@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.1
-Status: C0 bootstrap in progress
+Version: 0.2
+Status: C1 combat foundation implemented, CI validation pending
 Source of truth: this repository
 
 ## Product goal
@@ -48,6 +48,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 
 ## Milestones
 ### C0 — Vertical foundation
+Status: Complete, CI validated
+
 - responsive 9:16 shell
 - male/female select
 - touch joystick
@@ -56,13 +58,26 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - CI build validation
 
 ### C1 — Combat foundation
-- dodge state + i-frames
-- 3 active skill interfaces
-- melee/ranged/charger enemy roles
-- damage, telegraph, death and respawn
-- portrait readability pass
+Status: Implementation complete on feature branch, CI/device validation next
+
+Implemented:
+- dodge state + i-frames + cooldown
+- three active skills: frontal Cleave, targeted projectile, timed Guard
+- melee/ranged/charger enemy roles with distinct behaviors
+- telegraphs for melee strike, ranged shot and charger wind-up
+- player HP, damage, temporary invulnerability, death and respawn
+- enemy defeat rewards spirit
+- cooldown readout directly on portrait combat buttons
+- combat tuning centralized in `src/game/combatConfig.ts`
+
+C1 acceptance questions:
+- Can movement + auto attack + skills + dodge remain readable with three enemy roles active?
+- Does auto attack preserve enough agency when the player must position for Cleave, projectile range and dodge timing?
+- Are enemy telegraphs readable on a real portrait phone without visual overload?
 
 ### C2 — Cultivation skeleton
+Status: Planned
+
 - spirit/progression resource
 - materials
 - realm state
@@ -71,6 +86,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - meaningful power jump
 
 ### C3 — Continuous map + NPC layer
+Status: Planned
+
 - settlement and danger gradient
 - NPC interactions
 - merchant/elder loop
@@ -78,6 +95,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - short events
 
 ### C4 — Art identity
+Status: Planned
+
 - male/female player sprites
 - enemy families and boss art
 - environment kit
@@ -85,6 +104,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - skill/item/cultivation icons
 
 ### C5 — Full MVP loop
+Status: Planned
+
 - boss
 - 15–30 minute pacing
 - save/resume
@@ -93,6 +114,11 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 
 ## Current validation question
 Does portrait movement plus auto basic attack free enough thumb bandwidth for active skills and dodge while still feeling like an action RPG rather than an idle game?
+
+## Working assumptions
+- Placeholder geometric visuals remain intentional through C1.
+- Combat behavior is manually simulated rather than physics-driven until the core feel stabilizes.
+- Tuning values are provisional and should change from phone playtest evidence rather than desktop feel alone.
 
 ## Out of scope until MVP proves itself
 Large procedural worlds, sect simulation, deep relationships, large crafting trees, online accounts, multiplayer, monetization, many realms, and content multiplication before the core loop is fun.
