@@ -25,4 +25,4 @@ export const COMBAT = {
     ranged: { hp: 3, speed: 48, preferredRange: 215, damage: 1, cooldownMs: 1450 },
     charger: { hp: 4, speed: 58, damage: 2, windupMs: 650, chargeSpeed: 360, cooldownMs: 2200 },
   },
-} as const;
+};
