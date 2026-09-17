@@ -529,13 +529,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createCombatButtons(width: number, height: number): void {
-    this.createCombatButton('dodge', width - 108, height - 126, 58, 'NÉ', () => this.startDodge());
-    this.createCombatButton('cleave', width - 225, height - 126, 45, 'I', () => this.castCleave());
-    this.createCombatButton('projectile', width - 145, height - 240, 45, 'II', () => this.castProjectile());
-    this.createCombatButton('guard', width - 260, height - 235, 45, 'III', () => this.castGuard());
+    this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());
+    this.createCombatButton('cleave', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
 
-    this.add.text(width - 155, height - 330, 'Đánh thường: TỰ ĐỘNG', {
-      fontFamily: 'sans-serif', fontSize: '16px', color: '#4b4a42',
+    this.add.text(width - 172, height - 238, 'Đánh thường: TỰ ĐỘNG • Skill: Trảm Kích', {
+      fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
     }).setOrigin(0.5);
   }
 
@@ -558,7 +556,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private refreshCooldownLabels(time: number): void {
-    const names: Record<keyof Cooldowns, string> = { dodge: 'NÉ', cleave: 'I', projectile: 'II', guard: 'III' };
+    const names: Record<keyof Cooldowns, string> = {
+      dodge: 'NÉ',
+      cleave: 'SKILL',
+      projectile: 'II',
+      guard: 'III',
+    };
     for (const key of Object.keys(this.cooldowns) as Array<keyof Cooldowns>) {
       const label = this.buttonLabels[key];
       if (!label) continue;

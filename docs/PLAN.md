@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.2
-Status: C1 combat foundation implemented, CI validation pending
+Version: 0.3
+Status: C1 combat foundation deployed for mobile QC
 Source of truth: this repository
 
 ## Product goal
@@ -19,7 +19,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Dense route: settlement -> wilderness -> forest -> danger zone -> boss
 - Virtual joystick lower-left
 - Auto basic attack chooses the nearest valid target in range
-- 3 active skills + dodge on the right
+- Right thumb has only 2 combat buttons: one equipped Skill + Dodge
+- The Skill button represents the currently equipped active technique, not multiple simultaneous skill buttons
 - Male/female player choice at start
 - Shared combat profile and timing schema for both identities
 - 2 cultivation realms in MVP, with 1–2 breakthrough moments
@@ -34,13 +35,14 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - TypeScript 5.9
 - Vite 7.1
 - GitHub Actions for build validation
-- GitHub Pages for phone playtest after Pages is enabled
+- GitHub Pages for phone playtest
 
 ## MVP content budget
 - 2 selectable player visuals: male/female
 - 3 normal enemy archetypes
 - 1 boss
-- 3 active skills + dodge + auto basic attack
+- 1 equipped active skill slot + dodge + auto basic attack
+- multiple techniques may exist as progression/build choices, but only one active skill button is exposed during combat
 - 1 continuous region
 - 2–3 NPCs
 - 3–5 short random events
@@ -54,25 +56,33 @@ Status: Complete, CI validated
 - male/female select
 - touch joystick
 - auto basic attack nearest target
-- placeholder 3-skill + dodge layout
+- initial combat HUD shell
 - CI build validation
 
 ### C1 — Combat foundation
-Status: Implementation complete on feature branch, CI/device validation next
+Status: Core combat implemented and deployed; phone control QC in progress
 
 Implemented:
 - dodge state + i-frames + cooldown
-- three active skills: frontal Cleave, targeted projectile, timed Guard
+- one visible equipped Skill button, currently mapped to frontal Cleave
 - melee/ranged/charger enemy roles with distinct behaviors
 - telegraphs for melee strike, ranged shot and charger wind-up
 - player HP, damage, temporary invulnerability, death and respawn
 - enemy defeat rewards spirit
 - cooldown readout directly on portrait combat buttons
 - combat tuning centralized in `src/game/combatConfig.ts`
+- GitHub Pages mobile playtest deployment
+
+Control rule:
+- lower-left: movement joystick
+- lower-right: Dodge + Skill only
+- basic attack: automatic
+- no extra combat buttons may be added without revisiting this locked UX decision
 
 C1 acceptance questions:
-- Can movement + auto attack + skills + dodge remain readable with three enemy roles active?
-- Does auto attack preserve enough agency when the player must position for Cleave, projectile range and dodge timing?
+- Can movement + auto attack + one active skill + dodge feel active enough rather than idle?
+- Are two large right-thumb buttons comfortable and unambiguous on a real portrait phone?
+- Does auto attack preserve enough agency when positioning and dodge timing matter?
 - Are enemy telegraphs readable on a real portrait phone without visual overload?
 
 ### C2 — Cultivation skeleton
@@ -84,6 +94,7 @@ Status: Planned
 - breakthrough requirements
 - breakthrough trial
 - meaningful power jump
+- technique/equipped-skill choice becomes part of progression rather than additional combat buttons
 
 ### C3 — Continuous map + NPC layer
 Status: Planned
@@ -113,12 +124,13 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Does portrait movement plus auto basic attack free enough thumb bandwidth for active skills and dodge while still feeling like an action RPG rather than an idle game?
+Does portrait movement plus auto basic attack, one active Skill button and Dodge create enough tactical agency while keeping the right thumb simple?
 
 ## Working assumptions
 - Placeholder geometric visuals remain intentional through C1.
 - Combat behavior is manually simulated rather than physics-driven until the core feel stabilizes.
 - Tuning values are provisional and should change from phone playtest evidence rather than desktop feel alone.
+- Cleave is the temporary equipped skill for C1; the progression layer will later determine which technique occupies the single Skill slot.
 
 ## Out of scope until MVP proves itself
 Large procedural worlds, sect simulation, deep relationships, large crafting trees, online accounts, multiplayer, monetization, many realms, and content multiplication before the core loop is fun.
