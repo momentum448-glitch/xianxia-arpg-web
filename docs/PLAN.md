@@ -30,9 +30,9 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Public GitHub repository
 
 ## Technology
-- Phaser 4
-- TypeScript
-- Vite
+- Phaser 3.90
+- TypeScript 5.9
+- Vite 7.1
 - GitHub Actions for build validation
 - GitHub Pages for phone playtest after Pages is enabled
 
