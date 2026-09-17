@@ -1,5 +1,13 @@
 import Phaser from 'phaser';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
+import {
+  CULTIVATION,
+  canBreakthrough,
+  flyingSwordDamageForRealm,
+  maxHpForRealm,
+  realmName,
+  skillDamageForRealm,
+} from '../game/cultivationConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
 
 interface EnemyState {
@@ -23,11 +31,11 @@ interface FlyingSwordState {
   nextTrailAt: number;
 }
 
+type CombatButtonKey = 'dodge' | 'skill';
+
 interface Cooldowns {
   dodge: number;
-  cleave: number;
-  projectile: number;
-  guard: number;
+  skill: number;
 }
 
 export class GameScene extends Phaser.Scene {
@@ -46,7 +54,6 @@ export class GameScene extends Phaser.Scene {
   private actionLockedUntil = 0;
   private dodgeUntil = 0;
   private invulnerableUntil = 0;
-  private guardUntil = 0;
   private dodgeX = 0;
   private dodgeY = -1;
   private playerHp = COMBAT.player.maxHp;
@@ -55,9 +62,14 @@ export class GameScene extends Phaser.Scene {
   private respawnY = 0;
   private hpText!: Phaser.GameObjects.Text;
   private spiritText!: Phaser.GameObjects.Text;
+  private materialText!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
-  private cooldowns: Cooldowns = { dodge: 0, cleave: 0, projectile: 0, guard: 0 };
-  private buttonLabels: Partial<Record<keyof Cooldowns, Phaser.GameObjects.Text>> = {};
+  private breakthroughButton!: Phaser.GameObjects.Rectangle;
+  private breakthroughLabel!: Phaser.GameObjects.Text;
+  private breakthroughTrialActive = false;
+  private breakthroughTrialKills = 0;
+  private cooldowns: Cooldowns = { dodge: 0, skill: 0 };
+  private buttonLabels: Partial<Record<CombatButtonKey, Phaser.GameObjects.Text>> = {};
 
   constructor() {
     super('Game');
@@ -86,7 +98,11 @@ export class GameScene extends Phaser.Scene {
       fontFamily: 'sans-serif', fontSize: '17px', color: '#394038',
     });
 
-    this.statusText = this.add.text(width / 2, 124, '', {
+    this.materialText = this.add.text(28, 112, '', {
+      fontFamily: 'sans-serif', fontSize: '16px', color: '#665741',
+    });
+
+    this.statusText = this.add.text(width / 2, 142, '', {
       fontFamily: 'sans-serif', fontSize: '17px', color: '#554c3c', fontStyle: 'bold', align: 'center',
     }).setOrigin(0.5);
 
@@ -100,6 +116,7 @@ export class GameScene extends Phaser.Scene {
       fontFamily: 'sans-serif', fontSize: '14px', color: '#ffffff', fontStyle: 'bold',
     }).setOrigin(0.5).setName('playerLabel');
 
+    this.createBreakthroughUi(width);
     this.spawnEncounter();
     this.createJoystick(125, height - 145);
     this.createCombatButtons(width, height);
@@ -144,9 +161,7 @@ export class GameScene extends Phaser.Scene {
       this.scale.height - 245,
     );
 
-    if (time < this.guardUntil) {
-      this.player.setStrokeStyle(6, 0xd9f0cf);
-    } else if (time < this.invulnerableUntil) {
+    if (time < this.invulnerableUntil) {
       this.player.setStrokeStyle(5, 0xf5e8a8);
     } else {
       this.player.setStrokeStyle(3, 0xf6ead0);
@@ -176,7 +191,7 @@ export class GameScene extends Phaser.Scene {
     const sword = this.add.container(this.player.x, this.player.y, [blade, tip, guard, hilt])
       .setRotation(angle)
       .setDepth(8)
-      .setScale(0.92);
+      .setScale(this.profile.realm === 2 ? 1.06 : 0.92);
 
     const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35);
     this.tweens.add({
@@ -231,7 +246,14 @@ export class GameScene extends Phaser.Scene {
       );
 
       if (distance <= COMBAT.player.flyingSwordHitRadius) {
-        this.damageEnemy(sword.target, 1, 0xf2e4b8, 5, sword.node.x, sword.node.y);
+        this.damageEnemy(
+          sword.target,
+          flyingSwordDamageForRealm(this.profile.realm),
+          0xf2e4b8,
+          5,
+          sword.node.x,
+          sword.node.y,
+        );
         const impact = this.add.circle(sword.target.node.x, sword.target.node.y, 14, 0xf1e4bd, 0.32)
           .setStrokeStyle(2, 0xf1e4bd, 0.7);
         this.tweens.add({
@@ -256,9 +278,9 @@ export class GameScene extends Phaser.Scene {
       sword.node.y,
       tailX,
       tailY,
-      0xdce7dc,
-      0.42,
-    ).setOrigin(0, 0).setLineWidth(3).setDepth(7);
+      this.profile.realm === 2 ? 0xc9efe5 : 0xdce7dc,
+      this.profile.realm === 2 ? 0.58 : 0.42,
+    ).setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 4 : 3).setDepth(7);
 
     this.tweens.add({
       targets: trail,
@@ -401,20 +423,39 @@ export class GameScene extends Phaser.Scene {
     this.moveEnemyToward(enemy, cfg.speed, delta);
   }
 
+  private clearEnemies(): void {
+    for (const enemy of this.enemies) {
+      if (enemy.node.active) enemy.node.destroy();
+    }
+    this.enemies = [];
+  }
+
   private spawnEncounter(): void {
     this.clearFlyingSwords();
-    for (const enemy of this.enemies) enemy.node.destroy();
-    this.enemies = [];
+    this.clearEnemies();
     const { width, height } = this.scale;
     this.spawnEnemy('melee', width * 0.28, height * 0.36);
     this.spawnEnemy('ranged', width * 0.69, height * 0.31);
     this.spawnEnemy('charger', width * 0.75, height * 0.51);
   }
 
-  private spawnEnemy(kind: EnemyKind, x: number, y: number): void {
+  private spawnBreakthroughTrial(): void {
+    this.clearFlyingSwords();
+    this.clearEnemies();
+    const { width, height } = this.scale;
+    this.spawnEnemy('melee', width * 0.23, height * 0.34, true);
+    this.spawnEnemy('ranged', width * 0.72, height * 0.29, true);
+    this.spawnEnemy('charger', width * 0.78, height * 0.49, true);
+  }
+
+  private spawnEnemy(kind: EnemyKind, x: number, y: number, trial = false): void {
     const cfg = COMBAT.enemy[kind];
-    const node = this.add.circle(x, y, kind === 'charger' ? 35 : 31, this.enemyColor(kind))
-      .setStrokeStyle(3, 0x332f2a);
+    const node = this.add.circle(
+      x,
+      y,
+      kind === 'charger' ? 35 : 31,
+      trial ? 0x77564d : this.enemyColor(kind),
+    ).setStrokeStyle(trial ? 5 : 3, trial ? 0xd7b36d : 0x332f2a);
     const hp = cfg.hp;
     this.enemies.push({
       kind,
@@ -450,6 +491,10 @@ export class GameScene extends Phaser.Scene {
     return best;
   }
 
+  private activeEnemyCount(): number {
+    return this.enemies.reduce((count, enemy) => count + (enemy.node.active ? 1 : 0), 0);
+  }
+
   private damageEnemy(
     enemy: EnemyState,
     damage: number,
@@ -470,53 +515,153 @@ export class GameScene extends Phaser.Scene {
   }
 
   private killEnemy(enemy: EnemyState): void {
+    if (!enemy.node.active) return;
     enemy.node.destroy();
-    this.profile.spirit = Math.min(this.profile.maxSpirit, this.profile.spirit + 18);
+
+    if (this.breakthroughTrialActive) {
+      this.breakthroughTrialKills += 1;
+      this.statusText.setText(`Đột phá • Kiếp ảnh ${this.breakthroughTrialKills}/3`);
+      if (this.breakthroughTrialKills >= 3) this.completeBreakthrough();
+      return;
+    }
+
+    this.profile.spirit = Math.min(
+      this.profile.maxSpirit,
+      this.profile.spirit + CULTIVATION.rewards.spiritPerKill,
+    );
+    this.profile.essence += CULTIVATION.rewards.essencePerKill;
     this.refreshHud();
+
+    if (this.activeEnemyCount() === 0) {
+      this.time.delayedCall(CULTIVATION.encounterRespawnMs, () => {
+        if (!this.dead && !this.breakthroughTrialActive && this.activeEnemyCount() === 0) {
+          this.spawnEncounter();
+        }
+      });
+    }
+  }
+
+  private createBreakthroughUi(width: number): void {
+    this.breakthroughButton = this.add.rectangle(width / 2, 190, 250, 62, 0x654c35, 0.92)
+      .setStrokeStyle(3, 0xe5cf9c, 0.95)
+      .setDepth(20)
+      .setInteractive({ useHandCursor: true });
+    this.breakthroughLabel = this.add.text(width / 2, 190, 'ĐỘT PHÁ\n50 Linh Khí + 3 Tinh Hoa', {
+      fontFamily: 'serif', fontSize: '17px', color: '#fff1cd', fontStyle: 'bold', align: 'center',
+    }).setOrigin(0.5).setDepth(21);
+
+    this.breakthroughButton.on('pointerdown', () => this.startBreakthroughTrial());
+    this.breakthroughButton.setVisible(false).disableInteractive();
+    this.breakthroughLabel.setVisible(false);
+  }
+
+  private refreshBreakthroughUi(): void {
+    const ready = !this.dead
+      && !this.breakthroughTrialActive
+      && canBreakthrough(this.profile.realm, this.profile.spirit, this.profile.essence);
+
+    this.breakthroughButton.setVisible(ready);
+    this.breakthroughLabel.setVisible(ready);
+    if (ready) {
+      this.breakthroughButton.setInteractive({ useHandCursor: true });
+    } else {
+      this.breakthroughButton.disableInteractive();
+    }
+  }
+
+  private startBreakthroughTrial(): void {
+    if (this.dead || this.breakthroughTrialActive) return;
+    if (!canBreakthrough(this.profile.realm, this.profile.spirit, this.profile.essence)) return;
+
+    this.breakthroughTrialActive = true;
+    this.breakthroughTrialKills = 0;
+    this.refreshBreakthroughUi();
+    this.statusText.setText('Đột phá bắt đầu • Hạ 3 Kiếp Ảnh');
+
+    const aura = this.add.circle(this.player.x, this.player.y, 58, 0xd8c27d, 0.1)
+      .setStrokeStyle(5, 0xd8c27d, 0.75)
+      .setDepth(4);
+    this.tweens.add({
+      targets: aura,
+      scale: 3.2,
+      alpha: 0,
+      duration: 650,
+      onComplete: () => aura.destroy(),
+    });
+
+    this.spawnBreakthroughTrial();
+  }
+
+  private completeBreakthrough(): void {
+    if (!this.breakthroughTrialActive || this.profile.realm !== 1) return;
+
+    this.breakthroughTrialActive = false;
+    this.breakthroughTrialKills = 0;
+    this.profile.realm = 2;
+    this.profile.spirit = 0;
+    this.profile.essence = Math.max(0, this.profile.essence - CULTIVATION.realm1.breakthroughEssence);
+    this.profile.maxSpirit = CULTIVATION.realm2.maxSpirit;
+    this.playerHp = maxHpForRealm(this.profile.realm);
+    this.invulnerableUntil = this.time.now + 1200;
+    this.clearFlyingSwords();
+
+    const ascension = this.add.circle(this.player.x, this.player.y, 64, 0xc7eee3, 0.16)
+      .setStrokeStyle(7, 0xdff9ef, 0.85)
+      .setDepth(5);
+    this.tweens.add({
+      targets: ascension,
+      scale: 4.2,
+      alpha: 0,
+      duration: 900,
+      onComplete: () => ascension.destroy(),
+    });
+
+    this.statusText.setText('TRÚC CƠ THÀNH • Phi kiếm +1 sát thương • Sinh lực +2');
+    this.refreshHud();
+    this.time.delayedCall(1200, () => {
+      if (!this.dead) {
+        this.statusText.setText('');
+        this.spawnEncounter();
+      }
+    });
   }
 
   private damagePlayer(damage: number, source?: EnemyState): void {
     const now = this.time.now;
     if (this.dead || now < this.invulnerableUntil) return;
 
-    if (now < this.guardUntil) {
-      this.statusText.setText('Hộ thể chặn đòn');
-      this.time.delayedCall(450, () => { if (!this.dead) this.statusText.setText(''); });
-      if (source?.node.active) {
-        source.nextActionAt = Math.max(source.nextActionAt, now + 700);
-        source.node.setScale(0.9);
-        this.tweens.add({ targets: source.node, scale: 1, duration: 140 });
-      }
-      return;
-    }
-
     this.playerHp = Math.max(0, this.playerHp - damage);
     this.invulnerableUntil = now + 380;
     this.cameras.main.shake(90, 0.008);
     this.refreshHud();
+    if (source?.node.active) source.nextActionAt = Math.max(source.nextActionAt, now + 180);
     if (this.playerHp <= 0) this.die();
   }
 
   private die(): void {
     if (this.dead) return;
     this.dead = true;
+    if (this.breakthroughTrialActive) {
+      this.breakthroughTrialActive = false;
+      this.breakthroughTrialKills = 0;
+    }
     this.clearFlyingSwords();
     this.moveX = 0;
     this.moveY = 0;
     this.player.setAlpha(0.35);
     this.statusText.setText('Trọng thương... đang hồi phục');
+    this.refreshBreakthroughUi();
     this.time.delayedCall(1200, () => this.respawn());
   }
 
   private respawn(): void {
     this.dead = false;
     this.clearFlyingSwords();
-    this.playerHp = COMBAT.player.maxHp;
+    this.playerHp = maxHpForRealm(this.profile.realm);
     this.player.setPosition(this.respawnX, this.respawnY).setAlpha(1);
     this.nextAttackAt = this.time.now + 500;
     this.actionLockedUntil = 0;
     this.dodgeUntil = 0;
-    this.guardUntil = 0;
     this.invulnerableUntil = this.time.now + 900;
     this.statusText.setText('');
     this.spawnEncounter();
@@ -537,8 +682,8 @@ export class GameScene extends Phaser.Scene {
 
   private castCleave(): void {
     const now = this.time.now;
-    if (!this.canCast(now, this.cooldowns.cleave)) return;
-    this.cooldowns.cleave = now + COMBAT.skills.cleaveCooldownMs;
+    if (!this.canCast(now, this.cooldowns.skill)) return;
+    this.cooldowns.skill = now + COMBAT.skills.cleaveCooldownMs;
     this.actionLockedUntil = now + 230;
 
     const facingAngle = Math.atan2(this.facingY, this.facingX);
@@ -549,45 +694,14 @@ export class GameScene extends Phaser.Scene {
       if (distance > COMBAT.skills.cleaveRange) continue;
       const enemyAngle = Math.atan2(enemy.node.y - this.player.y, enemy.node.x - this.player.x);
       const diff = Math.abs(Phaser.Math.Angle.Wrap(enemyAngle - facingAngle));
-      if (diff <= halfArc) this.damageEnemy(enemy, 2, 0xe7d49a, 12);
+      if (diff <= halfArc) {
+        this.damageEnemy(enemy, skillDamageForRealm(this.profile.realm), 0xe7d49a, 12);
+      }
     }
 
     const pulse = this.add.circle(this.player.x, this.player.y, 52, 0xe7d49a, 0.1)
       .setStrokeStyle(5, 0xe7d49a, 0.7);
     this.tweens.add({ targets: pulse, scale: 2.7, alpha: 0, duration: 240, onComplete: () => pulse.destroy() });
-  }
-
-  private castProjectile(): void {
-    const now = this.time.now;
-    if (!this.canCast(now, this.cooldowns.projectile)) return;
-    const target = this.getNearestEnemy(COMBAT.skills.projectileRange);
-    if (!target) return;
-
-    this.cooldowns.projectile = now + COMBAT.skills.projectileCooldownMs;
-    this.actionLockedUntil = now + 180;
-    this.faceTarget(target);
-    const orb = this.add.circle(this.player.x, this.player.y, 13, 0xb9d8d0, 0.95);
-    this.tweens.add({
-      targets: orb,
-      x: target.node.x,
-      y: target.node.y,
-      duration: 230,
-      ease: 'Linear',
-      onComplete: () => {
-        if (target.node.active) this.damageEnemy(target, 2, 0xb9d8d0, 8);
-        orb.destroy();
-      },
-    });
-  }
-
-  private castGuard(): void {
-    const now = this.time.now;
-    if (!this.canCast(now, this.cooldowns.guard)) return;
-    this.cooldowns.guard = now + COMBAT.skills.guardCooldownMs;
-    this.guardUntil = now + COMBAT.skills.guardDurationMs;
-    this.actionLockedUntil = now + 120;
-    this.statusText.setText('Hộ Thể');
-    this.time.delayedCall(COMBAT.skills.guardDurationMs, () => { if (!this.dead) this.statusText.setText(''); });
   }
 
   private canCast(now: number, readyAt: number): boolean {
@@ -665,7 +779,7 @@ export class GameScene extends Phaser.Scene {
 
   private createCombatButtons(width: number, height: number): void {
     this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());
-    this.createCombatButton('cleave', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
+    this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
 
     this.add.text(width - 172, height - 238, 'Đánh thường: PHI KIẾM • Skill: Trảm Kích', {
       fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
@@ -673,7 +787,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createCombatButton(
-    key: keyof Cooldowns,
+    key: CombatButtonKey,
     x: number,
     y: number,
     radius: number,
@@ -691,13 +805,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private refreshCooldownLabels(time: number): void {
-    const names: Record<keyof Cooldowns, string> = {
-      dodge: 'NÉ',
-      cleave: 'SKILL',
-      projectile: 'II',
-      guard: 'III',
-    };
-    for (const key of Object.keys(this.cooldowns) as Array<keyof Cooldowns>) {
+    const names: Record<CombatButtonKey, string> = { dodge: 'NÉ', skill: 'SKILL' };
+    for (const key of Object.keys(this.cooldowns) as CombatButtonKey[]) {
       const label = this.buttonLabels[key];
       if (!label) continue;
       const remaining = this.cooldowns[key] - time;
@@ -711,7 +820,15 @@ export class GameScene extends Phaser.Scene {
   }
 
   private refreshHud(): void {
-    this.hpText.setText(`Sinh lực ${this.playerHp}/${COMBAT.player.maxHp}`);
-    this.spiritText.setText(`Luyện Khí • Linh khí ${this.profile.spirit}/${this.profile.maxSpirit}`);
+    this.hpText.setText(`Sinh lực ${this.playerHp}/${maxHpForRealm(this.profile.realm)}`);
+    this.spiritText.setText(
+      `${realmName(this.profile.realm)} • Linh khí ${this.profile.spirit}/${this.profile.maxSpirit}`,
+    );
+    this.materialText.setText(
+      this.profile.realm === 1
+        ? `Tinh Hoa ${this.profile.essence} • Đột phá cần 50 Linh Khí + 3 Tinh Hoa`
+        : `Tinh Hoa ${this.profile.essence} • Cảnh giới Trúc Cơ đã ổn định`,
+    );
+    this.refreshBreakthroughUi();
   }
 }
