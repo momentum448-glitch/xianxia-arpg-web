@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.4
-Status: C1 combat foundation deployed for mobile QC
+Version: 0.5
+Status: C2 cultivation skeleton implemented on feature branch, CI validation next
 Source of truth: this repository
 
 ## Product goal
@@ -25,8 +25,9 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - The Skill button represents the currently equipped active technique, not multiple simultaneous skill buttons
 - Male/female player choice at start
 - Shared combat profile and timing schema for both identities
-- 2 cultivation realms in MVP, with 1–2 breakthrough moments
+- 2 cultivation realms in MVP, with meaningful breakthrough moments
 - Breakthrough requires spirit/progress + materials + a short trial
+- C2 first breakthrough: 50 Linh Khí + 3 Tinh Hoa -> defeat 3 Kiếp Ảnh -> Trúc Cơ
 - 2–3 NPCs, merchant/elder function, 3–5 short events
 - Single-player, local/offline save for MVP
 - Original xianxia 2D/2.5D art with restrained ink-wash influence
@@ -62,7 +63,7 @@ Status: Complete, CI validated
 - CI build validation
 
 ### C1 — Combat foundation
-Status: Core combat implemented and deployed; phone control QC in progress
+Status: Complete enough for continued mobile QC
 
 Implemented:
 - dodge state + i-frames + cooldown
@@ -70,11 +71,9 @@ Implemented:
 - melee/ranged/charger enemy roles with distinct behaviors
 - telegraphs for melee strike, ranged shot and charger wind-up
 - player HP, damage, temporary invulnerability, death and respawn
-- enemy defeat rewards spirit
 - cooldown readout directly on portrait combat buttons
-- combat tuning centralized in `src/game/combatConfig.ts`
-- GitHub Pages mobile playtest deployment
 - auto basic attack rendered as one visible flying sword with light homing, trail, travel time and impact damage
+- GitHub Pages mobile playtest deployment
 
 Control rule:
 - lower-left: movement joystick
@@ -89,23 +88,33 @@ Flying-sword rule:
 - damage occurs only on contact, not at launch
 - no multi-target piercing in C1
 
-C1 acceptance questions:
-- Can movement + flying-sword auto attack + one active skill + dodge feel active enough rather than idle?
-- Is the flying sword visually readable on a portrait phone without adding clutter?
-- Does light homing feel supportive without making positioning irrelevant?
-- Are two large right-thumb buttons comfortable and unambiguous on a real portrait phone?
-- Are enemy telegraphs readable on a real portrait phone without visual overload?
-
 ### C2 — Cultivation skeleton
-Status: Planned
+Status: Implemented on feature branch, CI/device validation next
 
-- spirit/progression resource
-- materials
-- realm state
-- breakthrough requirements
-- breakthrough trial
-- meaningful power jump
-- technique/equipped-skill choice becomes part of progression rather than additional combat buttons
+Implemented:
+- Linh Khí progression resource
+- Tinh Hoa breakthrough material
+- repeated encounter waves so progression can be earned without intentional death/reset
+- realm state: Luyện Khí -> Trúc Cơ
+- first breakthrough requirement: 50 Linh Khí + 3 Tinh Hoa
+- breakthrough CTA appears in the upper-center progression HUD, not in the right-thumb combat controls
+- short breakthrough trial: defeat 3 visually marked Kiếp Ảnh
+- death during the trial cancels the attempt but does not consume materials in the prototype
+- successful breakthrough consumes 3 Tinh Hoa and resets Linh Khí for the new realm
+- meaningful power jump on Trúc Cơ:
+  - max HP 8 -> 10
+  - flying sword damage 1 -> 2
+  - Trảm Kích damage 2 -> 3
+  - stronger flying-sword visual trail
+- cultivation tuning centralized in `src/game/cultivationConfig.ts`
+- hidden legacy skill cooldown state removed so code now matches the locked one-Skill HUD
+
+C2 acceptance questions:
+- Is one normal three-enemy wave enough setup before the first breakthrough, or does it arrive too quickly?
+- Does the breakthrough CTA feel like progression rather than another combat button?
+- Is the 3-enemy trial readable and satisfying on a phone?
+- Is the Trúc Cơ power increase immediately noticeable through damage, HP, and VFX?
+- Should failed breakthroughs eventually consume a resource, or remain retry-friendly for MVP?
 
 ### C3 — Continuous map + NPC layer
 Status: Planned
@@ -136,14 +145,17 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Does portrait movement plus visible flying-sword auto attack, one active Skill button and Dodge create enough tactical agency while keeping the right thumb simple?
+Can the player understand and enjoy this compact loop on a phone without opening a complex menu:
+
+fight -> gain Linh Khí/Tinh Hoa -> meet requirements -> start breakthrough -> defeat Kiếp Ảnh -> visibly become stronger?
 
 ## Working assumptions
-- Placeholder geometric visuals remain intentional through C1.
+- Placeholder geometric visuals remain intentional through C2.
 - Combat behavior is manually simulated rather than physics-driven until the core feel stabilizes.
 - Tuning values are provisional and should change from phone playtest evidence rather than desktop feel alone.
-- Cleave is the temporary equipped skill for C1; the progression layer will later determine which technique occupies the single Skill slot.
-- Flying-sword art is procedural placeholder geometry in C1; final sprite/VFX comes in the art pass.
+- Cleave remains the temporary equipped Skill; later progression chooses which technique occupies the single Skill slot.
+- Flying-sword art is procedural placeholder geometry until the art pass.
+- C2 breakthrough failure is deliberately forgiving so QC focuses on clarity and feel rather than punishment balance.
 
 ## Out of scope until MVP proves itself
 Large procedural worlds, sect simulation, deep relationships, large crafting trees, online accounts, multiplayer, monetization, many realms, and content multiplication before the core loop is fun.
