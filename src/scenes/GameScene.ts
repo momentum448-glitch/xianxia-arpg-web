@@ -15,6 +15,14 @@ interface EnemyState {
   chargeHit: boolean;
 }
 
+interface FlyingSwordState {
+  node: Phaser.GameObjects.Container;
+  target: EnemyState;
+  angle: number;
+  expiresAt: number;
+  nextTrailAt: number;
+}
+
 interface Cooldowns {
   dodge: number;
   cleave: number;
@@ -26,6 +34,7 @@ export class GameScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Rectangle;
   private profile!: PlayerProfile;
   private enemies: EnemyState[] = [];
+  private flyingSwords: FlyingSwordState[] = [];
   private moveX = 0;
   private moveY = 0;
   private facingX = 0;
@@ -103,6 +112,7 @@ export class GameScene extends Phaser.Scene {
       this.updatePlayer(time, delta);
       this.updateEnemies(time, delta);
       this.updateAutoAttack(time);
+      this.updateFlyingSwords(time, delta);
     }
 
     this.syncPlayerPresentation();
@@ -150,7 +160,122 @@ export class GameScene extends Phaser.Scene {
 
     this.nextAttackAt = time + COMBAT.player.autoAttackCooldownMs;
     this.faceTarget(target);
-    this.damageEnemy(target, 1, 0xf2e4b8, 7);
+    this.spawnFlyingSword(target, time);
+  }
+
+  private spawnFlyingSword(target: EnemyState, time: number): void {
+    if (!target.node.active) return;
+
+    const angle = Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x);
+    const blade = this.add.rectangle(10, 0, 30, 6, 0xf6edd5)
+      .setStrokeStyle(1, 0x6b6e65);
+    const tip = this.add.triangle(30, 0, 0, -6, 12, 0, 0, 6, 0xf6edd5)
+      .setStrokeStyle(1, 0x6b6e65);
+    const guard = this.add.rectangle(-7, 0, 5, 16, 0xb89b62);
+    const hilt = this.add.rectangle(-14, 0, 12, 5, 0x6d4c35);
+    const sword = this.add.container(this.player.x, this.player.y, [blade, tip, guard, hilt])
+      .setRotation(angle)
+      .setDepth(8)
+      .setScale(0.92);
+
+    const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35);
+    this.tweens.add({
+      targets: launchFlash,
+      scale: 2.2,
+      alpha: 0,
+      duration: 130,
+      onComplete: () => launchFlash.destroy(),
+    });
+
+    this.flyingSwords.push({
+      node: sword,
+      target,
+      angle,
+      expiresAt: time + COMBAT.player.flyingSwordLifetimeMs,
+      nextTrailAt: time,
+    });
+  }
+
+  private updateFlyingSwords(time: number, delta: number): void {
+    const dt = delta / 1000;
+
+    for (let i = this.flyingSwords.length - 1; i >= 0; i -= 1) {
+      const sword = this.flyingSwords[i];
+      if (!sword.target.node.active || time >= sword.expiresAt) {
+        this.destroyFlyingSword(i);
+        continue;
+      }
+
+      const desiredAngle = Math.atan2(
+        sword.target.node.y - sword.node.y,
+        sword.target.node.x - sword.node.x,
+      );
+      const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);
+      const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;
+      sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);
+
+      sword.node.x += Math.cos(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
+      sword.node.y += Math.sin(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
+      sword.node.setRotation(sword.angle);
+
+      if (time >= sword.nextTrailAt) {
+        sword.nextTrailAt = time + COMBAT.player.flyingSwordTrailIntervalMs;
+        this.emitFlyingSwordTrail(sword);
+      }
+
+      const distance = Phaser.Math.Distance.Between(
+        sword.node.x,
+        sword.node.y,
+        sword.target.node.x,
+        sword.target.node.y,
+      );
+
+      if (distance <= COMBAT.player.flyingSwordHitRadius) {
+        this.damageEnemy(sword.target, 1, 0xf2e4b8, 5, sword.node.x, sword.node.y);
+        const impact = this.add.circle(sword.target.node.x, sword.target.node.y, 14, 0xf1e4bd, 0.32)
+          .setStrokeStyle(2, 0xf1e4bd, 0.7);
+        this.tweens.add({
+          targets: impact,
+          scale: 2.1,
+          alpha: 0,
+          duration: 150,
+          onComplete: () => impact.destroy(),
+        });
+        this.destroyFlyingSword(i);
+      }
+    }
+  }
+
+  private emitFlyingSwordTrail(sword: FlyingSwordState): void {
+    const tailX = sword.node.x - Math.cos(sword.angle) * 28;
+    const tailY = sword.node.y - Math.sin(sword.angle) * 28;
+    const trail = this.add.line(
+      0,
+      0,
+      sword.node.x,
+      sword.node.y,
+      tailX,
+      tailY,
+      0xdce7dc,
+      0.42,
+    ).setOrigin(0, 0).setLineWidth(3).setDepth(7);
+
+    this.tweens.add({
+      targets: trail,
+      alpha: 0,
+      duration: 150,
+      onComplete: () => trail.destroy(),
+    });
+  }
+
+  private destroyFlyingSword(index: number): void {
+    this.flyingSwords[index].node.destroy(true);
+    this.flyingSwords.splice(index, 1);
+  }
+
+  private clearFlyingSwords(): void {
+    for (const sword of this.flyingSwords) sword.node.destroy(true);
+    this.flyingSwords = [];
   }
 
   private updateEnemies(time: number, delta: number): void {
@@ -277,6 +402,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnEncounter(): void {
+    this.clearFlyingSwords();
     for (const enemy of this.enemies) enemy.node.destroy();
     this.enemies = [];
     const { width, height } = this.scale;
@@ -324,9 +450,16 @@ export class GameScene extends Phaser.Scene {
     return best;
   }
 
-  private damageEnemy(enemy: EnemyState, damage: number, color: number, width: number): void {
+  private damageEnemy(
+    enemy: EnemyState,
+    damage: number,
+    color: number,
+    width: number,
+    originX = this.player.x,
+    originY = this.player.y,
+  ): void {
     if (!enemy.node.active) return;
-    const fx = this.add.line(0, 0, this.player.x, this.player.y, enemy.node.x, enemy.node.y, color, 0.95)
+    const fx = this.add.line(0, 0, originX, originY, enemy.node.x, enemy.node.y, color, 0.95)
       .setOrigin(0, 0).setLineWidth(width);
     this.tweens.add({ targets: fx, alpha: 0, duration: 150, onComplete: () => fx.destroy() });
 
@@ -367,6 +500,7 @@ export class GameScene extends Phaser.Scene {
   private die(): void {
     if (this.dead) return;
     this.dead = true;
+    this.clearFlyingSwords();
     this.moveX = 0;
     this.moveY = 0;
     this.player.setAlpha(0.35);
@@ -376,6 +510,7 @@ export class GameScene extends Phaser.Scene {
 
   private respawn(): void {
     this.dead = false;
+    this.clearFlyingSwords();
     this.playerHp = COMBAT.player.maxHp;
     this.player.setPosition(this.respawnX, this.respawnY).setAlpha(1);
     this.nextAttackAt = this.time.now + 500;
@@ -532,7 +667,7 @@ export class GameScene extends Phaser.Scene {
     this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());
     this.createCombatButton('cleave', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
 
-    this.add.text(width - 172, height - 238, 'Đánh thường: TỰ ĐỘNG • Skill: Trảm Kích', {
+    this.add.text(width - 172, height - 238, 'Đánh thường: PHI KIẾM • Skill: Trảm Kích', {
       fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
     }).setOrigin(0.5);
   }
