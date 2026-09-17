@@ -1,6 +1,6 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.3
+Version: 0.4
 Status: C1 combat foundation deployed for mobile QC
 Source of truth: this repository
 
@@ -19,6 +19,8 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Dense route: settlement -> wilderness -> forest -> danger zone -> boss
 - Virtual joystick lower-left
 - Auto basic attack chooses the nearest valid target in range
+- Auto basic attack is represented as exactly one visible flying sword per attack cycle
+- Flying sword uses light homing to follow the locked target, then deals damage on contact
 - Right thumb has only 2 combat buttons: one equipped Skill + Dodge
 - The Skill button represents the currently equipped active technique, not multiple simultaneous skill buttons
 - Male/female player choice at start
@@ -41,7 +43,7 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - 2 selectable player visuals: male/female
 - 3 normal enemy archetypes
 - 1 boss
-- 1 equipped active skill slot + dodge + auto basic attack
+- 1 equipped active skill slot + dodge + auto flying-sword basic attack
 - multiple techniques may exist as progression/build choices, but only one active skill button is exposed during combat
 - 1 continuous region
 - 2–3 NPCs
@@ -72,17 +74,26 @@ Implemented:
 - cooldown readout directly on portrait combat buttons
 - combat tuning centralized in `src/game/combatConfig.ts`
 - GitHub Pages mobile playtest deployment
+- auto basic attack rendered as one visible flying sword with light homing, trail, travel time and impact damage
 
 Control rule:
 - lower-left: movement joystick
 - lower-right: Dodge + Skill only
-- basic attack: automatic
+- basic attack: automatic flying sword
 - no extra combat buttons may be added without revisiting this locked UX decision
 
+Flying-sword rule:
+- one sword per basic-attack cycle
+- locks the nearest valid enemy at launch
+- turns gradually toward that target instead of snapping instantly
+- damage occurs only on contact, not at launch
+- no multi-target piercing in C1
+
 C1 acceptance questions:
-- Can movement + auto attack + one active skill + dodge feel active enough rather than idle?
+- Can movement + flying-sword auto attack + one active skill + dodge feel active enough rather than idle?
+- Is the flying sword visually readable on a portrait phone without adding clutter?
+- Does light homing feel supportive without making positioning irrelevant?
 - Are two large right-thumb buttons comfortable and unambiguous on a real portrait phone?
-- Does auto attack preserve enough agency when positioning and dodge timing matter?
 - Are enemy telegraphs readable on a real portrait phone without visual overload?
 
 ### C2 — Cultivation skeleton
@@ -113,6 +124,7 @@ Status: Planned
 - environment kit
 - ink-wash UI/VFX accents
 - skill/item/cultivation icons
+- replace geometric flying-sword placeholder with final xianxia sword art/VFX
 
 ### C5 — Full MVP loop
 Status: Planned
@@ -124,13 +136,14 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Does portrait movement plus auto basic attack, one active Skill button and Dodge create enough tactical agency while keeping the right thumb simple?
+Does portrait movement plus visible flying-sword auto attack, one active Skill button and Dodge create enough tactical agency while keeping the right thumb simple?
 
 ## Working assumptions
 - Placeholder geometric visuals remain intentional through C1.
 - Combat behavior is manually simulated rather than physics-driven until the core feel stabilizes.
 - Tuning values are provisional and should change from phone playtest evidence rather than desktop feel alone.
 - Cleave is the temporary equipped skill for C1; the progression layer will later determine which technique occupies the single Skill slot.
+- Flying-sword art is procedural placeholder geometry in C1; final sprite/VFX comes in the art pass.
 
 ## Out of scope until MVP proves itself
 Large procedural worlds, sect simulation, deep relationships, large crafting trees, online accounts, multiplayer, monetization, many realms, and content multiplication before the core loop is fun.
