@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
   CULTIVATION,
@@ -27,6 +28,7 @@ interface EnemyState {
   trial: boolean;
   encounterId: string | null;
   damageMultiplier: number;
+  visual: Phaser.GameObjects.Container;
 }
 
 interface FlyingSwordState {
@@ -57,6 +59,7 @@ interface Cooldowns {
 
 export class GameScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Rectangle;
+  private playerVisual!: Phaser.GameObjects.Container;
   private profile!: PlayerProfile;
   private enemies: EnemyState[] = [];
   private flyingSwords: FlyingSwordState[] = [];
@@ -114,16 +117,17 @@ export class GameScene extends Phaser.Scene {
     this.createWorldShell();
     this.createHud(width);
 
-    const playerColor = this.profile.gender === 'male' ? 0x425b52 : 0x785560;
     this.respawnX = WORLD.playerSpawn.x;
     this.respawnY = WORLD.playerSpawn.y;
-    this.player = this.add.rectangle(this.respawnX, this.respawnY, 58, 78, playerColor)
-      .setStrokeStyle(3, 0xf6ead0)
+    this.player = this.add.rectangle(this.respawnX, this.respawnY, 58, 78, 0x000000, 0.001)
+      .setStrokeStyle(0, 0x000000, 0)
       .setDepth(10);
-
-    this.add.text(this.player.x, this.player.y, this.profile.gender === 'male' ? 'NAM' : 'NỮ', {
-      fontFamily: 'sans-serif', fontSize: '14px', color: '#ffffff', fontStyle: 'bold',
-    }).setOrigin(0.5).setName('playerLabel').setDepth(11);
+    this.playerVisual = createPlayerVisual(
+      this,
+      this.profile.gender,
+      this.respawnX,
+      this.respawnY,
+    );
 
     this.createNpcs();
     this.createRegionContent();
@@ -144,6 +148,7 @@ export class GameScene extends Phaser.Scene {
     if (!this.dead) {
       this.updatePlayer(time, delta);
       this.updateEnemies(time, delta);
+      this.syncEnemyVisuals();
       this.updateAutoAttack(time);
       this.updateFlyingSwords(time, delta);
     }
@@ -495,14 +500,14 @@ CỔ MÔN • PHONG ẤN`, {
     if (!target.node.active) return;
 
     const angle = Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x);
-    const blade = this.add.rectangle(10, 0, 30, 6, 0xf6edd5).setStrokeStyle(1, 0x6b6e65);
-    const tip = this.add.triangle(30, 0, 0, -6, 12, 0, 0, 6, 0xf6edd5).setStrokeStyle(1, 0x6b6e65);
-    const guard = this.add.rectangle(-7, 0, 5, 16, 0xb89b62);
-    const hilt = this.add.rectangle(-14, 0, 12, 5, 0x6d4c35);
-    const sword = this.add.container(this.player.x, this.player.y, [blade, tip, guard, hilt])
+    const sword = createFlyingSwordVisual(
+      this,
+      this.player.x,
+      this.player.y,
+      this.profile.realm,
+    )
       .setRotation(angle)
-      .setDepth(18)
-      .setScale(this.profile.realm === 2 ? 1.06 : 0.92);
+      .setScale(this.profile.realm === 2 ? 1.08 : 0.94);
 
     const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35).setDepth(17);
     this.tweens.add({ targets: launchFlash, scale: 2.2, alpha: 0, duration: 130, onComplete: () => launchFlash.destroy() });
@@ -728,6 +733,7 @@ CỔ MÔN • PHONG ẤN`, {
 
   private clearEnemies(): void {
     for (const enemy of this.enemies) {
+      if (enemy.visual.active) enemy.visual.destroy(true);
       if (enemy.node.active) enemy.node.destroy();
     }
     this.enemies = [];
@@ -787,12 +793,15 @@ CỔ MÔN • PHONG ẤN`, {
       clampedX,
       clampedY,
       kind === 'charger' ? 35 : 31,
-      trial ? 0x77564d : this.enemyColor(kind),
-    ).setStrokeStyle(trial ? 5 : 3, trial ? 0xd7b36d : 0x332f2a).setDepth(9);
+      0x000000,
+      0.001,
+    ).setStrokeStyle(0, 0x000000, 0).setDepth(9);
+    const visual = createEnemyVisual(this, kind, clampedX, clampedY, trial);
     const hp = Math.max(1, Math.ceil(cfg.hp * hpMultiplier));
     this.enemies.push({
       kind,
       node,
+      visual,
       hp,
       maxHp: hp,
       nextActionAt: this.time.now + 700,
@@ -845,13 +854,14 @@ CỔ MÔN • PHONG ẤN`, {
     this.tweens.add({ targets: fx, alpha: 0, duration: 150, onComplete: () => fx.destroy() });
 
     enemy.hp -= damage;
-    enemy.node.setScale(1.17);
-    this.tweens.add({ targets: enemy.node, scale: 1, duration: 120 });
+    enemy.visual.setScale(1.14);
+    this.tweens.add({ targets: enemy.visual, scale: 1, duration: 120 });
     if (enemy.hp <= 0) this.killEnemy(enemy);
   }
 
   private killEnemy(enemy: EnemyState): void {
     if (!enemy.node.active) return;
+    enemy.visual.destroy(true);
     enemy.node.destroy();
 
     if (this.breakthroughTrialActive) {
@@ -973,6 +983,7 @@ CỔ MÔN • PHONG ẤN`, {
     this.moveX = 0;
     this.moveY = 0;
     this.player.setAlpha(0.35);
+    this.playerVisual.setAlpha(0.35);
     this.statusText.setText('Trọng thương... đang hồi phục');
     this.refreshBreakthroughUi();
     this.time.delayedCall(1200, () => this.respawn());
@@ -983,6 +994,7 @@ CỔ MÔN • PHONG ẤN`, {
     this.clearFlyingSwords();
     this.playerHp = maxHpForRealm(this.profile.realm);
     this.player.setPosition(this.respawnX, this.respawnY).setAlpha(1);
+    this.playerVisual.setPosition(this.respawnX, this.respawnY).setAlpha(1);
     this.nextAttackAt = this.time.now + 500;
     this.actionLockedUntil = 0;
     this.dodgeUntil = 0;
@@ -1156,8 +1168,16 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private syncPlayerPresentation(): void {
-    const label = this.children.getByName('playerLabel') as Phaser.GameObjects.Text | null;
-    label?.setPosition(this.player.x, this.player.y);
+    this.playerVisual.setPosition(this.player.x, this.player.y);
+    const invulnerable = this.time.now < this.invulnerableUntil;
+    this.playerVisual.setAlpha(this.dead ? 0.35 : invulnerable ? 0.78 : 1);
+  }
+
+  private syncEnemyVisuals(): void {
+    for (const enemy of this.enemies) {
+      if (!enemy.node.active || !enemy.visual.active) continue;
+      enemy.visual.setPosition(enemy.node.x, enemy.node.y);
+    }
   }
 
   private refreshHud(): void {
