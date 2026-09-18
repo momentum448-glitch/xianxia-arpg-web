@@ -5,6 +5,13 @@ import type { EnemyKind } from './combatConfig';
 import type { PlayerGender } from './playerProfile';
 
 const PLAYER_MALE_TEXTURE_KEY = 'c4-player-male-idle-s';
+const ENEMY_MELEE_TEXTURE_KEY = 'c4-enemy-melee-idle-s';
+
+const pendingMeleeByScene = new WeakMap<
+  Phaser.Scene,
+  Array<{ container: Phaser.GameObjects.Container; trial: boolean }>
+>();
+const meleeLoadStarted = new WeakSet<Phaser.Scene>();
 
 function applyMaleRuntimeTexture(
   scene: Phaser.Scene,
@@ -33,6 +40,61 @@ function queueMaleRuntimeTexture(
   scene.load.image(PLAYER_MALE_TEXTURE_KEY, C4_ASSETS.playerMaleIdleSouth);
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => applyMaleRuntimeTexture(scene, container));
   scene.load.start();
+}
+
+function applyMeleeRuntimeTexture(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  trial: boolean,
+): void {
+  if (!container.active || !scene.textures.exists(ENEMY_MELEE_TEXTURE_KEY)) return;
+
+  container.removeAll(true);
+  const children: Phaser.GameObjects.GameObject[] = [];
+  if (trial) {
+    children.push(
+      scene.add.circle(0, 0, 46, 0xd7b36d, 0.07)
+        .setStrokeStyle(3, 0xd7b36d, 0.42),
+    );
+  }
+  children.push(scene.add.ellipse(0, 30, 66, 20, 0x252724, 0.2));
+  const image = scene.add.image(0, C4_ART_SCALE.enemyMelee.offsetY, ENEMY_MELEE_TEXTURE_KEY)
+    .setOrigin(C4_ART_SCALE.enemyMelee.originX, C4_ART_SCALE.enemyMelee.originY);
+  const scale = C4_ART_SCALE.enemyMelee.displayHeight / image.height;
+  image.setScale(scale);
+  children.push(image);
+  container.add(children);
+}
+
+function queueMeleeRuntimeTexture(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  trial: boolean,
+): void {
+  if (scene.textures.exists(ENEMY_MELEE_TEXTURE_KEY)) {
+    applyMeleeRuntimeTexture(scene, container, trial);
+    return;
+  }
+
+  const pending = pendingMeleeByScene.get(scene) ?? [];
+  pending.push({ container, trial });
+  pendingMeleeByScene.set(scene, pending);
+  if (meleeLoadStarted.has(scene)) return;
+
+  meleeLoadStarted.add(scene);
+  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, C4_ASSETS.enemyMeleeIdleSouth);
+  scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+    for (const item of pendingMeleeByScene.get(scene) ?? []) {
+      applyMeleeRuntimeTexture(scene, item.container, item.trial);
+    }
+    pendingMeleeByScene.delete(scene);
+    meleeLoadStarted.delete(scene);
+  });
+  scene.load.once(Phaser.Loader.Events.LOAD_ERROR, () => {
+    pendingMeleeByScene.delete(scene);
+    meleeLoadStarted.delete(scene);
+  });
+  if (!scene.load.isLoading()) scene.load.start();
 }
 
 export function createPlayerVisual(
@@ -133,7 +195,9 @@ export function createEnemyVisual(
       .setStrokeStyle(3, 0xd7b36d, 0.42));
   }
 
-  return scene.add.container(x, y, pieces).setDepth(10);
+  const container = scene.add.container(x, y, pieces).setDepth(10);
+  if (kind === 'melee') queueMeleeRuntimeTexture(scene, container, trial);
+  return container;
 }
 
 export function createFlyingSwordVisual(
