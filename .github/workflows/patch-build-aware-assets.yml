@@ -1,0 +1,37 @@
+name: Patch build-aware art urls
+on:
+  push:
+    branches: [fix/melee-binary-build-id]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch runtime asset urls
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/game/actorVisuals.ts')
+          s = p.read_text()
+          s = s.replace("import { C4_ASSETS } from './art/assetManifest';", "import { C4_ASSETS, c4AssetUrl } from './art/assetManifest';")
+          s = s.replace("new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString()", "c4AssetUrl(C4_ASSETS.playerMaleIdleSouth)")
+          s = s.replace("new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString()", "c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth)")
+          p.write_text(s)
+
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+          s = s.replace("import { C4_ASSETS } from '../game/art/assetManifest';", "import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';")
+          s = s.replace("new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString()", "c4AssetUrl(C4_ASSETS.playerMaleIdleSouth)")
+          s = s.replace("new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString()", "c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth)")
+          p.write_text(s)
+          PY
+      - name: Commit patch and remove workflow
+        run: |
+          rm .github/workflows/patch-build-aware-assets.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/game/actorVisuals.ts src/scenes/GameScene.ts .github/workflows/patch-build-aware-assets.yml
+          git commit -m 'feat(art): cache-bust C4 assets by build id'
+          git push
