@@ -7,3 +7,8 @@ export function basicAttackRangeForProfile(profile: PlayerProfile): number {
     COMBAT.player.baseBasicAttackRange + profile.combatBonuses.basicAttackRange,
   );
 }
+
+export function basicAttackCooldownMsForProfile(profile: PlayerProfile): number {
+  const speedMultiplier = Math.max(0.1, 1 + profile.combatBonuses.basicAttackSpeedPct / 100);
+  return Math.max(120, Math.round(COMBAT.player.baseBasicAttackCooldownMs / speedMultiplier));
+}
