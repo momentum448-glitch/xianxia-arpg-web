@@ -4,3 +4,9 @@ export const C4_ASSETS = {
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;
+
+export function c4AssetUrl(path: string): string {
+  const url = new URL(path, document.baseURI);
+  url.searchParams.set('v', __BUILD_ID__);
+  return url.toString();
+}
