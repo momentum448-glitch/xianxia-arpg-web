@@ -1,0 +1,58 @@
+name: Patch sword raw QC
+
+on:
+  push:
+    branches:
+      - fix/sword-verified-raw-qc
+    paths:
+      - '.github/workflows/patch-sword-raw-qc.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Disable sword VFX for raw-texture QC
+        shell: python
+        run: |
+          from pathlib import Path
+
+          scene = Path('src/scenes/GameScene.ts')
+          text = scene.read_text()
+          anchor = "type CombatButtonKey = 'attack' | 'dodge' | 'skill';\n"
+          if 'const SWORD_RAW_QC = true;' not in text:
+              text = text.replace(anchor, "const SWORD_RAW_QC = true;\n\n" + anchor, 1)
+
+          launch = """    const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;\n    const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)\n      .setRotation(angle)\n      .setDepth(17);\n    const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);\n    this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });\n    this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });\n"""
+          launch_wrapped = """    if (!SWORD_RAW_QC) {\n      const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;\n      const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)\n        .setRotation(angle)\n        .setDepth(17);\n      const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);\n      this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });\n      this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });\n    }\n"""
+          if launch not in text:
+              raise SystemExit('launch block not found')
+          text = text.replace(launch, launch_wrapped, 1)
+
+          trail = "      if (time >= sword.nextTrailAt) {\n"
+          if trail not in text:
+              raise SystemExit('trail gate not found')
+          text = text.replace(trail, "      if (!SWORD_RAW_QC && time >= sword.nextTrailAt) {\n", 1)
+
+          impact = """          const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;\n          const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)\n            .setStrokeStyle(3, impactColor, 0.78)\n            .setDepth(20);\n          const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);\n          this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });\n          this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });\n"""
+          impact_wrapped = """          if (!SWORD_RAW_QC) {\n            const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;\n            const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)\n              .setStrokeStyle(3, impactColor, 0.78)\n              .setDepth(20);\n            const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);\n            this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });\n            this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });\n          }\n"""
+          if impact not in text:
+              raise SystemExit('impact block not found')
+          scene.write_text(text.replace(impact, impact_wrapped, 1))
+
+      - name: Commit patch and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/patch-sword-raw-qc.yml
+          git add src/scenes/GameScene.ts
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(vfx): isolate flying sword raw texture for QC'
+          git push
