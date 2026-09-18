@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.6
-Status: C3.1 continuous-world shell implemented on feature branch; CI/device validation next
+Version: 0.7
+Status: C3.2 settlement NPC interaction layer implemented on feature branch; CI/device validation next
 Source of truth: this repository
 
 ## Product goal
@@ -22,6 +22,7 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Auto basic attack is exactly one visible flying sword per attack cycle
 - Flying sword uses light homing and deals damage on contact
 - Right thumb has only 2 combat buttons: one equipped Skill + Dodge
+- NPC interaction uses a contextual proximity button and does not add a combat button
 - Male/female player choice at start
 - 2 cultivation realms in MVP with meaningful breakthrough moments
 - Breakthrough requires spirit/progress + materials + a short trial
@@ -84,10 +85,10 @@ Implemented:
 Status: In progress
 
 #### C3.1 — Continuous world shell
-Status: Implemented on feature branch; CI/device validation next
+Status: Complete and phone-QC passed
 
 Implemented:
-- world larger than the viewport with camera follow
+- expanded 1600 x 9000 world with camera follow
 - portrait-first vertical route across four continuous zones:
   - Thanh Vân Thôn
   - Thanh Vân Hoang Nguyên
@@ -100,20 +101,27 @@ Implemented:
 - breakthrough trial spawns around the player's current world position and remains an explicit exception to settlement safety
 - placeholder houses, road, forest and danger-zone landmarks establish navigation before the art pass
 - world layout tuning centralized in `src/game/worldConfig.ts`
-
-C3.1 phone acceptance questions:
-- Does camera follow feel stable while using the left joystick?
-- Can the player immediately understand that the village is safe and that progression lies north/up the route?
-- Do HUD and right-thumb controls remain visually fixed while traversing the world?
-- Is the travel distance from village to first encounter long enough to feel like exploration but short enough to avoid dead walking?
-- Can the player cross zone boundaries without visual/input glitches?
+- phone feedback accepted after world scale and biome travel distances were expanded
 
 #### C3.2 — NPC interaction layer
-Planned:
-- Elder/guide interaction
-- merchant shell
-- one secondary NPC
-- proximity interaction UI without adding combat buttons
+Status: Implemented on feature branch; CI/device validation next
+
+Implemented:
+- three settlement NPCs defined in `src/game/npcConfig.ts`
+- Mặc Trưởng Lão gives realm-aware breakthrough guidance and reports missing Linh Khí/Tinh Hoa
+- Thanh Dược Sư restores the player to full HP inside the settlement
+- Lục Chưởng Quầy establishes the merchant shell without introducing inventory/economy before the interaction layer is validated
+- contextual `TƯƠNG TÁC` button appears only inside NPC proximity and disappears when leaving range
+- dialogue overlay is screen-space UI and auto-dismisses
+- NPC interaction is suppressed during death and breakthrough trials
+- right-thumb combat UX remains exactly Skill + Dodge
+
+C3.2 phone acceptance questions:
+- Are the three NPCs easy to notice and distinguish in the village?
+- Does the contextual interaction button appear/disappear at a comfortable distance?
+- Can the interaction button be tapped without stealing joystick, Skill or Dodge input?
+- Is dialogue readable without obscuring too much of the world?
+- Does the healer restore HP correctly and does the elder guidance match current progression state?
 
 #### C3.3 — Encounter regions + short events
 Planned:
@@ -121,6 +129,7 @@ Planned:
 - danger gradient by zone
 - 3–5 compact random/event nodes
 - route toward future boss gate
+- merchant economy can be layered here or later after C3.2 interaction UX passes phone QC
 
 ### C4 — Art identity
 Status: Planned
@@ -142,12 +151,13 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Does a continuous scrolling world make the existing combat/progression loop feel like a place to explore rather than a test arena, while keeping portrait controls readable and stable?
+Does the settlement NPC layer make Thanh Vân Thôn feel like a functional home base without compromising the locked portrait combat controls?
 
 ## Working assumptions
-- Placeholder geometry remains intentional through C3.1.
+- Placeholder geometry remains intentional through C3.
 - World route is authored rather than procedural for MVP.
 - Combat remains manually simulated until feel stabilizes.
+- C3.2 validates proximity interaction before any deeper shop/inventory system is added.
 - C3.1 intentionally has only one normal encounter anchor; biome-specific encounter distribution comes in C3.3.
 - C2 breakthrough may be started anywhere; its trial temporarily overrides settlement safety.
 - Tuning should follow phone evidence rather than desktop feel.
