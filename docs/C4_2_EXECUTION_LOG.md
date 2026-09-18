@@ -50,8 +50,9 @@ Status: TECH_REWORK / integrated candidate for phone QC
 
 Completed:
 - old isolated candidate bytes were confirmed unavailable and were not silently treated as recovered;
-- a fresh isolated transparent melee candidate was technically exported from the current locked melee reference without HUD/map/text;
-- runtime path registered as `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`;
+- a fresh isolated transparent melee candidate was technically exported from the current melee reference without HUD/map/text;
+- runtime file prepared at `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`;
+- source normalized to 136×160 indexed PNG for mobile-safe texture size while preserving transparency;
 - melee scale/pivot and runtime animation tuning added centrally;
 - procedural melee visual remains the fallback if the production texture fails to load.
 
