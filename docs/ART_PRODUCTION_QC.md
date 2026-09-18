@@ -1,6 +1,6 @@
 # C4 Art Production QC Loop
 
-Version: 1.0
+Version: 1.1
 Status: Locked workflow for C4.2+
 
 ## Rule
@@ -77,10 +77,18 @@ QC:
 - does not look over-detailed when reduced
 - silhouette remains readable against settlement/plains values
 
-Pass -> Stage B.
-Revise -> regenerate player only.
+Decision: PASS (2026-09-18 phone QC)
+
+Accepted qualities:
+- sword-cultivator identity reads clearly
+- silhouette and robe language accepted
+- production direction approved to continue
+
+Next -> Stage B.
 
 ### Stage B: Melee enemy production asset
+Status: Active
+
 Deliverable:
 - corrupted beast with physical mass plus evil-spirit cues
 
@@ -88,6 +96,7 @@ QC:
 - instantly reads as melee pressure
 - attack-tell posture can be exaggerated without changing base design
 - strong contrast from player shape and value
+- silhouette remains readable at gameplay scale without excessive ornament
 
 Pass -> Stage C.
 Revise -> regenerate melee only.
@@ -138,6 +147,9 @@ Pass -> expand to female player, ranged, charger, NPCs and remaining biomes.
 Revise -> fix only the failing visual layer, then repeat in-game QC.
 
 ## Current status
-The latest generated sprite-atlas-style board is a production reference, not yet a usable sprite atlas. It contains useful art direction, but the assets are not yet isolated, normalized or verified for transparent-background game integration.
+Stage A male player asset: PASS.
+Stage B melee enemy asset: ACTIVE.
 
-Next action: generate and QC the male player as the first isolated production asset.
+The previous sprite-atlas-style board remains production reference only, not a usable sprite atlas.
+
+Next action: generate and QC the isolated melee enemy production asset.
