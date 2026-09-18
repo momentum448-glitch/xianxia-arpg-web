@@ -30,3 +30,28 @@ Anti-duplication reminder:
 - do not create another presentation board for `PLY-M-BASE`;
 - do not redesign the male player unless a future QC decision explicitly marks it `REVISE`;
 - generate only the missing production deliverable.
+
+## 2026-09-18 — PLY-M-BASE runtime integration
+
+Asset state: `INTEGRATED`
+Animation checkpoint: implemented, phone QC pending
+
+Completed:
+- accepted male player art isolated and stored as the production PNG under `public/assets/c4/actors/player/male/`;
+- runtime asset manifest and scale/pivot config added;
+- production sprite replaces the previous procedural male visual while the invisible gameplay hitbox stays separate;
+- phone QC accepted the current display size;
+- the visible white rectangle was traced to the old hitbox stroke and removed without changing collision;
+- manual `ATK` control replaced auto basic attack, with buildable range and attack-speed stat hooks recorded in the main plan;
+- current base attack range is 205 and untargeted presses still launch a straight flying sword;
+- minimum runtime animation proof now covers idle breathing, run bob/lean, manual ATK launch response, dodge stretch/motion cue, and skill anticipation/recovery;
+- animation parameters are centralized in `src/game/art/animationConfig.ts`;
+- true four-direction production poses are still required before final C4.2 acceptance; this proof uses the accepted base sprite with directional mirror/lean where possible.
+
+QC status:
+- build/typecheck must remain green;
+- next user-facing checkpoint is live phone animation QC;
+- do not promote `PLY-M-BASE` to `PHONE_PASS` until that live QC is accepted.
+
+Next action after animation phone PASS:
+- continue with `EN-MELEE-BASE` isolation/integration; do not regenerate the accepted melee design unless QC explicitly marks it `REVISE`.
