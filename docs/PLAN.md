@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.7
-Status: C3.2 settlement NPC interaction layer implemented on feature branch; CI/device validation next
+Version: 0.8
+Status: C3.3 biome encounters + short events implemented on feature branch; CI/device validation next
 Source of truth: this repository
 
 ## Product goal
@@ -97,39 +97,49 @@ Implemented:
 - screen-space HUD/joystick/Skill/Dodge remain fixed while the world scrolls
 - safe settlement boundary; normal enemies cannot enter or damage the player inside the settlement
 - distance-based aggro so enemies do not march to the village gate before the player approaches
-- current C2 encounter moved into the wilderness instead of spawning inside the starting screen
 - breakthrough trial spawns around the player's current world position and remains an explicit exception to settlement safety
 - placeholder houses, road, forest and danger-zone landmarks establish navigation before the art pass
 - world layout tuning centralized in `src/game/worldConfig.ts`
 - phone feedback accepted after world scale and biome travel distances were expanded
 
 #### C3.2 — NPC interaction layer
-Status: Implemented on feature branch; CI/device validation next
+Status: Complete and phone-QC passed
 
 Implemented:
 - three settlement NPCs defined in `src/game/npcConfig.ts`
 - Mặc Trưởng Lão gives realm-aware breakthrough guidance and reports missing Linh Khí/Tinh Hoa
 - Thanh Dược Sư restores the player to full HP inside the settlement
-- Lục Chưởng Quầy establishes the merchant shell without introducing inventory/economy before the interaction layer is validated
+- Lục Chưởng Quầy establishes the merchant shell without introducing inventory/economy yet
 - contextual `TƯƠNG TÁC` button appears only inside NPC proximity and disappears when leaving range
 - dialogue overlay is screen-space UI and auto-dismisses
 - NPC interaction is suppressed during death and breakthrough trials
 - right-thumb combat UX remains exactly Skill + Dodge
 
-C3.2 phone acceptance questions:
-- Are the three NPCs easy to notice and distinguish in the village?
-- Does the contextual interaction button appear/disappear at a comfortable distance?
-- Can the interaction button be tapped without stealing joystick, Skill or Dodge input?
-- Is dialogue readable without obscuring too much of the world?
-- Does the healer restore HP correctly and does the elder guidance match current progression state?
-
 #### C3.3 — Encounter regions + short events
-Planned:
-- biome-specific encounter anchors
-- danger gradient by zone
-- 3–5 compact random/event nodes
-- route toward future boss gate
-- merchant economy can be layered here or later after C3.2 interaction UX passes phone QC
+Status: Implemented on feature branch; CI/device validation next
+
+Implemented:
+- biome encounter definitions centralized in `src/game/regionContentConfig.ts`
+- Thanh Vân Hoang Nguyên encounter: 3 standard enemies
+- Linh Lâm encounter: 4 enemies with moderately increased HP
+- U Minh Cốc encounter: 5 enemies with the highest HP scaling and stronger heavy-hit pressure
+- each authored encounter respawns independently after its own group is cleared
+- ambient groups remain dormant until the player approaches, preserving travel pacing
+- three one-time world events:
+  - Linh Tuyền: restores up to 2 HP and grants 12 Linh Khí
+  - Dược Thảo Ẩn: grants 1 Tinh Hoa
+  - U Minh Bi: triggers a stronger three-enemy ambush
+- event markers visibly dim after activation
+- placeholder `Phong Ấn Cổ Môn` placed at the top of U Minh Cốc as the future boss gate
+- combat controls, NPC interaction and breakthrough flow remain unchanged
+
+C3.3 phone acceptance questions:
+- Does each biome now feel mechanically different rather than only visually different?
+- Is the jump from Hoang Nguyên -> Linh Lâm -> U Minh Cốc noticeable without becoming unfair?
+- Do encounter groups stay local instead of pulling across large travel distances?
+- Are the three event markers readable enough to invite exploration on a phone screen?
+- Does the U Minh Bi ambush feel surprising but survivable?
+- Does reaching Phong Ấn Cổ Môn feel like a clear end-of-route objective?
 
 ### C4 — Art identity
 Status: Planned
@@ -151,15 +161,15 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Does the settlement NPC layer make Thanh Vân Thôn feel like a functional home base without compromising the locked portrait combat controls?
+Do biome-specific fights and compact exploration events turn the enlarged continuous map into a meaningful journey with a readable danger gradient toward the future boss gate?
 
 ## Working assumptions
 - Placeholder geometry remains intentional through C3.
 - World route is authored rather than procedural for MVP.
 - Combat remains manually simulated until feel stabilizes.
-- C3.2 validates proximity interaction before any deeper shop/inventory system is added.
-- C3.1 intentionally has only one normal encounter anchor; biome-specific encounter distribution comes in C3.3.
-- C2 breakthrough may be started anywhere; its trial temporarily overrides settlement safety.
+- Merchant economy stays deferred until the exploration/combat route proves fun enough to justify another progression layer.
+- C2 breakthrough may be started anywhere; its trial temporarily overrides settlement safety and restores authored biome encounters afterward.
+- C3.3 events are one-time per current run; persistence comes with the save/resume milestone.
 - Tuning should follow phone evidence rather than desktop feel.
 
 ## Out of scope until MVP proves itself
