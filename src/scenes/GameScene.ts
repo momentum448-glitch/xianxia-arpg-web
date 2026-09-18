@@ -478,11 +478,7 @@ CỔ MÔN • PHONG ẤN`, {
       WORLD.height - WORLD.edgePadding,
     );
 
-    if (time < this.invulnerableUntil) {
-      this.player.setStrokeStyle(5, 0xf5e8a8);
-    } else {
-      this.player.setStrokeStyle(3, 0xf6ead0);
-    }
+    this.player.setStrokeStyle(0, 0x000000, 0);
   }
 
   private updateAutoAttack(time: number): void {
