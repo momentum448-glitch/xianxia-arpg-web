@@ -1,6 +1,7 @@
 export const C4_ASSETS = {
   playerMaleIdleSouth: 'assets/c4/actors/player/male/ply_m_idle_s.png',
   enemyMeleeIdleSouth: 'assets/c4/actors/enemies/melee/en_melee_idle_s.png',
+  flyingSwordR1: 'assets/c4/vfx/sword/fx_sword_r1.png',
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;

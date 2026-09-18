@@ -11,4 +11,9 @@ export const C4_ART_SCALE = {
     originY: 0.84,
     offsetY: 18,
   },
+  flyingSword: {
+    displayWidth: 84,
+    originX: 0.5,
+    originY: 0.5,
+  },
 } as const;

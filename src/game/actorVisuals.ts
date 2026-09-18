@@ -7,6 +7,7 @@ import type { PlayerGender } from './playerProfile';
 
 const PLAYER_MALE_TEXTURE_KEY = 'c4-player-male-idle-s';
 const ENEMY_MELEE_TEXTURE_KEY = 'c4-enemy-melee-idle-s';
+const FLYING_SWORD_TEXTURE_KEY = 'c4-flying-sword-r1';
 
 const pendingMeleeByScene = new WeakMap<
   Phaser.Scene,
@@ -273,7 +274,17 @@ export function createFlyingSwordVisual(
   realm: 1 | 2,
 ): Phaser.GameObjects.Container {
   const qi = realm === 2 ? 0xc9efe5 : 0xe2e6d8;
-  const aura = scene.add.ellipse(7, 0, 54, realm === 2 ? 18 : 14, qi, realm === 2 ? 0.18 : 0.11);
+  const aura = scene.add.ellipse(6, 0, 70, realm === 2 ? 22 : 18, qi, realm === 2 ? 0.16 : 0.1);
+
+  if (scene.textures.exists(FLYING_SWORD_TEXTURE_KEY)) {
+    const image = scene.add.image(0, 0, FLYING_SWORD_TEXTURE_KEY)
+      .setOrigin(C4_ART_SCALE.flyingSword.originX, C4_ART_SCALE.flyingSword.originY);
+    const scale = C4_ART_SCALE.flyingSword.displayWidth / image.width;
+    image.setScale(scale);
+    if (realm === 2) image.setTint(0xe8fff7);
+    return scene.add.container(x, y, [aura, image]).setDepth(18);
+  }
+
   const blade = scene.add.polygon(9, 0, [-21, -4, 15, -4, 29, 0, 15, 4, -21, 4], 0xf3ead4, 1)
     .setStrokeStyle(1, 0x61665f, 0.9);
   const ridge = scene.add.line(0, 0, -10, 0, 30, 0, realm === 2 ? 0x9ed9ce : 0xbebcae, 0.72)
