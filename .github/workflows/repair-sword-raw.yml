@@ -5,7 +5,7 @@ on:
     branches:
       - fix/sword-black-texture
     paths:
-      - '.tmp/fx_sword_r1_96.b64'
+      - '.tmp/sword_chunk_*.txt'
       - '.github/workflows/repair-sword-raw.yml'
 
 permissions:
@@ -24,7 +24,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p public/assets/c4/vfx/sword
-          base64 -d .tmp/fx_sword_r1_96.b64 > public/assets/c4/vfx/sword/fx_sword_r1.png
+          cat .tmp/sword_chunk_00.txt .tmp/sword_chunk_01.txt .tmp/sword_chunk_02.txt .tmp/sword_chunk_03.txt .tmp/sword_chunk_04.txt \
+            | base64 -d > public/assets/c4/vfx/sword/fx_sword_r1.png
           test "$(wc -c < public/assets/c4/vfx/sword/fx_sword_r1.png)" -eq 5465
           echo "bf4a4aeab1963a330e1526fb06f7e0a5742e6cf00dc55a2dc25c5680f37bde76  public/assets/c4/vfx/sword/fx_sword_r1.png" | sha256sum -c -
 
@@ -52,7 +53,6 @@ jobs:
           if launch not in text:
               raise SystemExit('launch VFX block not found')
           text = text.replace(launch, launch_wrapped, 1)
-
           text = text.replace(
               "      if (time >= sword.nextTrailAt) {\n",
               "      if (!SWORD_RAW_QC && time >= sword.nextTrailAt) {\n",
@@ -69,7 +69,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git rm .tmp/fx_sword_r1_96.b64 .github/workflows/repair-sword-raw.yml
+          git rm .tmp/fx_sword_r1_96.b64 .tmp/sword_chunk_00.txt .tmp/sword_chunk_01.txt .tmp/sword_chunk_02.txt .tmp/sword_chunk_03.txt .tmp/sword_chunk_04.txt .github/workflows/repair-sword-raw.yml
           git add public/assets/c4/vfx/sword/fx_sword_r1.png src/game/actorVisuals.ts src/scenes/GameScene.ts
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
