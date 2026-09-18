@@ -23,6 +23,9 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Each `ATK` press launches exactly one visible flying sword when a valid target is available
 - Flying sword uses light homing and deals damage on contact
 - Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge
+- `ATK` is the largest central combat button; Skill and Dodge are smaller satellite buttons
+- Manual basic attack base cooldown is 800 ms and resolves through an attack-speed build stat
+- Pressing `ATK` without a target still launches a straight flying sword capped by current basic-attack range
 - NPC interaction uses a contextual proximity button and does not add a combat button
 - Male/female player choice at start
 - Character select shows both character previews, selected-card highlight, short identity copy, and explicit start confirmation

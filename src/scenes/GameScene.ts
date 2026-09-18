@@ -12,7 +12,7 @@ import {
 import { NPCS, type NpcDefinition } from '../game/npcConfig';
 import { BOSS_GATE, ENCOUNTERS, WORLD_EVENTS, type EncounterDefinition, type WorldEventDefinition } from '../game/regionContentConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
-import { basicAttackRangeForProfile } from '../game/playerStats';
+import { basicAttackCooldownMsForProfile, basicAttackRangeForProfile } from '../game/playerStats';
 import { WORLD, isSettlementY, zoneAt, type WorldZoneId } from '../game/worldConfig';
 
 interface EnemyState {
@@ -34,10 +34,13 @@ interface EnemyState {
 
 interface FlyingSwordState {
   node: Phaser.GameObjects.Container;
-  target: EnemyState;
+  target: EnemyState | null;
   angle: number;
   expiresAt: number;
   nextTrailAt: number;
+  originX: number;
+  originY: number;
+  maxTravelDistance: number | null;
 }
 
 interface NpcState {
@@ -485,18 +488,21 @@ CỔ MÔN • PHONG ẤN`, {
     const now = this.time.now;
     if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;
     if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;
-    const target = this.getNearestEnemy(basicAttackRangeForProfile(this.profile));
-    if (!target) return;
 
-    this.cooldowns.attack = now + COMBAT.player.basicAttackCooldownMs;
-    this.faceTarget(target);
-    this.spawnFlyingSword(target, now);
+    const attackRange = basicAttackRangeForProfile(this.profile);
+    const target = this.getNearestEnemy(attackRange);
+    this.cooldowns.attack = now + basicAttackCooldownMsForProfile(this.profile);
+
+    if (target) this.faceTarget(target);
+    this.spawnFlyingSword(target, now, attackRange);
   }
 
-  private spawnFlyingSword(target: EnemyState, time: number): void {
-    if (!target.node.active) return;
+  private spawnFlyingSword(target: EnemyState | null, time: number, untargetedRange: number): void {
+    if (target && !target.node.active) return;
 
-    const angle = Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x);
+    const angle = target
+      ? Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x)
+      : Math.atan2(this.facingY, this.facingX);
     const sword = createFlyingSwordVisual(
       this,
       this.player.x,
@@ -515,6 +521,9 @@ CỔ MÔN • PHONG ẤN`, {
       angle,
       expiresAt: time + COMBAT.player.flyingSwordLifetimeMs,
       nextTrailAt: time,
+      originX: this.player.x,
+      originY: this.player.y,
+      maxTravelDistance: target ? null : untargetedRange,
     });
   }
 
@@ -524,15 +533,17 @@ CỔ MÔN • PHONG ẤN`, {
     for (let i = this.flyingSwords.length - 1; i >= 0; i -= 1) {
       const sword = this.flyingSwords[i];
       if (!sword) continue;
-      if (!sword.target.node.active || time >= sword.expiresAt) {
+      if (time >= sword.expiresAt || (sword.target && !sword.target.node.active)) {
         this.destroyFlyingSword(i);
         continue;
       }
 
-      const desiredAngle = Math.atan2(sword.target.node.y - sword.node.y, sword.target.node.x - sword.node.x);
-      const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);
-      const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;
-      sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);
+      if (sword.target) {
+        const desiredAngle = Math.atan2(sword.target.node.y - sword.node.y, sword.target.node.x - sword.node.x);
+        const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);
+        const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;
+        sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);
+      }
 
       sword.node.x += Math.cos(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
       sword.node.y += Math.sin(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
@@ -543,28 +554,40 @@ CỔ MÔN • PHONG ẤN`, {
         this.emitFlyingSwordTrail(sword);
       }
 
-      const distance = Phaser.Math.Distance.Between(
-        sword.node.x, sword.node.y, sword.target.node.x, sword.target.node.y,
-      );
+      const contactTarget = sword.target ?? this.enemies.find((enemy) =>
+        enemy.node.active
+        && Phaser.Math.Distance.Between(sword.node.x, sword.node.y, enemy.node.x, enemy.node.y)
+          <= COMBAT.player.flyingSwordHitRadius
+      ) ?? null;
 
-      if (distance <= COMBAT.player.flyingSwordHitRadius) {
-        const target = sword.target;
-        const hitX = target.node.x;
-        const hitY = target.node.y;
-        const originX = sword.node.x;
-        const originY = sword.node.y;
-
-        this.destroyFlyingSword(i);
-        this.damageEnemy(
-          target,
-          flyingSwordDamageForRealm(this.profile.realm),
-          0xf2e4b8,
-          5,
-          originX,
-          originY,
+      if (contactTarget) {
+        const targetDistance = Phaser.Math.Distance.Between(
+          sword.node.x, sword.node.y, contactTarget.node.x, contactTarget.node.y,
         );
-        const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);
-        this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });
+        if (targetDistance <= COMBAT.player.flyingSwordHitRadius) {
+          const hitX = contactTarget.node.x;
+          const hitY = contactTarget.node.y;
+          const originX = sword.node.x;
+          const originY = sword.node.y;
+
+          this.destroyFlyingSword(i);
+          this.damageEnemy(
+            contactTarget,
+            flyingSwordDamageForRealm(this.profile.realm),
+            0xf2e4b8,
+            5,
+            originX,
+            originY,
+          );
+          const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);
+          this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });
+          continue;
+        }
+      }
+
+      if (sword.maxTravelDistance !== null) {
+        const travelled = Phaser.Math.Distance.Between(sword.originX, sword.originY, sword.node.x, sword.node.y);
+        if (travelled >= sword.maxTravelDistance) this.destroyFlyingSword(i);
       }
     }
   }
@@ -1126,11 +1149,11 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private createCombatButtons(width: number, height: number): void {
-    this.createCombatButton('attack', width - 118, height - 278, 66, 'ATK', () => this.performBasicAttack());
-    this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());
-    this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
+    this.createCombatButton('attack', width - 132, height - 158, 80, 'ATK', () => this.performBasicAttack());
+    this.createCombatButton('skill', width - 248, height - 286, 52, 'SKILL', () => this.castCleave());
+    this.createCombatButton('dodge', width - 68, height - 292, 52, 'NÉ', () => this.startDodge());
 
-    this.add.text(width - 170, height - 365, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {
+    this.add.text(width - 158, height - 382, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {
       fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(110);
   }

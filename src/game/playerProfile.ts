@@ -4,6 +4,7 @@ export type PlayerGender = 'male' | 'female';
 
 export interface PlayerCombatBonuses {
   basicAttackRange: number;
+  basicAttackSpeedPct: number;
 }
 
 export interface PlayerProfile {
@@ -24,6 +25,7 @@ export function createPlayerProfile(gender: PlayerGender): PlayerProfile {
     essence: 0,
     combatBonuses: {
       basicAttackRange: 0,
+      basicAttackSpeedPct: 0,
     },
   };
 }
