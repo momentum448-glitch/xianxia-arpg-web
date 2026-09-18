@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.9
-Status: C4.1 art identity foundation implemented on feature branch; CI/device validation next
+Version: 1.0
+Status: C4.2 production test pack in progress; Stage A player approved, Stage B melee active
 Source of truth: this repository
 
 ## Product goal
@@ -29,7 +29,7 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - First breakthrough: 50 Linh Khí + 3 Tinh Hoa -> defeat 3 Kiếp Ảnh -> Trúc Cơ
 - 2–3 NPCs, merchant/elder function, 3–5 short events
 - Single-player, local/offline save for MVP
-- Original xianxia 2D/2.5D art with restrained ink-wash influence
+- Original 2D xianxia art with restrained ink-wash influence
 - Public GitHub repository
 
 ## Technology
@@ -142,9 +142,10 @@ Recorded phone feedback to revisit after C4 readability stabilizes:
 Status: In progress
 
 Art direction source of truth: `docs/ART_BIBLE.md`.
+Art production/QC source of truth: `docs/ART_PRODUCTION_QC.md`.
 
 #### C4.1 — Readable actor silhouette foundation
-Status: Implemented on feature branch; CI/device validation next
+Status: Complete and merged
 
 Implemented:
 - male/female player rectangle replaced visually by an original layered xianxia silhouette while retaining the same invisible gameplay hitbox;
@@ -154,23 +155,43 @@ Implemented:
 - gameplay collision bodies remain separate from visuals so art QC does not contaminate C3 combat-balance evidence;
 - `docs/ART_BIBLE.md` locks silhouette, palette, readability and future asset rules.
 
-C4.1 phone acceptance questions:
-- Are male/female player silhouettes readable and distinct at normal phone zoom?
-- Can melee/ranged/charger roles be recognized before they attack?
-- Does the flying sword remain clearly a sword during fast travel?
-- Do the new silhouettes stay readable against all four biome backgrounds?
-- Does combat feel visually clearer without making telegraphs harder to see?
+Phone result:
+- role readability improved;
+- visual quality still looked too much like dev art, triggering the C4.2 correction pass.
 
-#### C4.2 — Final actor/environment asset pass
-Planned:
-- generated/integrated player and enemy texture set based on accepted silhouettes
-- environment kit for settlement/plains/forest/danger zone
-- NPC visual pass
-- replace temporary geometric landscape landmarks
+#### C4.2 — Production art correction + minimum viable animation
+Status: In progress
+
+Locked direction:
+- 2D xianxia, ancient/ink-wash mood, moderate anime influence;
+- muted earth, ink and jade palette;
+- player = cool, elegant sword cultivator;
+- enemies = mix of corrupted beasts and spectral/evil-spirit forms;
+- environment = painterly but deliberately less dense for gameplay readability;
+- VFX = pale white-jade, restrained, strongest at impact;
+- hybrid animation pipeline, four directions;
+- player minimum animation set: idle, run, dodge, skill;
+- enemy minimum animation set: idle, move, attack tell.
+
+Production-test sequence:
+1. Male player isolated production asset — PASS
+2. Melee enemy isolated production asset — ACTIVE
+3. Flying sword + launch/trail/impact VFX
+4. Settlement/plains environment sample
+5. Minimum viable animation validation
+6. In-game integration with current hitboxes/timing unchanged
+7. Phone QC
+8. Only after test pack passes: expand to female player, ranged, charger, NPCs and remaining biomes
+
+Important rule:
+- generated concept boards are reference only;
+- an image is not a game-ready asset until it is isolated, technically usable, normalized, and validated in-game;
+- every art generation step must end in PASS / REVISE / REJECT and an explicit next action.
 
 #### C4.3 — VFX/UI finish
-Planned:
-- qi and breakthrough effects
+Status: Planned after C4.2 production test passes
+
+- broader qi and breakthrough polish
 - final enemy telegraph treatment
 - boss gate art
 - skill/item/cultivation icons
@@ -187,10 +208,9 @@ Status: Planned
 - device QC and go/revise decision
 
 ## Current validation question
-Do the C4.1 player, enemy and flying-sword silhouettes establish a readable original xianxia identity on a phone without changing the gameplay evidence gathered in C3?
+Can the C4.2 production test pack make the game look like a coherent real product on a phone while preserving combat readability and the gameplay evidence already gathered in C3?
 
 ## Working assumptions
-- C4.1 uses authored Phaser composite silhouettes as an art-direction checkpoint before final generated texture integration.
 - World route is authored rather than procedural for MVP.
 - Combat remains manually simulated until feel stabilizes.
 - Merchant economy stays deferred until the exploration/combat route proves fun enough to justify another progression layer.
