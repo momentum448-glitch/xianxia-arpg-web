@@ -1,6 +1,39 @@
 import Phaser from 'phaser';
+import { C4_ART_SCALE } from './art/artScaleConfig';
+import { C4_ASSETS } from './art/assetManifest';
 import type { EnemyKind } from './combatConfig';
 import type { PlayerGender } from './playerProfile';
+
+const PLAYER_MALE_TEXTURE_KEY = 'c4-player-male-idle-s';
+
+function applyMaleRuntimeTexture(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+): void {
+  if (!container.active || !scene.textures.exists(PLAYER_MALE_TEXTURE_KEY)) return;
+
+  container.removeAll(true);
+  const shadow = scene.add.ellipse(0, 31, 58, 18, 0x252724, 0.18);
+  const image = scene.add.image(0, C4_ART_SCALE.playerMale.offsetY, PLAYER_MALE_TEXTURE_KEY)
+    .setOrigin(C4_ART_SCALE.playerMale.originX, C4_ART_SCALE.playerMale.originY);
+  const scale = C4_ART_SCALE.playerMale.displayHeight / image.height;
+  image.setScale(scale);
+  container.add([shadow, image]);
+}
+
+function queueMaleRuntimeTexture(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+): void {
+  if (scene.textures.exists(PLAYER_MALE_TEXTURE_KEY)) {
+    applyMaleRuntimeTexture(scene, container);
+    return;
+  }
+
+  scene.load.image(PLAYER_MALE_TEXTURE_KEY, C4_ASSETS.playerMaleIdleSouth);
+  scene.load.once(Phaser.Loader.Events.COMPLETE, () => applyMaleRuntimeTexture(scene, container));
+  scene.load.start();
+}
 
 export function createPlayerVisual(
   scene: Phaser.Scene,
@@ -52,7 +85,9 @@ export function createPlayerVisual(
     children.push(scene.add.circle(12, -57, 3, 0xc8a66e, 0.95));
   }
 
-  return scene.add.container(x, y, children).setDepth(11);
+  const container = scene.add.container(x, y, children).setDepth(11);
+  if (gender === 'male') queueMaleRuntimeTexture(scene, container);
+  return container;
 }
 
 export function createEnemyVisual(
