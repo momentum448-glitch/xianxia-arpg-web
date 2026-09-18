@@ -1,0 +1,51 @@
+name: Patch range stat and select docs
+
+on:
+  push:
+    branches: [feat/range-stat-character-select]
+    paths: [.github/workflows/patch-range-select.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/range-stat-character-select
+          fetch-depth: 0
+      - name: Patch GameScene and PLAN
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          game = Path('src/scenes/GameScene.ts')
+          text = game.read_text()
+          needle = "import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';"
+          if "../game/playerStats" not in text:
+              text = text.replace(needle, needle + "\nimport { basicAttackRangeForProfile } from '../game/playerStats';")
+          text = text.replace('COMBAT.player.basicAttackRange', 'basicAttackRangeForProfile(this.profile)')
+          game.write_text(text)
+
+          plan = Path('docs/PLAN.md')
+          text = plan.read_text()
+          range_line = '- Basic attack is manual via a dedicated `ATK` button and targets the nearest valid enemy in range\n'
+          range_note = '- Basic attack range resolves through a profile-derived stat: base 205 + build bonus, so future equipment/cultivation/talent paths can extend range\n'
+          if range_note not in text:
+              text = text.replace(range_line, range_line + range_note)
+          gender_line = '- Male/female player choice at start\n'
+          gender_note = '- Character select shows both character previews, selected-card highlight, short identity copy, and explicit start confirmation\n'
+          if gender_note not in text:
+              text = text.replace(gender_line, gender_line + gender_note)
+          plan.write_text(text)
+          PY
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-range-select.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/scenes/GameScene.ts docs/PLAN.md .github/workflows/patch-range-select.yml
+          git commit -m 'feat: wire buildable attack range and character select plan'
+          git push origin HEAD:feat/range-stat-character-select
