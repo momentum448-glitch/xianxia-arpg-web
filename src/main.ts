@@ -3,6 +3,11 @@ import './style.css';
 import { CharacterSelectScene } from './scenes/CharacterSelectScene';
 import { GameScene } from './scenes/GameScene';
 
+const buildBadge = document.createElement('div');
+buildBadge.id = 'build-id';
+buildBadge.textContent = `BUILD ${__BUILD_ID__}`;
+document.body.appendChild(buildBadge);
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',

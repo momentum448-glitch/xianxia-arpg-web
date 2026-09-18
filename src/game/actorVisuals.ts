@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { MELEE_RUNTIME_ANIMATION } from './art/animationConfig';
 import { C4_ART_SCALE } from './art/artScaleConfig';
-import { C4_ASSETS } from './art/assetManifest';
+import { C4_ASSETS, c4AssetUrl } from './art/assetManifest';
 import type { EnemyKind } from './combatConfig';
 import type { PlayerGender } from './playerProfile';
 
@@ -38,7 +38,7 @@ function queueMaleRuntimeTexture(
     return;
   }
 
-  scene.load.image(PLAYER_MALE_TEXTURE_KEY, new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString());
+  scene.load.image(PLAYER_MALE_TEXTURE_KEY, c4AssetUrl(C4_ASSETS.playerMaleIdleSouth));
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => applyMaleRuntimeTexture(scene, container));
   scene.load.start();
 }
@@ -141,7 +141,7 @@ function queueMeleeRuntimeTexture(
   if (meleeLoadStarted.has(scene)) return;
 
   meleeLoadStarted.add(scene);
-  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString());
+  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth));
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
     for (const item of pendingMeleeByScene.get(scene) ?? []) {
       applyMeleeRuntimeTexture(scene, item.container, item.trial);

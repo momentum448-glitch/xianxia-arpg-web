@@ -20,3 +20,19 @@ canvas {
   max-height: 100dvh;
   touch-action: none;
 }
+
+#build-id {
+  position: fixed;
+  right: 6px;
+  bottom: 6px;
+  z-index: 9999;
+  padding: 3px 6px;
+  border: 1px solid rgba(233, 223, 199, 0.45);
+  border-radius: 4px;
+  background: rgba(23, 25, 20, 0.72);
+  color: #e9dfc7;
+  font: 600 11px/1.2 monospace;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  opacity: 0.9;
+}

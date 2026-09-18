@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
-import { C4_ASSETS } from '../game/art/assetManifest';
+import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
@@ -122,10 +122,10 @@ export class GameScene extends Phaser.Scene {
 
   preload(): void {
     if (!this.textures.exists('c4-player-male-idle-s')) {
-      this.load.image('c4-player-male-idle-s', new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString());
+      this.load.image('c4-player-male-idle-s', c4AssetUrl(C4_ASSETS.playerMaleIdleSouth));
     }
     if (!this.textures.exists('c4-enemy-melee-idle-s')) {
-      this.load.image('c4-enemy-melee-idle-s', new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString());
+      this.load.image('c4-enemy-melee-idle-s', c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth));
     }
   }
 
