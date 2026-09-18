@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
@@ -76,6 +77,11 @@ export class GameScene extends Phaser.Scene {
   private joystickBase!: Phaser.GameObjects.Arc;
   private joystickNub!: Phaser.GameObjects.Arc;
   private actionLockedUntil = 0;
+  private attackAnimStartedAt = 0;
+  private attackAnimUntil = 0;
+  private skillAnimStartedAt = 0;
+  private skillAnimUntil = 0;
+  private playerVisualFacingSign = 1;
   private dodgeUntil = 0;
   private invulnerableUntil = 0;
   private dodgeX = 0;
@@ -492,6 +498,8 @@ CỔ MÔN • PHONG ẤN`, {
     const attackRange = basicAttackRangeForProfile(this.profile);
     const target = this.getNearestEnemy(attackRange);
     this.cooldowns.attack = now + basicAttackCooldownMsForProfile(this.profile);
+    this.attackAnimStartedAt = now;
+    this.attackAnimUntil = now + PLAYER_RUNTIME_ANIMATION.attack.durationMs;
 
     if (target) this.faceTarget(target);
     this.spawnFlyingSword(target, now, attackRange);
@@ -1017,6 +1025,10 @@ CỔ MÔN • PHONG ẤN`, {
     this.playerVisual.setPosition(this.respawnX, this.respawnY).setAlpha(1);
     this.cooldowns.attack = this.time.now + 300;
     this.actionLockedUntil = 0;
+    this.attackAnimStartedAt = 0;
+    this.attackAnimUntil = 0;
+    this.skillAnimStartedAt = 0;
+    this.skillAnimUntil = 0;
     this.dodgeUntil = 0;
     this.invulnerableUntil = this.time.now + 900;
     this.statusText.setText('');
@@ -1035,13 +1047,36 @@ CỔ MÔN • PHONG ẤN`, {
     this.invulnerableUntil = now + COMBAT.player.iframeMs;
     this.actionLockedUntil = this.dodgeUntil;
     this.cooldowns.dodge = now + COMBAT.player.dodgeCooldownMs;
+    this.emitDodgeMotionCue();
+    this.time.delayedCall(58, () => {
+      if (!this.dead && this.time.now < this.dodgeUntil) this.emitDodgeMotionCue();
+    });
+  }
+
+  private emitDodgeMotionCue(): void {
+    const cfg = PLAYER_RUNTIME_ANIMATION.dodge;
+    const headX = this.player.x - this.dodgeX * 8;
+    const headY = this.player.y - 18 - this.dodgeY * 8;
+    const tailX = this.player.x - this.dodgeX * cfg.trailLengthPx;
+    const tailY = this.player.y - 18 - this.dodgeY * cfg.trailLengthPx;
+    const streak = this.add.line(
+      0, 0, headX, headY, tailX, tailY, 0xd7e7dc, cfg.trailAlpha,
+    ).setOrigin(0, 0).setLineWidth(cfg.trailWidthPx).setDepth(9);
+    this.tweens.add({
+      targets: streak,
+      alpha: 0,
+      duration: cfg.trailDurationMs,
+      onComplete: () => streak.destroy(),
+    });
   }
 
   private castCleave(): void {
     const now = this.time.now;
     if (!this.canCast(now, this.cooldowns.skill)) return;
     this.cooldowns.skill = now + COMBAT.skills.cleaveCooldownMs;
-    this.actionLockedUntil = now + 230;
+    this.skillAnimStartedAt = now;
+    this.skillAnimUntil = now + PLAYER_RUNTIME_ANIMATION.skill.durationMs;
+    this.actionLockedUntil = this.skillAnimUntil;
 
     const facingAngle = Math.atan2(this.facingY, this.facingX);
     const halfArc = COMBAT.skills.cleaveArcDeg * Math.PI / 360;
@@ -1189,8 +1224,67 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private syncPlayerPresentation(): void {
-    this.playerVisual.setPosition(this.player.x, this.player.y);
-    const invulnerable = this.time.now < this.invulnerableUntil;
+    const now = this.time.now;
+    const moving = Math.hypot(this.moveX, this.moveY) > 0.08;
+    let offsetX = 0;
+    let offsetY = 0;
+    let rotation = 0;
+    let scaleX = 1;
+    let scaleY = 1;
+
+    if (this.facingX < -0.2) this.playerVisualFacingSign = -1;
+    else if (this.facingX > 0.2) this.playerVisualFacingSign = 1;
+
+    if (!this.dead && now < this.dodgeUntil) {
+      const cfg = PLAYER_RUNTIME_ANIMATION.dodge;
+      const horizontal = Math.abs(this.dodgeX) >= Math.abs(this.dodgeY);
+      scaleX = horizontal ? 1 + cfg.stretchScale : 1 - cfg.stretchScale * 0.28;
+      scaleY = horizontal ? 1 - cfg.stretchScale * 0.28 : 1 + cfg.stretchScale;
+      rotation = this.dodgeX * cfg.tiltRad;
+    } else if (!this.dead && now < this.skillAnimUntil) {
+      const cfg = PLAYER_RUNTIME_ANIMATION.skill;
+      const progress = Phaser.Math.Clamp((now - this.skillAnimStartedAt) / cfg.durationMs, 0, 1);
+      const pulse = Math.sin(progress * Math.PI);
+      const directionSign = Math.abs(this.facingX) > 0.15 ? Math.sign(this.facingX) : this.playerVisualFacingSign;
+      offsetX = this.facingX * cfg.forwardPx * pulse;
+      offsetY = this.facingY * cfg.forwardPx * pulse - cfg.liftPx * pulse;
+      scaleX = 1 + cfg.pulseScale * pulse;
+      scaleY = 1 - cfg.pulseScale * 0.42 * pulse;
+      rotation = directionSign * cfg.tiltRad * pulse;
+    } else if (!this.dead && now < this.attackAnimUntil) {
+      const cfg = PLAYER_RUNTIME_ANIMATION.attack;
+      const progress = Phaser.Math.Clamp((now - this.attackAnimStartedAt) / cfg.durationMs, 0, 1);
+      const pulse = Math.sin(progress * Math.PI);
+      offsetX = this.facingX * cfg.forwardPx * pulse;
+      offsetY = this.facingY * cfg.forwardPx * pulse;
+      scaleX = 1 + cfg.pulseScale * pulse;
+      scaleY = 1 - cfg.pulseScale * 0.35 * pulse;
+      rotation = this.facingX * cfg.tiltRad * pulse;
+    } else if (!this.dead && moving) {
+      const cfg = PLAYER_RUNTIME_ANIMATION.run;
+      const phase = (now % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2;
+      const step = Math.sin(phase);
+      const bounce = Math.abs(step);
+      offsetY = -bounce * cfg.bobPx;
+      scaleX = 1 + bounce * cfg.squashScale;
+      scaleY = 1 - bounce * cfg.squashScale * 0.65;
+      rotation = this.facingX * cfg.leanRad + Math.cos(phase) * cfg.leanRad * 0.24;
+    } else if (!this.dead) {
+      const cfg = PLAYER_RUNTIME_ANIMATION.idle;
+      const phase = (now % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2;
+      const breath = Math.sin(phase);
+      offsetY = breath * cfg.bobPx;
+      scaleX = 1 - breath * cfg.breatheScale * 0.45;
+      scaleY = 1 + breath * cfg.breatheScale;
+      rotation = breath * cfg.swayRad;
+    }
+
+    this.playerVisual
+      .setPosition(this.player.x + offsetX, this.player.y + offsetY)
+      .setScale(this.playerVisualFacingSign * scaleX, scaleY)
+      .setRotation(rotation);
+
+    const invulnerable = now < this.invulnerableUntil;
     this.playerVisual.setAlpha(this.dead ? 0.35 : invulnerable ? 0.78 : 1);
   }
 
