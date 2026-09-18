@@ -19,11 +19,13 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - Dense route: settlement -> wilderness -> forest -> danger zone -> boss
 - Virtual joystick lower-left
 - Basic attack is manual via a dedicated `ATK` button and targets the nearest valid enemy in range
+- Basic attack range resolves through a profile-derived stat: base 205 + build bonus, so future equipment/cultivation/talent paths can extend range
 - Each `ATK` press launches exactly one visible flying sword when a valid target is available
 - Flying sword uses light homing and deals damage on contact
 - Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge
 - NPC interaction uses a contextual proximity button and does not add a combat button
 - Male/female player choice at start
+- Character select shows both character previews, selected-card highlight, short identity copy, and explicit start confirmation
 - 2 cultivation realms in MVP with meaningful breakthrough moments
 - Breakthrough requires spirit/progress + materials + a short trial
 - First breakthrough: 50 Linh Khí + 3 Tinh Hoa -> defeat 3 Kiếp Ảnh -> Trúc Cơ
