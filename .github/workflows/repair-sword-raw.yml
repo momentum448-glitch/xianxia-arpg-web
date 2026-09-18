@@ -1,0 +1,77 @@
+name: Repair sword raw texture
+
+on:
+  push:
+    branches:
+      - fix/sword-black-texture
+    paths:
+      - '.tmp/fx_sword_r1_96.b64'
+      - '.github/workflows/repair-sword-raw.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode and verify sword PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/assets/c4/vfx/sword
+          base64 -d .tmp/fx_sword_r1_96.b64 > public/assets/c4/vfx/sword/fx_sword_r1.png
+          test "$(wc -c < public/assets/c4/vfx/sword/fx_sword_r1.png)" -eq 5465
+          echo "bf4a4aeab1963a330e1526fb06f7e0a5742e6cf00dc55a2dc25c5680f37bde76  public/assets/c4/vfx/sword/fx_sword_r1.png" | sha256sum -c -
+
+      - name: Switch sword to raw-texture QC mode
+        shell: python
+        run: |
+          from pathlib import Path
+
+          actor = Path('src/game/actorVisuals.ts')
+          text = actor.read_text()
+          old = """  const qi = realm === 2 ? 0xc9efe5 : 0xe2e6d8;\n  const aura = scene.add.ellipse(6, 0, 70, realm === 2 ? 22 : 18, qi, realm === 2 ? 0.16 : 0.1);\n\n  if (scene.textures.exists(FLYING_SWORD_TEXTURE_KEY)) {\n    const image = scene.add.image(0, 0, FLYING_SWORD_TEXTURE_KEY)\n      .setOrigin(C4_ART_SCALE.flyingSword.originX, C4_ART_SCALE.flyingSword.originY);\n    const scale = C4_ART_SCALE.flyingSword.displayWidth / image.width;\n    image.setScale(scale);\n    if (realm === 2) image.setTint(0xe8fff7);\n    return scene.add.container(x, y, [aura, image]).setDepth(18);\n  }\n\n  const blade = scene.add.polygon"""
+          new = """  if (scene.textures.exists(FLYING_SWORD_TEXTURE_KEY)) {\n    const image = scene.add.image(0, 0, FLYING_SWORD_TEXTURE_KEY)\n      .setOrigin(C4_ART_SCALE.flyingSword.originX, C4_ART_SCALE.flyingSword.originY);\n    const scale = C4_ART_SCALE.flyingSword.displayWidth / image.width;\n    image.setScale(scale);\n    return scene.add.container(x, y, [image]).setDepth(18);\n  }\n\n  const qi = realm === 2 ? 0xc9efe5 : 0xe2e6d8;\n  const aura = scene.add.ellipse(6, 0, 70, realm === 2 ? 22 : 18, qi, realm === 2 ? 0.16 : 0.1);\n  const blade = scene.add.polygon"""
+          if old not in text:
+              raise SystemExit('actorVisuals sword block not found')
+          actor.write_text(text.replace(old, new, 1))
+
+          scene = Path('src/scenes/GameScene.ts')
+          text = scene.read_text()
+          anchor = "type CombatButtonKey = 'attack' | 'dodge' | 'skill';\n"
+          if 'const SWORD_RAW_QC = true;' not in text:
+              text = text.replace(anchor, "const SWORD_RAW_QC = true;\n\n" + anchor, 1)
+
+          launch = """    const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;\n    const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)\n      .setRotation(angle)\n      .setDepth(17);\n    const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);\n    this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });\n    this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });\n"""
+          launch_wrapped = """    if (!SWORD_RAW_QC) {\n      const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;\n      const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)\n        .setRotation(angle)\n        .setDepth(17);\n      const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);\n      this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });\n      this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });\n    }\n"""
+          if launch not in text:
+              raise SystemExit('launch VFX block not found')
+          text = text.replace(launch, launch_wrapped, 1)
+
+          text = text.replace(
+              "      if (time >= sword.nextTrailAt) {\n",
+              "      if (!SWORD_RAW_QC && time >= sword.nextTrailAt) {\n",
+              1,
+          )
+
+          impact = """          const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;\n          const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)\n            .setStrokeStyle(3, impactColor, 0.78)\n            .setDepth(20);\n          const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);\n          this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });\n          this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });\n"""
+          impact_wrapped = """          if (!SWORD_RAW_QC) {\n            const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;\n            const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)\n              .setStrokeStyle(3, impactColor, 0.78)\n              .setDepth(20);\n            const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);\n            this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });\n            this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });\n          }\n"""
+          if impact not in text:
+              raise SystemExit('impact VFX block not found')
+          scene.write_text(text.replace(impact, impact_wrapped, 1))
+
+      - name: Commit verified binary and raw QC mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .tmp/fx_sword_r1_96.b64 .github/workflows/repair-sword-raw.yml
+          git add public/assets/c4/vfx/sword/fx_sword_r1.png src/game/actorVisuals.ts src/scenes/GameScene.ts
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(art): verify raw flying sword texture'
+          git push
