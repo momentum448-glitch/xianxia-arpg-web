@@ -9,6 +9,7 @@ import {
   skillDamageForRealm,
 } from '../game/cultivationConfig';
 import { NPCS, type NpcDefinition } from '../game/npcConfig';
+import { BOSS_GATE, ENCOUNTERS, WORLD_EVENTS, type EncounterDefinition, type WorldEventDefinition } from '../game/regionContentConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
 import { WORLD, isSettlementY, zoneAt, type WorldZoneId } from '../game/worldConfig';
 
@@ -24,6 +25,8 @@ interface EnemyState {
   chargeY: number;
   chargeHit: boolean;
   trial: boolean;
+  encounterId: string | null;
+  damageMultiplier: number;
 }
 
 interface FlyingSwordState {
@@ -37,6 +40,12 @@ interface FlyingSwordState {
 interface NpcState {
   def: NpcDefinition;
   node: Phaser.GameObjects.Container;
+}
+
+interface WorldEventState {
+  def: WorldEventDefinition;
+  node: Phaser.GameObjects.Container;
+  triggered: boolean;
 }
 
 type CombatButtonKey = 'dodge' | 'skill';
@@ -87,6 +96,7 @@ export class GameScene extends Phaser.Scene {
   private dialoguePanel!: Phaser.GameObjects.Rectangle;
   private dialogueText!: Phaser.GameObjects.Text;
   private dialogueHideAt = 0;
+  private worldEvents: WorldEventState[] = [];
 
   constructor() {
     super('Game');
@@ -116,12 +126,13 @@ export class GameScene extends Phaser.Scene {
     }).setOrigin(0.5).setName('playerLabel').setDepth(11);
 
     this.createNpcs();
+    this.createRegionContent();
     this.cameras.main.startFollow(this.player, true, 0.11, 0.11);
     this.cameras.main.setDeadzone(150, 280);
 
     this.createBreakthroughUi(width);
     this.createInteractionUi(width, height);
-    this.spawnEncounter();
+    this.spawnAllEncounters();
     this.createJoystick(125, height - 145);
     this.createCombatButtons(width, height);
     this.bindTouchControls();
@@ -141,6 +152,7 @@ export class GameScene extends Phaser.Scene {
     this.refreshCooldownLabels(time);
     this.refreshZoneHud();
     this.updateNpcInteraction(time);
+    this.updateWorldEvents();
   }
 
   private createWorldShell(): void {
@@ -217,6 +229,71 @@ export class GameScene extends Phaser.Scene {
       const y = plains.yMin + 340 + row * 610 + (i % 2) * 95;
       this.add.ellipse(x, y, 86, 34, 0x8b865f, 0.2).setDepth(-7);
     }
+  }
+
+  private createRegionContent(): void {
+    this.worldEvents = WORLD_EVENTS.map((def) => {
+      const ring = this.add.circle(0, 0, 44, def.color, 0.16).setStrokeStyle(4, def.color, 0.8);
+      const core = this.add.circle(0, 0, 13, def.color, 0.72);
+      const label = this.add.text(0, -64, def.name, {
+        fontFamily: 'serif', fontSize: '18px', color: '#403b32', fontStyle: 'bold',
+        backgroundColor: '#eee4ccbb', padding: { x: 7, y: 4 },
+      }).setOrigin(0.5, 1);
+      const node = this.add.container(def.x, def.y, [ring, core, label]).setDepth(6);
+      this.tweens.add({ targets: ring, scale: 1.18, alpha: 0.05, duration: 1200, yoyo: true, repeat: -1 });
+      return { def, node, triggered: false };
+    });
+
+    const gate = this.add.container(BOSS_GATE.x, BOSS_GATE.y).setDepth(5);
+    const left = this.add.rectangle(-72, 28, 28, 128, 0x5b554d, 0.72);
+    const right = this.add.rectangle(72, 28, 28, 128, 0x5b554d, 0.72);
+    const lintel = this.add.rectangle(0, -34, 176, 28, 0x5b554d, 0.72);
+    const seal = this.add.circle(0, 24, 40, 0x8f705f, 0.15).setStrokeStyle(5, 0x8f705f, 0.72);
+    const label = this.add.text(0, 112, `${BOSS_GATE.name}
+CỔ MÔN • PHONG ẤN`, {
+      fontFamily: 'serif', fontSize: '19px', color: '#443e38', fontStyle: 'bold', align: 'center',
+      backgroundColor: '#ded4c0cc', padding: { x: 9, y: 5 },
+    }).setOrigin(0.5);
+    gate.add([left, right, lintel, seal, label]);
+  }
+
+  private updateWorldEvents(): void {
+    if (this.dead || this.breakthroughTrialActive) return;
+    for (const event of this.worldEvents) {
+      if (event.triggered) continue;
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, event.def.x, event.def.y);
+      if (distance <= event.def.radius) this.triggerWorldEvent(event);
+    }
+  }
+
+  private triggerWorldEvent(event: WorldEventState): void {
+    if (event.triggered) return;
+    event.triggered = true;
+    event.node.setAlpha(0.28);
+
+    if (event.def.id === 'spirit-spring') {
+      const beforeHp = this.playerHp;
+      this.playerHp = Math.min(maxHpForRealm(this.profile.realm), this.playerHp + 2);
+      this.profile.spirit = Math.min(this.profile.maxSpirit, this.profile.spirit + 12);
+      this.refreshHud();
+      this.statusText.setText(`Linh Tuyền • +12 Linh Khí${this.playerHp > beforeHp ? ' • +2 Sinh lực' : ''}`);
+      this.time.delayedCall(2200, () => { if (!this.dead) this.statusText.setText(''); });
+      return;
+    }
+
+    if (event.def.id === 'herb-cache') {
+      this.profile.essence += 1;
+      this.refreshHud();
+      this.statusText.setText('Dược Thảo Ẩn • +1 Tinh Hoa');
+      this.time.delayedCall(2200, () => { if (!this.dead) this.statusText.setText(''); });
+      return;
+    }
+
+    this.statusText.setText('U Minh Bi rung chuyển • Tà ảnh xuất hiện');
+    this.spawnEnemy('melee', this.player.x - 165, this.player.y - 180, false, null, 1.45, 1.2);
+    this.spawnEnemy('ranged', this.player.x + 185, this.player.y - 145, false, null, 1.4, 1.25);
+    this.spawnEnemy('charger', this.player.x + 30, this.player.y + 205, false, null, 1.55, 1.3);
+    this.time.delayedCall(2400, () => { if (!this.dead) this.statusText.setText(''); });
   }
 
   private createNpcs(): void {
@@ -554,7 +631,7 @@ export class GameScene extends Phaser.Scene {
     this.tweens.add({ targets: warning, scale: 1.35, alpha: 0, duration: 260, onComplete: () => warning.destroy() });
     this.time.delayedCall(240, () => {
       if (!enemy.node.active || this.dead) return;
-      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) this.damagePlayer(cfg.damage, enemy);
+      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
     });
   }
 
@@ -582,7 +659,7 @@ export class GameScene extends Phaser.Scene {
         ease: 'Linear',
         onComplete: () => {
           if (!this.dead && Phaser.Math.Distance.Between(this.player.x, this.player.y, targetX, targetY) < 48) {
-            this.damagePlayer(cfg.damage, enemy);
+            this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
           }
           orb.destroy();
         },
@@ -609,7 +686,7 @@ export class GameScene extends Phaser.Scene {
       this.clampEnemyToWorld(enemy);
       if (!enemy.chargeHit && this.distanceToPlayer(enemy) < 48) {
         enemy.chargeHit = true;
-        this.damagePlayer(cfg.damage, enemy);
+        this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
       }
       if (time >= enemy.phaseUntil) {
         enemy.phase = 'recover';
@@ -656,13 +733,31 @@ export class GameScene extends Phaser.Scene {
     this.enemies = [];
   }
 
-  private spawnEncounter(): void {
+  private spawnAllEncounters(): void {
     this.clearFlyingSwords();
     this.clearEnemies();
-    const { x, y } = WORLD.encounterCenter;
-    this.spawnEnemy('melee', x - 190, y + 80);
-    this.spawnEnemy('ranged', x + 145, y - 100);
-    this.spawnEnemy('charger', x + 240, y + 155);
+    for (const encounter of ENCOUNTERS) this.spawnEncounterDefinition(encounter);
+  }
+
+  private spawnEncounterDefinition(encounter: EncounterDefinition): void {
+    for (const enemy of encounter.enemies) {
+      this.spawnEnemy(
+        enemy.kind,
+        encounter.x + enemy.dx,
+        encounter.y + enemy.dy,
+        false,
+        encounter.id,
+        enemy.hpMultiplier,
+        enemy.damageMultiplier,
+      );
+    }
+  }
+
+  private activeEncounterEnemyCount(encounterId: string): number {
+    return this.enemies.reduce(
+      (count, enemy) => count + (enemy.node.active && enemy.encounterId === encounterId ? 1 : 0),
+      0,
+    );
   }
 
   private spawnBreakthroughTrial(): void {
@@ -675,7 +770,15 @@ export class GameScene extends Phaser.Scene {
     this.spawnEnemy('charger', x + 245, y + 40, true);
   }
 
-  private spawnEnemy(kind: EnemyKind, x: number, y: number, trial = false): void {
+  private spawnEnemy(
+    kind: EnemyKind,
+    x: number,
+    y: number,
+    trial = false,
+    encounterId: string | null = null,
+    hpMultiplier = 1,
+    damageMultiplier = 1,
+  ): void {
     const cfg = COMBAT.enemy[kind];
     const clampedX = Phaser.Math.Clamp(x, WORLD.edgePadding, WORLD.width - WORLD.edgePadding);
     const maxY = trial ? WORLD.height - WORLD.edgePadding : WORLD.safeBoundaryY - 70;
@@ -686,7 +789,7 @@ export class GameScene extends Phaser.Scene {
       kind === 'charger' ? 35 : 31,
       trial ? 0x77564d : this.enemyColor(kind),
     ).setStrokeStyle(trial ? 5 : 3, trial ? 0xd7b36d : 0x332f2a).setDepth(9);
-    const hp = cfg.hp;
+    const hp = Math.max(1, Math.ceil(cfg.hp * hpMultiplier));
     this.enemies.push({
       kind,
       node,
@@ -699,6 +802,8 @@ export class GameScene extends Phaser.Scene {
       chargeY: 0,
       chargeHit: false,
       trial,
+      encounterId,
+      damageMultiplier,
     });
   }
 
@@ -763,11 +868,12 @@ export class GameScene extends Phaser.Scene {
     this.profile.essence += CULTIVATION.rewards.essencePerKill;
     this.refreshHud();
 
-    if (this.activeEnemyCount() === 0) {
+    const encounterId = enemy.encounterId;
+    if (encounterId && this.activeEncounterEnemyCount(encounterId) === 0) {
       this.time.delayedCall(CULTIVATION.encounterRespawnMs, () => {
-        if (!this.dead && !this.breakthroughTrialActive && this.activeEnemyCount() === 0) {
-          this.spawnEncounter();
-        }
+        if (this.dead || this.breakthroughTrialActive || this.activeEncounterEnemyCount(encounterId) > 0) return;
+        const encounter = ENCOUNTERS.find((entry) => entry.id === encounterId);
+        if (encounter) this.spawnEncounterDefinition(encounter);
       });
     }
   }
@@ -838,7 +944,7 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(1200, () => {
       if (!this.dead) {
         this.statusText.setText('');
-        this.spawnEncounter();
+        this.spawnAllEncounters();
       }
     });
   }
@@ -882,7 +988,7 @@ export class GameScene extends Phaser.Scene {
     this.dodgeUntil = 0;
     this.invulnerableUntil = this.time.now + 900;
     this.statusText.setText('');
-    this.spawnEncounter();
+    this.spawnAllEncounters();
     this.refreshHud();
     this.refreshZoneHud();
   }
