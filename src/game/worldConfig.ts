@@ -9,17 +9,17 @@ export interface WorldZone {
 }
 
 export const WORLD = {
-  width: 1080,
-  height: 4300,
-  edgePadding: 54,
-  safeBoundaryY: 3370,
-  playerSpawn: { x: 540, y: 3820 },
-  encounterCenter: { x: 540, y: 2860 },
+  width: 1600,
+  height: 9000,
+  edgePadding: 72,
+  safeBoundaryY: 7200,
+  playerSpawn: { x: 800, y: 8150 },
+  encounterCenter: { x: 800, y: 6100 },
   zones: [
-    { id: 'danger', name: 'U Minh Cốc', yMin: 0, yMax: 1050, fill: 0xb8b29d },
-    { id: 'forest', name: 'Linh Lâm', yMin: 1050, yMax: 2200, fill: 0xc3ccb0 },
-    { id: 'plains', name: 'Thanh Vân Hoang Nguyên', yMin: 2200, yMax: 3370, fill: 0xd6cfad },
-    { id: 'settlement', name: 'Thanh Vân Thôn', yMin: 3370, yMax: 4300, fill: 0xe3d5b5 },
+    { id: 'danger', name: 'U Minh Cốc', yMin: 0, yMax: 2200, fill: 0xb8b29d },
+    { id: 'forest', name: 'Linh Lâm', yMin: 2200, yMax: 4600, fill: 0xc3ccb0 },
+    { id: 'plains', name: 'Thanh Vân Hoang Nguyên', yMin: 4600, yMax: 7200, fill: 0xd6cfad },
+    { id: 'settlement', name: 'Thanh Vân Thôn', yMin: 7200, yMax: 9000, fill: 0xe3d5b5 },
   ] satisfies WorldZone[],
 };
 
