@@ -1,0 +1,31 @@
+name: C3 NPC Patch
+
+on:
+  push:
+    branches: [c3/npc-layer]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: c3/npc-layer
+          fetch-depth: 0
+
+      - name: Apply NPC interaction patch
+        run: python scripts/c3_npc_patch.py
+
+      - name: Commit NPC layer and remove temporary helpers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm scripts/c3_npc_patch.py .github/workflows/c3-npc-patch.yml
+          git add src/scenes/GameScene.ts src/game/npcConfig.ts
+          git commit -m "feat(c3): add settlement NPC interaction layer"
+          git push origin HEAD:c3/npc-layer
