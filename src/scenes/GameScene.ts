@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
+import { C4_ASSETS } from '../game/art/assetManifest';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
@@ -117,6 +118,15 @@ export class GameScene extends Phaser.Scene {
 
   init(data: { gender?: PlayerGender }): void {
     this.profile = createPlayerProfile(data.gender ?? 'male');
+  }
+
+  preload(): void {
+    if (!this.textures.exists('c4-player-male-idle-s')) {
+      this.load.image('c4-player-male-idle-s', C4_ASSETS.playerMaleIdleSouth);
+    }
+    if (!this.textures.exists('c4-enemy-melee-idle-s')) {
+      this.load.image('c4-enemy-melee-idle-s', C4_ASSETS.enemyMeleeIdleSouth);
+    }
   }
 
   create(): void {
