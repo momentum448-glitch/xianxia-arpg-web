@@ -33,3 +33,24 @@ export const PLAYER_RUNTIME_ANIMATION = {
     tiltRad: 0.14,
   },
 } as const;
+
+export const MELEE_RUNTIME_ANIMATION = {
+  idle: {
+    cycleMs: 1050,
+    bobPx: 1.2,
+    breatheScale: 0.012,
+  },
+  move: {
+    cycleMs: 310,
+    bobPx: 2.8,
+    squashScale: 0.025,
+    leanRad: 0.055,
+  },
+  attackTell: {
+    durationMs: 240,
+    crouchPx: 5,
+    squashX: 0.1,
+    squashY: 0.12,
+    tiltRad: 0.09,
+  },
+} as const;
