@@ -537,12 +537,12 @@ CỔ MÔN • PHONG ẤN`, {
 
     if (SWORD_VFX_QC.launch) {
       const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;
-      const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)
+      const launchHalo = this.add.ellipse(this.player.x, this.player.y, 56, 22, launchColor, 0.32)
         .setRotation(angle)
         .setDepth(17);
-      const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);
-      this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });
-      this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });
+      const launchCore = this.add.circle(this.player.x, this.player.y, 9, launchColor, 0.82).setDepth(18);
+      this.tweens.add({ targets: launchHalo, scaleX: 2.4, scaleY: 1.65, alpha: 0, duration: 180, onComplete: () => launchHalo.destroy() });
+      this.tweens.add({ targets: launchCore, scale: 2.1, alpha: 0, duration: 145, onComplete: () => launchCore.destroy() });
     }
 
     this.flyingSwords.push({
