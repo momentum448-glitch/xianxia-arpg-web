@@ -1,0 +1,85 @@
+name: Patch attack feel
+
+on:
+  push:
+    branches: [feat/attack-feel-build-stats]
+    paths:
+      - '.github/workflows/patch-attack-feel.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/attack-feel-build-stats
+          fetch-depth: 0
+      - name: Patch GameScene and PLAN
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+
+          s = s.replace(
+              "import { basicAttackRangeForProfile } from '../game/playerStats';",
+              "import { basicAttackCooldownMsForProfile, basicAttackRangeForProfile } from '../game/playerStats';",
+          )
+
+          old_interface = """interface FlyingSwordState {\n  node: Phaser.GameObjects.Container;\n  target: EnemyState;\n  angle: number;\n  expiresAt: number;\n  nextTrailAt: number;\n}"""
+          new_interface = """interface FlyingSwordState {\n  node: Phaser.GameObjects.Container;\n  target: EnemyState | null;\n  angle: number;\n  expiresAt: number;\n  nextTrailAt: number;\n  originX: number;\n  originY: number;\n  maxTravelDistance: number | null;\n}"""
+          assert old_interface in s, 'FlyingSwordState block not found'
+          s = s.replace(old_interface, new_interface)
+
+          old_attack = """  private performBasicAttack(): void {\n    const now = this.time.now;\n    if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;\n    if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;\n    const target = this.getNearestEnemy(basicAttackRangeForProfile(this.profile));\n    if (!target) return;\n\n    this.cooldowns.attack = now + COMBAT.player.basicAttackCooldownMs;\n    this.faceTarget(target);\n    this.spawnFlyingSword(target, now);\n  }\n\n  private spawnFlyingSword(target: EnemyState, time: number): void {\n    if (!target.node.active) return;\n\n    const angle = Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x);"""
+          new_attack = """  private performBasicAttack(): void {\n    const now = this.time.now;\n    if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;\n    if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;\n\n    const attackRange = basicAttackRangeForProfile(this.profile);\n    const target = this.getNearestEnemy(attackRange);\n    this.cooldowns.attack = now + basicAttackCooldownMsForProfile(this.profile);\n\n    if (target) this.faceTarget(target);\n    this.spawnFlyingSword(target, now, attackRange);\n  }\n\n  private spawnFlyingSword(target: EnemyState | null, time: number, untargetedRange: number): void {\n    if (target && !target.node.active) return;\n\n    const angle = target\n      ? Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x)\n      : Math.atan2(this.facingY, this.facingX);"""
+          assert old_attack in s, 'performBasicAttack block not found'
+          s = s.replace(old_attack, new_attack)
+
+          old_push = """    this.flyingSwords.push({\n      node: sword,\n      target,\n      angle,\n      expiresAt: time + COMBAT.player.flyingSwordLifetimeMs,\n      nextTrailAt: time,\n    });"""
+          new_push = """    this.flyingSwords.push({\n      node: sword,\n      target,\n      angle,\n      expiresAt: time + COMBAT.player.flyingSwordLifetimeMs,\n      nextTrailAt: time,\n      originX: this.player.x,\n      originY: this.player.y,\n      maxTravelDistance: target ? null : untargetedRange,\n    });"""
+          assert old_push in s, 'flying sword push block not found'
+          s = s.replace(old_push, new_push)
+
+          old_update = """      if (!sword.target.node.active || time >= sword.expiresAt) {\n        this.destroyFlyingSword(i);\n        continue;\n      }\n\n      const desiredAngle = Math.atan2(sword.target.node.y - sword.node.y, sword.target.node.x - sword.node.x);\n      const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);\n      const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;\n      sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);"""
+          new_update = """      if (time >= sword.expiresAt || (sword.target && !sword.target.node.active)) {\n        this.destroyFlyingSword(i);\n        continue;\n      }\n\n      if (sword.target) {\n        const desiredAngle = Math.atan2(sword.target.node.y - sword.node.y, sword.target.node.x - sword.node.x);\n        const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);\n        const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;\n        sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);\n      }"""
+          assert old_update in s, 'flying sword homing block not found'
+          s = s.replace(old_update, new_update)
+
+          old_hit = """      const distance = Phaser.Math.Distance.Between(\n        sword.node.x, sword.node.y, sword.target.node.x, sword.target.node.y,\n      );\n\n      if (distance <= COMBAT.player.flyingSwordHitRadius) {\n        const target = sword.target;\n        const hitX = target.node.x;\n        const hitY = target.node.y;\n        const originX = sword.node.x;\n        const originY = sword.node.y;\n\n        this.destroyFlyingSword(i);\n        this.damageEnemy(\n          target,\n          flyingSwordDamageForRealm(this.profile.realm),\n          0xf2e4b8,\n          5,\n          originX,\n          originY,\n        );\n        const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);\n        this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });\n      }"""
+          new_hit = """      const contactTarget = sword.target ?? this.enemies.find((enemy) =>\n        enemy.node.active\n        && Phaser.Math.Distance.Between(sword.node.x, sword.node.y, enemy.node.x, enemy.node.y)\n          <= COMBAT.player.flyingSwordHitRadius\n      ) ?? null;\n\n      if (contactTarget) {\n        const targetDistance = Phaser.Math.Distance.Between(\n          sword.node.x, sword.node.y, contactTarget.node.x, contactTarget.node.y,\n        );\n        if (targetDistance <= COMBAT.player.flyingSwordHitRadius) {\n          const hitX = contactTarget.node.x;\n          const hitY = contactTarget.node.y;\n          const originX = sword.node.x;\n          const originY = sword.node.y;\n\n          this.destroyFlyingSword(i);\n          this.damageEnemy(\n            contactTarget,\n            flyingSwordDamageForRealm(this.profile.realm),\n            0xf2e4b8,\n            5,\n            originX,\n            originY,\n          );\n          const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);\n          this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });\n          continue;\n        }\n      }\n\n      if (sword.maxTravelDistance !== null) {\n        const travelled = Phaser.Math.Distance.Between(sword.originX, sword.originY, sword.node.x, sword.node.y);\n        if (travelled >= sword.maxTravelDistance) this.destroyFlyingSword(i);\n      }"""
+          assert old_hit in s, 'flying sword hit block not found'
+          s = s.replace(old_hit, new_hit)
+
+          old_buttons = """  private createCombatButtons(width: number, height: number): void {\n    this.createCombatButton('attack', width - 118, height - 278, 66, 'ATK', () => this.performBasicAttack());\n    this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());\n    this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());\n\n    this.add.text(width - 170, height - 365, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {"""
+          new_buttons = """  private createCombatButtons(width: number, height: number): void {\n    this.createCombatButton('attack', width - 132, height - 158, 80, 'ATK', () => this.performBasicAttack());\n    this.createCombatButton('skill', width - 248, height - 286, 52, 'SKILL', () => this.castCleave());\n    this.createCombatButton('dodge', width - 68, height - 292, 52, 'NÉ', () => this.startDodge());\n\n    this.add.text(width - 158, height - 382, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {"""
+          assert old_buttons in s, 'combat button layout block not found'
+          s = s.replace(old_buttons, new_buttons)
+
+          p.write_text(s)
+
+          plan = Path('docs/PLAN.md')
+          t = plan.read_text()
+          anchor = "- Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge\n"
+          addition = (
+              "- Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge\n"
+              "- `ATK` is the largest central combat button; Skill and Dodge are smaller satellite buttons\n"
+              "- Manual basic attack base cooldown is 800 ms and resolves through an attack-speed build stat\n"
+              "- Pressing `ATK` without a target still launches a straight flying sword capped by current basic-attack range\n"
+          )
+          assert anchor in t, 'PLAN combat cluster anchor not found'
+          t = t.replace(anchor, addition, 1)
+          plan.write_text(t)
+          PY
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-attack-feel.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/scenes/GameScene.ts docs/PLAN.md .github/workflows/patch-attack-feel.yml
+          git commit -m "feat(combat): improve manual ATK feel and build hooks"
+          git push origin HEAD:feat/attack-feel-build-stats
