@@ -46,7 +46,7 @@ Phone QC remains required before `PHONE_PASS`.
 
 ## 2026-09-18 — Melee enemy runtime candidate
 
-Status: TECH_REWORK / integrated candidate for phone QC
+Status: PHONE_PASS
 
 Completed:
 - old isolated candidate bytes were confirmed unavailable and were not silently treated as recovered;
@@ -54,16 +54,38 @@ Completed:
 - runtime file prepared at `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`;
 - source normalized to 136×160 indexed PNG for mobile-safe texture size while preserving transparency;
 - melee scale/pivot and runtime animation tuning added centrally;
-- procedural melee visual remains the fallback if the production texture fails to load;
-- first CI pass caught a Phaser loader event naming mismatch; `LOAD_ERROR` was corrected to `FILE_LOAD_ERROR` before merge.
+- truncated PNG upload was diagnosed and replaced with the complete binary;
+- visible Build ID and per-build C4 asset cache-busting were added for reliable phone QC;
+- user confirmed the production melee texture renders cleanly on phone after the temporary readability ellipse was removed.
 
-QC required before promotion:
-- reads immediately as melee pressure at phone scale;
-- no baked background/HUD/telegraph remnants;
-- move/chase motion feels alive enough;
-- wind-up/attack tell is clearly readable;
-- silhouette fits the accepted corrupted-melee direction closely enough to keep `EN-MELEE-BASE`, otherwise mark `REVISE` instead of silently redefining it.
+Result:
+- `EN-MELEE-BASE` advances to `PHONE_PASS`;
+- ground shadow remains;
+- non-trial readability ring is removed;
+- AI, hitbox, damage and combat timing remain unchanged.
+
+## 2026-09-18 — Flying sword + restrained VFX candidate
+
+Status: ISOLATED_READY / INTEGRATED candidate / phone QC pending
+
+Completed:
+- `FX-SWORD` isolated as a single 163×74 RGBA transparent PNG;
+- asset registered under `public/assets/c4/vfx/sword/fx_sword_r1.png`;
+- flying sword texture uses centralized manifest and art scale configuration;
+- procedural sword remains a safe fallback if the texture is unavailable;
+- launch feedback upgraded to a short white-jade halo/core flash;
+- trail upgraded to a restrained two-layer white-jade streak;
+- impact upgraded to a brief bright core + expanding ring;
+- homing, contact damage, no-pierce behavior, attack range, projectile speed and combat timing are unchanged.
+
+Phone QC required before promotion:
+- flying sword must read clearly as a sword at full speed;
+- no baked rectangle/background or dirty alpha edge;
+- launch/trail remain subtle enough not to obscure enemies;
+- impact is the brightest moment;
+- Realm 1 stays restrained while Realm 2 can read slightly brighter/jade-tinted.
 
 Next action:
-- rerun CI and deploy the live phone-QC build for the melee candidate;
-- only after user acceptance may `EN-MELEE-BASE` advance toward `PHONE_PASS`.
+- CI + Pages deploy;
+- phone QC on the exact Build ID;
+- if PASS, proceed to the Phase 1 settlement ground + minimal village props proof.
