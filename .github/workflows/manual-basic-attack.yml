@@ -1,0 +1,80 @@
+name: Patch manual basic attack
+
+on:
+  push:
+    branches:
+      - feat/manual-basic-attack
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/manual-basic-attack
+      - name: Patch manual attack control
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+          replacements = [
+              ("type CombatButtonKey = 'dodge' | 'skill';", "type CombatButtonKey = 'attack' | 'dodge' | 'skill';"),
+              ("interface Cooldowns {\n  dodge: number;\n  skill: number;\n}", "interface Cooldowns {\n  attack: number;\n  dodge: number;\n  skill: number;\n}"),
+              ("  private nextAttackAt = 0;\n", ""),
+              ("  private cooldowns: Cooldowns = { dodge: 0, skill: 0 };", "  private cooldowns: Cooldowns = { attack: 0, dodge: 0, skill: 0 };"),
+              ("      this.updateAutoAttack(time);\n", ""),
+              ("  private updateAutoAttack(time: number): void {\n    if (isSettlementY(this.player.y) && !this.breakthroughTrialActive) return;\n    if (time < this.nextAttackAt || time < this.actionLockedUntil || time < this.dodgeUntil) return;\n    const target = this.getNearestEnemy(COMBAT.player.autoAttackRange);\n    if (!target) return;\n\n    this.nextAttackAt = time + COMBAT.player.autoAttackCooldownMs;\n    this.faceTarget(target);\n    this.spawnFlyingSword(target, time);\n  }", "  private performBasicAttack(): void {\n    const now = this.time.now;\n    if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;\n    if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;\n    const target = this.getNearestEnemy(COMBAT.player.basicAttackRange);\n    if (!target) return;\n\n    this.cooldowns.attack = now + COMBAT.player.basicAttackCooldownMs;\n    this.faceTarget(target);\n    this.spawnFlyingSword(target, now);\n  }"),
+              ("    this.nextAttackAt = this.time.now + 500;\n", "    this.cooldowns.attack = this.time.now + 300;\n"),
+              ("    this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());\n    this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());\n\n    this.add.text(width - 172, height - 238, 'Đánh thường: PHI KIẾM • Skill: Trảm Kích', {", "    this.createCombatButton('attack', width - 118, height - 278, 66, 'ATK', () => this.performBasicAttack());\n    this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());\n    this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());\n\n    this.add.text(width - 170, height - 365, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {"),
+              ("    const names: Record<CombatButtonKey, string> = { dodge: 'NÉ', skill: 'SKILL' };", "    const names: Record<CombatButtonKey, string> = { attack: 'ATK', dodge: 'NÉ', skill: 'SKILL' };")
+          ]
+          for old, new in replacements:
+              if old not in s:
+                  raise SystemExit(f'Missing expected GameScene fragment: {old[:90]!r}')
+              s = s.replace(old, new, 1)
+          p.write_text(s)
+
+          p = Path('src/game/combatConfig.ts')
+          s = p.read_text()
+          old = '    autoAttackRange: 175,\n    autoAttackCooldownMs: 620,'
+          new = '    basicAttackRange: 175,\n    basicAttackCooldownMs: 620,'
+          if old not in s:
+              raise SystemExit('Missing combat config auto attack fields')
+          p.write_text(s.replace(old, new, 1))
+
+          p = Path('docs/PLAN.md')
+          s = p.read_text()
+          changes = [
+              ('- Auto basic attack chooses the nearest valid target in range\n- Auto basic attack is exactly one visible flying sword per attack cycle\n', '- Basic attack is manual via a dedicated `ATK` button and targets the nearest valid enemy in range\n- Each `ATK` press launches exactly one visible flying sword when a valid target is available\n'),
+              ('- Right thumb has only 2 combat buttons: one equipped Skill + Dodge\n', '- Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge\n'),
+              ('- 1 equipped active skill slot + dodge + auto flying-sword basic attack\n', '- 1 equipped active skill slot + dodge + manual flying-sword basic attack\n'),
+              ('- auto flying-sword basic attack with travel time, light homing and impact damage\n', '- flying-sword basic attack with travel time, light homing and impact damage\n'),
+              ('- locked right-thumb UX: Skill + Dodge only\n', '- original right-thumb UX at C1: Skill + Dodge only; superseded during C4.2 by manual `ATK` control\n'),
+          ]
+          for old, new in changes:
+              if old not in s:
+                  raise SystemExit(f'Missing PLAN fragment: {old[:80]!r}')
+              s = s.replace(old, new, 1)
+          marker = '#### C4.2 — Production art correction + minimum viable animation\nStatus: In progress\n'
+          insert = marker + '\nControl revision during C4.2:\n- auto basic attack removed at user request;\n- dedicated `ATK` button fires one flying sword toward the nearest valid target in range;\n- basic-attack cooldown remains 620 ms;\n- Skill and Dodge behavior are unchanged.\n'
+          if marker not in s:
+              raise SystemExit('Missing C4.2 marker')
+          s = s.replace(marker, insert, 1)
+          p.write_text(s)
+          PY
+
+      - name: Commit patch and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/manual-basic-attack.yml
+          git add src/scenes/GameScene.ts src/game/combatConfig.ts docs/PLAN.md
+          git commit -m "feat(combat): replace auto attack with manual ATK button"
+          git push origin HEAD:feat/manual-basic-attack
