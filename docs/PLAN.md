@@ -18,10 +18,10 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - One continuous open-map-lite region
 - Dense route: settlement -> wilderness -> forest -> danger zone -> boss
 - Virtual joystick lower-left
-- Auto basic attack chooses the nearest valid target in range
-- Auto basic attack is exactly one visible flying sword per attack cycle
+- Basic attack is manual via a dedicated `ATK` button and targets the nearest valid enemy in range
+- Each `ATK` press launches exactly one visible flying sword when a valid target is available
 - Flying sword uses light homing and deals damage on contact
-- Right thumb has only 2 combat buttons: one equipped Skill + Dodge
+- Right thumb combat cluster has 3 buttons: `ATK` + one equipped Skill + Dodge
 - NPC interaction uses a contextual proximity button and does not add a combat button
 - Male/female player choice at start
 - 2 cultivation realms in MVP with meaningful breakthrough moments
@@ -43,7 +43,7 @@ explore -> fight -> collect spirit/resources -> interact/upgrade -> breakthrough
 - 2 selectable player visuals: male/female
 - 3 normal enemy archetypes
 - 1 boss
-- 1 equipped active skill slot + dodge + auto flying-sword basic attack
+- 1 equipped active skill slot + dodge + manual flying-sword basic attack
 - 1 continuous region
 - 2–3 NPCs
 - 3–5 short random events
@@ -62,12 +62,12 @@ Status: Complete
 Status: Complete enough for continued mobile QC
 
 Implemented:
-- auto flying-sword basic attack with travel time, light homing and impact damage
+- flying-sword basic attack with travel time, light homing and impact damage
 - one equipped Skill button, currently Trảm Kích
 - Dodge with i-frames
 - melee/ranged/charger enemy roles and telegraphs
 - HP, damage, death and respawn
-- locked right-thumb UX: Skill + Dodge only
+- original right-thumb UX at C1: Skill + Dodge only; superseded during C4.2 by manual `ATK` control
 
 ### C2 — Cultivation skeleton
 Status: Complete and phone-QC passed for the core loop
@@ -161,6 +161,12 @@ Phone result:
 
 #### C4.2 — Production art correction + minimum viable animation
 Status: In progress
+
+Control revision during C4.2:
+- auto basic attack removed at user request;
+- dedicated `ATK` button fires one flying sword toward the nearest valid target in range;
+- basic-attack cooldown remains 620 ms;
+- Skill and Dodge behavior are unchanged.
 
 Locked direction:
 - 2D xianxia, ancient/ink-wash mood, moderate anime influence;

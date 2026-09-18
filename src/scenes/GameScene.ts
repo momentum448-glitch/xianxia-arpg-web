@@ -50,9 +50,10 @@ interface WorldEventState {
   triggered: boolean;
 }
 
-type CombatButtonKey = 'dodge' | 'skill';
+type CombatButtonKey = 'attack' | 'dodge' | 'skill';
 
 interface Cooldowns {
+  attack: number;
   dodge: number;
   skill: number;
 }
@@ -70,7 +71,6 @@ export class GameScene extends Phaser.Scene {
   private joystickPointerId: number | null = null;
   private joystickBase!: Phaser.GameObjects.Arc;
   private joystickNub!: Phaser.GameObjects.Arc;
-  private nextAttackAt = 0;
   private actionLockedUntil = 0;
   private dodgeUntil = 0;
   private invulnerableUntil = 0;
@@ -90,7 +90,7 @@ export class GameScene extends Phaser.Scene {
   private breakthroughTrialActive = false;
   private breakthroughTrialKills = 0;
   private currentZoneId: WorldZoneId | null = null;
-  private cooldowns: Cooldowns = { dodge: 0, skill: 0 };
+  private cooldowns: Cooldowns = { attack: 0, dodge: 0, skill: 0 };
   private buttonLabels: Partial<Record<CombatButtonKey, Phaser.GameObjects.Text>> = {};
   private npcs: NpcState[] = [];
   private nearestNpc: NpcState | null = null;
@@ -149,7 +149,6 @@ export class GameScene extends Phaser.Scene {
       this.updatePlayer(time, delta);
       this.updateEnemies(time, delta);
       this.syncEnemyVisuals();
-      this.updateAutoAttack(time);
       this.updateFlyingSwords(time, delta);
     }
 
@@ -481,15 +480,16 @@ CỔ MÔN • PHONG ẤN`, {
     this.player.setStrokeStyle(0, 0x000000, 0);
   }
 
-  private updateAutoAttack(time: number): void {
-    if (isSettlementY(this.player.y) && !this.breakthroughTrialActive) return;
-    if (time < this.nextAttackAt || time < this.actionLockedUntil || time < this.dodgeUntil) return;
-    const target = this.getNearestEnemy(COMBAT.player.autoAttackRange);
+  private performBasicAttack(): void {
+    const now = this.time.now;
+    if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;
+    if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;
+    const target = this.getNearestEnemy(COMBAT.player.basicAttackRange);
     if (!target) return;
 
-    this.nextAttackAt = time + COMBAT.player.autoAttackCooldownMs;
+    this.cooldowns.attack = now + COMBAT.player.basicAttackCooldownMs;
     this.faceTarget(target);
-    this.spawnFlyingSword(target, time);
+    this.spawnFlyingSword(target, now);
   }
 
   private spawnFlyingSword(target: EnemyState, time: number): void {
@@ -991,7 +991,7 @@ CỔ MÔN • PHONG ẤN`, {
     this.playerHp = maxHpForRealm(this.profile.realm);
     this.player.setPosition(this.respawnX, this.respawnY).setAlpha(1);
     this.playerVisual.setPosition(this.respawnX, this.respawnY).setAlpha(1);
-    this.nextAttackAt = this.time.now + 500;
+    this.cooldowns.attack = this.time.now + 300;
     this.actionLockedUntil = 0;
     this.dodgeUntil = 0;
     this.invulnerableUntil = this.time.now + 900;
@@ -1125,10 +1125,11 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private createCombatButtons(width: number, height: number): void {
+    this.createCombatButton('attack', width - 118, height - 278, 66, 'ATK', () => this.performBasicAttack());
     this.createCombatButton('dodge', width - 104, height - 128, 60, 'NÉ', () => this.startDodge());
     this.createCombatButton('skill', width - 230, height - 144, 58, 'SKILL', () => this.castCleave());
 
-    this.add.text(width - 172, height - 238, 'Đánh thường: PHI KIẾM • Skill: Trảm Kích', {
+    this.add.text(width - 170, height - 365, 'ATK: Phi Kiếm • SKILL: Trảm Kích', {
       fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(110);
   }
@@ -1154,7 +1155,7 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private refreshCooldownLabels(time: number): void {
-    const names: Record<CombatButtonKey, string> = { dodge: 'NÉ', skill: 'SKILL' };
+    const names: Record<CombatButtonKey, string> = { attack: 'ATK', dodge: 'NÉ', skill: 'SKILL' };
     for (const key of Object.keys(this.cooldowns) as CombatButtonKey[]) {
       const label = this.buttonLabels[key];
       if (!label) continue;
