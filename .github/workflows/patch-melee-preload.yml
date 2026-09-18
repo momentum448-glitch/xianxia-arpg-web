@@ -1,0 +1,47 @@
+name: Patch melee preload
+
+on:
+  push:
+    branches:
+      - fix/melee-preload
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/melee-preload
+      - name: Patch GameScene preload
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/scenes/GameScene.ts')
+          text = p.read_text()
+
+          import_anchor = "import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';\n"
+          import_line = "import { C4_ASSETS } from '../game/art/assetManifest';\n"
+          if import_line not in text:
+              assert import_anchor in text
+              text = text.replace(import_anchor, import_anchor + import_line, 1)
+
+          marker = "  init(data: { gender?: PlayerGender }): void {\n    this.profile = createPlayerProfile(data.gender ?? 'male');\n  }\n\n  create(): void {"
+          replacement = "  init(data: { gender?: PlayerGender }): void {\n    this.profile = createPlayerProfile(data.gender ?? 'male');\n  }\n\n  preload(): void {\n    if (!this.textures.exists('c4-player-male-idle-s')) {\n      this.load.image('c4-player-male-idle-s', C4_ASSETS.playerMaleIdleSouth);\n    }\n    if (!this.textures.exists('c4-enemy-melee-idle-s')) {\n      this.load.image('c4-enemy-melee-idle-s', C4_ASSETS.enemyMeleeIdleSouth);\n    }\n  }\n\n  create(): void {"
+          if "  preload(): void {" not in text:
+              assert marker in text
+              text = text.replace(marker, replacement, 1)
+
+          p.write_text(text)
+          PY
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-melee-preload.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/scenes/GameScene.ts .github/workflows/patch-melee-preload.yml
+          git commit -m "fix(art): preload melee texture before enemy spawn"
+          git push origin HEAD:fix/melee-preload
