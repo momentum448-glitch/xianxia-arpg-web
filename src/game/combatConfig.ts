@@ -5,7 +5,7 @@ export const COMBAT = {
     maxHp: 8,
     moveSpeed: 250,
     baseBasicAttackRange: 205,
-    basicAttackCooldownMs: 620,
+    baseBasicAttackCooldownMs: 800,
     flyingSwordSpeed: 560,
     flyingSwordTurnRateRadPerSec: 4.2,
     flyingSwordLifetimeMs: 850,
