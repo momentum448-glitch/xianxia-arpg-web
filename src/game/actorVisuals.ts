@@ -38,7 +38,7 @@ function queueMaleRuntimeTexture(
     return;
   }
 
-  scene.load.image(PLAYER_MALE_TEXTURE_KEY, `${import.meta.env.BASE_URL}${C4_ASSETS.playerMaleIdleSouth}`);
+  scene.load.image(PLAYER_MALE_TEXTURE_KEY, new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString());
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => applyMaleRuntimeTexture(scene, container));
   scene.load.start();
 }
@@ -141,7 +141,7 @@ function queueMeleeRuntimeTexture(
   if (meleeLoadStarted.has(scene)) return;
 
   meleeLoadStarted.add(scene);
-  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, `${import.meta.env.BASE_URL}${C4_ASSETS.enemyMeleeIdleSouth}`);
+  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString());
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
     for (const item of pendingMeleeByScene.get(scene) ?? []) {
       applyMeleeRuntimeTexture(scene, item.container, item.trial);

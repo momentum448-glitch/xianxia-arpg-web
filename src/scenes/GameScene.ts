@@ -122,10 +122,10 @@ export class GameScene extends Phaser.Scene {
 
   preload(): void {
     if (!this.textures.exists('c4-player-male-idle-s')) {
-      this.load.image('c4-player-male-idle-s', `${import.meta.env.BASE_URL}${C4_ASSETS.playerMaleIdleSouth}`);
+      this.load.image('c4-player-male-idle-s', new URL(C4_ASSETS.playerMaleIdleSouth, document.baseURI).toString());
     }
     if (!this.textures.exists('c4-enemy-melee-idle-s')) {
-      this.load.image('c4-enemy-melee-idle-s', `${import.meta.env.BASE_URL}${C4_ASSETS.enemyMeleeIdleSouth}`);
+      this.load.image('c4-enemy-melee-idle-s', new URL(C4_ASSETS.enemyMeleeIdleSouth, document.baseURI).toString());
     }
   }
 
