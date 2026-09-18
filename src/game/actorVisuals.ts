@@ -38,7 +38,7 @@ function queueMaleRuntimeTexture(
     return;
   }
 
-  scene.load.image(PLAYER_MALE_TEXTURE_KEY, C4_ASSETS.playerMaleIdleSouth);
+  scene.load.image(PLAYER_MALE_TEXTURE_KEY, `${import.meta.env.BASE_URL}${C4_ASSETS.playerMaleIdleSouth}`);
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => applyMaleRuntimeTexture(scene, container));
   scene.load.start();
 }
@@ -141,7 +141,7 @@ function queueMeleeRuntimeTexture(
   if (meleeLoadStarted.has(scene)) return;
 
   meleeLoadStarted.add(scene);
-  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, C4_ASSETS.enemyMeleeIdleSouth);
+  scene.load.image(ENEMY_MELEE_TEXTURE_KEY, `${import.meta.env.BASE_URL}${C4_ASSETS.enemyMeleeIdleSouth}`);
   scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
     for (const item of pendingMeleeByScene.get(scene) ?? []) {
       applyMeleeRuntimeTexture(scene, item.container, item.trial);
@@ -255,7 +255,19 @@ export function createEnemyVisual(
   }
 
   const container = scene.add.container(x, y, pieces).setDepth(10);
-  if (kind === 'melee') queueMeleeRuntimeTexture(scene, container, trial);
+  if (kind === 'melee') {
+    if (scene.textures.exists(ENEMY_MELEE_TEXTURE_KEY)) {
+      applyMeleeRuntimeTexture(scene, container, trial);
+    } else {
+      container.removeAll(true);
+      const miss = scene.add.rectangle(0, 0, 86, 86, 0xff00aa, 0.22)
+        .setStrokeStyle(3, 0xff00aa, 0.9);
+      const label = scene.add.text(0, 0, 'MELEE\nTEX MISS', {
+        fontFamily: 'monospace', fontSize: '12px', color: '#ff00aa', align: 'center',
+      }).setOrigin(0.5);
+      container.add([miss, label]);
+    }
+  }
   return container;
 }
 
