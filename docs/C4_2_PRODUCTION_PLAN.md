@@ -48,7 +48,7 @@ No chat-only decision should remain the only record for a production-critical ch
 ### Animation
 - Hybrid pipeline.
 - Four facing directions.
-- Player minimum set: idle, run, dodge, skill.
+- Player minimum set: idle, run, dodge, skill; manual `ATK` also needs a readable launch response now that basic attack is button-driven.
 - Enemy minimum set: idle, move, attack tell; charger also needs a clear charge state.
 - NPC minimum: subtle idle.
 - Flying sword minimum: launch, trail, impact.
@@ -56,9 +56,9 @@ No chat-only decision should remain the only record for a production-critical ch
 
 ### Gameplay constraints preserved through art integration
 - Portrait mobile-first camera remains unchanged.
-- Right thumb remains exactly two combat buttons: `NÉ` and `SKILL`.
-- Basic attack remains exactly one visible flying sword per cycle.
-- Existing hitboxes and combat timing remain unchanged during the first art integration test.
+- Right thumb combat cluster currently uses three buttons: large central `ATK` + `SKILL` + `NÉ`.
+- Manual basic attack launches exactly one visible flying sword per valid `ATK` press; untargeted presses still launch a straight shot.
+- Art animation must not alter gameplay hitboxes or current combat timing/stat calculations.
 - Known C3 gameplay debt is not tuned until art readability is stable:
   - enemies rarely connect hits against a moving player;
   - enemy distribution feels too regular/clustered.
@@ -99,7 +99,7 @@ No asset can jump from `REFERENCE_ONLY` directly to `INTEGRATED`.
 ### Core player
 | Asset ID | Asset | Current state | Notes |
 |---|---|---|---|
-| `PLY-M-BASE` | Male sword cultivator | `DESIGN_PASS` | User explicitly passed the male design. Existing generated sheet is reference, not final isolated runtime file. |
+| `PLY-M-BASE` | Male sword cultivator | `INTEGRATED` | Isolated production PNG is live in runtime with accepted scale/pivot; minimum runtime animation is the active QC step. |
 | `PLY-F-BASE` | Female sword cultivator | `REFERENCE_ONLY` | Direction exists in compilation sheet; needs isolated production generation and QC. |
 | `PLY-M-SKILL` | Male dedicated skill pose/frame | `REFERENCE_ONLY` | Needed only if runtime cutout/tween is insufficient. |
 | `PLY-F-SKILL` | Female dedicated skill pose/frame | `NOT_STARTED` | Deferred until female base passes. |
@@ -426,7 +426,7 @@ Internal QC can happen continuously without interrupting the user.
 
 ## 15. Immediate next action
 
-Run Phase 0 gap audit against the actual repository.
+Validate `PLY-M-BASE` minimum runtime animation (`idle`, `run`, manual `ATK` response, `dodge`, `skill`) on GitHub Pages. If phone QC passes, continue with `EN-MELEE-BASE` isolation/integration. True four-direction production poses remain required before final C4.2 acceptance; the current runtime proof uses the accepted base sprite with directional mirror/lean where possible.
 
 Do not generate another image until the audit confirms the exact next Asset ID whose production file is missing.
 
