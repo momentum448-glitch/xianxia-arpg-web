@@ -127,6 +127,9 @@ export class GameScene extends Phaser.Scene {
     if (!this.textures.exists('c4-enemy-melee-idle-s')) {
       this.load.image('c4-enemy-melee-idle-s', c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth));
     }
+    if (!this.textures.exists('c4-flying-sword-r1')) {
+      this.load.image('c4-flying-sword-r1', c4AssetUrl(C4_ASSETS.flyingSwordR1));
+    }
   }
 
   create(): void {
@@ -530,8 +533,13 @@ CỔ MÔN • PHONG ẤN`, {
       .setRotation(angle)
       .setScale(this.profile.realm === 2 ? 1.08 : 0.94);
 
-    const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35).setDepth(17);
-    this.tweens.add({ targets: launchFlash, scale: 2.2, alpha: 0, duration: 130, onComplete: () => launchFlash.destroy() });
+    const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;
+    const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)
+      .setRotation(angle)
+      .setDepth(17);
+    const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);
+    this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });
+    this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });
 
     this.flyingSwords.push({
       node: sword,
@@ -597,8 +605,13 @@ CỔ MÔN • PHONG ẤN`, {
             originX,
             originY,
           );
-          const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);
-          this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });
+          const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;
+          const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)
+            .setStrokeStyle(3, impactColor, 0.78)
+            .setDepth(20);
+          const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);
+          this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });
+          this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });
           continue;
         }
       }
@@ -611,17 +624,17 @@ CỔ MÔN • PHONG ẤN`, {
   }
 
   private emitFlyingSwordTrail(sword: FlyingSwordState): void {
-    const tailX = sword.node.x - Math.cos(sword.angle) * 28;
-    const tailY = sword.node.y - Math.sin(sword.angle) * 28;
-    const trail = this.add.line(
-      0, 0,
-      sword.node.x, sword.node.y,
-      tailX, tailY,
-      this.profile.realm === 2 ? 0xc9efe5 : 0xdce7dc,
-      this.profile.realm === 2 ? 0.58 : 0.42,
-    ).setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 4 : 3).setDepth(17);
+    const length = this.profile.realm === 2 ? 48 : 42;
+    const tailX = sword.node.x - Math.cos(sword.angle) * length;
+    const tailY = sword.node.y - Math.sin(sword.angle) * length;
+    const color = this.profile.realm === 2 ? 0xc9efe5 : 0xdfe9df;
+    const outer = this.add.line(0, 0, sword.node.x, sword.node.y, tailX, tailY, color, 0.16)
+      .setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 8 : 7).setDepth(16);
+    const core = this.add.line(0, 0, sword.node.x, sword.node.y, tailX, tailY, color, this.profile.realm === 2 ? 0.62 : 0.5)
+      .setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 3 : 2).setDepth(17);
 
-    this.tweens.add({ targets: trail, alpha: 0, duration: 150, onComplete: () => trail.destroy() });
+    this.tweens.add({ targets: outer, alpha: 0, duration: 145, onComplete: () => outer.destroy() });
+    this.tweens.add({ targets: core, alpha: 0, duration: 120, onComplete: () => core.destroy() });
   }
 
   private destroyFlyingSword(index: number): void {
