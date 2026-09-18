@@ -9,6 +9,7 @@ import {
   skillDamageForRealm,
 } from '../game/cultivationConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
+import { WORLD, isSettlementY, zoneAt, type WorldZoneId } from '../game/worldConfig';
 
 interface EnemyState {
   kind: EnemyKind;
@@ -21,6 +22,7 @@ interface EnemyState {
   chargeX: number;
   chargeY: number;
   chargeHit: boolean;
+  trial: boolean;
 }
 
 interface FlyingSwordState {
@@ -58,16 +60,18 @@ export class GameScene extends Phaser.Scene {
   private dodgeY = -1;
   private playerHp = COMBAT.player.maxHp;
   private dead = false;
-  private respawnX = 0;
-  private respawnY = 0;
+  private respawnX = WORLD.playerSpawn.x;
+  private respawnY = WORLD.playerSpawn.y;
   private hpText!: Phaser.GameObjects.Text;
   private spiritText!: Phaser.GameObjects.Text;
   private materialText!: Phaser.GameObjects.Text;
+  private zoneText!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
   private breakthroughButton!: Phaser.GameObjects.Rectangle;
   private breakthroughLabel!: Phaser.GameObjects.Text;
   private breakthroughTrialActive = false;
   private breakthroughTrialKills = 0;
+  private currentZoneId: WorldZoneId | null = null;
   private cooldowns: Cooldowns = { dodge: 0, skill: 0 };
   private buttonLabels: Partial<Record<CombatButtonKey, Phaser.GameObjects.Text>> = {};
 
@@ -82,39 +86,24 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
     this.cameras.main.setBackgroundColor('#d9d0b7');
+    this.cameras.main.setBounds(0, 0, WORLD.width, WORLD.height);
 
-    this.add.rectangle(width / 2, height / 2, width - 32, height - 32, 0xded5ba)
-      .setStrokeStyle(3, 0x545044);
-
-    this.add.text(28, 24, 'Thanh Vân Ngoại Vực', {
-      fontFamily: 'serif', fontSize: '27px', color: '#262922', fontStyle: 'bold',
-    });
-
-    this.hpText = this.add.text(28, 62, '', {
-      fontFamily: 'sans-serif', fontSize: '18px', color: '#5b302c', fontStyle: 'bold',
-    });
-
-    this.spiritText = this.add.text(28, 88, '', {
-      fontFamily: 'sans-serif', fontSize: '17px', color: '#394038',
-    });
-
-    this.materialText = this.add.text(28, 112, '', {
-      fontFamily: 'sans-serif', fontSize: '16px', color: '#665741',
-    });
-
-    this.statusText = this.add.text(width / 2, 142, '', {
-      fontFamily: 'sans-serif', fontSize: '17px', color: '#554c3c', fontStyle: 'bold', align: 'center',
-    }).setOrigin(0.5);
+    this.createWorldShell();
+    this.createHud(width);
 
     const playerColor = this.profile.gender === 'male' ? 0x425b52 : 0x785560;
-    this.respawnX = width / 2;
-    this.respawnY = height * 0.61;
+    this.respawnX = WORLD.playerSpawn.x;
+    this.respawnY = WORLD.playerSpawn.y;
     this.player = this.add.rectangle(this.respawnX, this.respawnY, 58, 78, playerColor)
-      .setStrokeStyle(3, 0xf6ead0);
+      .setStrokeStyle(3, 0xf6ead0)
+      .setDepth(10);
 
     this.add.text(this.player.x, this.player.y, this.profile.gender === 'male' ? 'NAM' : 'NỮ', {
       fontFamily: 'sans-serif', fontSize: '14px', color: '#ffffff', fontStyle: 'bold',
-    }).setOrigin(0.5).setName('playerLabel');
+    }).setOrigin(0.5).setName('playerLabel').setDepth(11);
+
+    this.cameras.main.startFollow(this.player, true, 0.11, 0.11);
+    this.cameras.main.setDeadzone(150, 280);
 
     this.createBreakthroughUi(width);
     this.spawnEncounter();
@@ -122,6 +111,7 @@ export class GameScene extends Phaser.Scene {
     this.createCombatButtons(width, height);
     this.bindTouchControls();
     this.refreshHud();
+    this.refreshZoneHud();
   }
 
   update(time: number, delta: number): void {
@@ -134,6 +124,100 @@ export class GameScene extends Phaser.Scene {
 
     this.syncPlayerPresentation();
     this.refreshCooldownLabels(time);
+    this.refreshZoneHud();
+  }
+
+  private createWorldShell(): void {
+    for (const zone of WORLD.zones) {
+      const zoneHeight = zone.yMax - zone.yMin;
+      this.add.rectangle(
+        WORLD.width / 2,
+        zone.yMin + zoneHeight / 2,
+        WORLD.width,
+        zoneHeight,
+        zone.fill,
+      ).setDepth(-10);
+
+      this.add.text(WORLD.width / 2, zone.yMin + 90, zone.name, {
+        fontFamily: 'serif', fontSize: '34px', color: '#49483f', fontStyle: 'bold',
+      }).setOrigin(0.5).setAlpha(0.45).setDepth(-7);
+    }
+
+    this.add.rectangle(WORLD.width / 2, WORLD.height / 2, 170, WORLD.height, 0xe8dec4, 0.42)
+      .setDepth(-8);
+
+    const boundaryY = WORLD.safeBoundaryY;
+    this.add.rectangle(WORLD.width / 2, boundaryY, WORLD.width - 80, 10, 0x7a6a50, 0.55)
+      .setDepth(-5);
+    this.add.text(WORLD.width / 2, boundaryY + 42, 'THANH VÂN THÔN • AN TOÀN', {
+      fontFamily: 'serif', fontSize: '23px', color: '#6d5b43', fontStyle: 'bold',
+    }).setOrigin(0.5).setAlpha(0.8).setDepth(-4);
+
+    const houses = [
+      { x: 300, y: 3650, w: 210, h: 145 },
+      { x: 780, y: 3680, w: 220, h: 155 },
+      { x: 330, y: 4040, w: 230, h: 150 },
+      { x: 755, y: 4050, w: 205, h: 140 },
+    ];
+    for (const house of houses) {
+      this.add.rectangle(house.x, house.y, house.w, house.h, 0xc2a77d, 0.72)
+        .setStrokeStyle(5, 0x765f43, 0.65)
+        .setDepth(-3);
+      this.add.triangle(house.x, house.y - house.h / 2 - 35, -120, 45, 120, 45, 0, -45, 0x75624b, 0.75)
+        .setDepth(-2);
+    }
+
+    for (let i = 0; i < 14; i += 1) {
+      const x = 120 + (i % 5) * 205 + (i % 2) * 28;
+      const y = 1250 + Math.floor(i / 5) * 300 + (i % 3) * 45;
+      this.add.circle(x, y, 46, 0x6f805c, 0.38).setDepth(-6);
+      this.add.circle(x + 22, y - 20, 34, 0x657754, 0.3).setDepth(-6);
+    }
+
+    for (let i = 0; i < 10; i += 1) {
+      const x = 120 + (i % 4) * 270;
+      const y = 190 + Math.floor(i / 4) * 310 + (i % 2) * 65;
+      this.add.polygon(x, y, [0, -42, 34, -12, 27, 35, -22, 43, -39, 2], 0x6e6b62, 0.35)
+        .setDepth(-6);
+    }
+  }
+
+  private createHud(width: number): void {
+    this.add.rectangle(width / 2, 86, width - 24, 150, 0xeee5cf, 0.86)
+      .setStrokeStyle(2, 0x6b675b, 0.36)
+      .setScrollFactor(0)
+      .setDepth(90);
+
+    this.add.text(28, 20, 'Thanh Vân Ngoại Vực', {
+      fontFamily: 'serif', fontSize: '25px', color: '#262922', fontStyle: 'bold',
+    }).setScrollFactor(0).setDepth(100);
+
+    this.zoneText = this.add.text(width - 28, 26, '', {
+      fontFamily: 'serif', fontSize: '18px', color: '#544c3e', fontStyle: 'bold', align: 'right',
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(100);
+
+    this.hpText = this.add.text(28, 58, '', {
+      fontFamily: 'sans-serif', fontSize: '17px', color: '#5b302c', fontStyle: 'bold',
+    }).setScrollFactor(0).setDepth(100);
+
+    this.spiritText = this.add.text(28, 84, '', {
+      fontFamily: 'sans-serif', fontSize: '16px', color: '#394038',
+    }).setScrollFactor(0).setDepth(100);
+
+    this.materialText = this.add.text(28, 109, '', {
+      fontFamily: 'sans-serif', fontSize: '15px', color: '#665741',
+    }).setScrollFactor(0).setDepth(100);
+
+    this.statusText = this.add.text(width / 2, 154, '', {
+      fontFamily: 'sans-serif', fontSize: '17px', color: '#554c3c', fontStyle: 'bold', align: 'center',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(101);
+  }
+
+  private refreshZoneHud(): void {
+    const zone = zoneAt(this.player?.y ?? WORLD.playerSpawn.y);
+    if (zone.id === this.currentZoneId) return;
+    this.currentZoneId = zone.id;
+    this.zoneText.setText(zone.id === 'settlement' ? `${zone.name}\nAN TOÀN` : zone.name);
   }
 
   private updatePlayer(time: number, delta: number): void {
@@ -152,13 +236,13 @@ export class GameScene extends Phaser.Scene {
 
     this.player.x = Phaser.Math.Clamp(
       this.player.x + vx * speed * delta / 1000,
-      42,
-      this.scale.width - 42,
+      WORLD.edgePadding,
+      WORLD.width - WORLD.edgePadding,
     );
     this.player.y = Phaser.Math.Clamp(
       this.player.y + vy * speed * delta / 1000,
-      145,
-      this.scale.height - 245,
+      WORLD.edgePadding,
+      WORLD.height - WORLD.edgePadding,
     );
 
     if (time < this.invulnerableUntil) {
@@ -169,6 +253,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateAutoAttack(time: number): void {
+    if (isSettlementY(this.player.y) && !this.breakthroughTrialActive) return;
     if (time < this.nextAttackAt || time < this.actionLockedUntil || time < this.dodgeUntil) return;
     const target = this.getNearestEnemy(COMBAT.player.autoAttackRange);
     if (!target) return;
@@ -182,25 +267,17 @@ export class GameScene extends Phaser.Scene {
     if (!target.node.active) return;
 
     const angle = Math.atan2(target.node.y - this.player.y, target.node.x - this.player.x);
-    const blade = this.add.rectangle(10, 0, 30, 6, 0xf6edd5)
-      .setStrokeStyle(1, 0x6b6e65);
-    const tip = this.add.triangle(30, 0, 0, -6, 12, 0, 0, 6, 0xf6edd5)
-      .setStrokeStyle(1, 0x6b6e65);
+    const blade = this.add.rectangle(10, 0, 30, 6, 0xf6edd5).setStrokeStyle(1, 0x6b6e65);
+    const tip = this.add.triangle(30, 0, 0, -6, 12, 0, 0, 6, 0xf6edd5).setStrokeStyle(1, 0x6b6e65);
     const guard = this.add.rectangle(-7, 0, 5, 16, 0xb89b62);
     const hilt = this.add.rectangle(-14, 0, 12, 5, 0x6d4c35);
     const sword = this.add.container(this.player.x, this.player.y, [blade, tip, guard, hilt])
       .setRotation(angle)
-      .setDepth(8)
+      .setDepth(18)
       .setScale(this.profile.realm === 2 ? 1.06 : 0.92);
 
-    const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35);
-    this.tweens.add({
-      targets: launchFlash,
-      scale: 2.2,
-      alpha: 0,
-      duration: 130,
-      onComplete: () => launchFlash.destroy(),
-    });
+    const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35).setDepth(17);
+    this.tweens.add({ targets: launchFlash, scale: 2.2, alpha: 0, duration: 130, onComplete: () => launchFlash.destroy() });
 
     this.flyingSwords.push({
       node: sword,
@@ -222,10 +299,7 @@ export class GameScene extends Phaser.Scene {
         continue;
       }
 
-      const desiredAngle = Math.atan2(
-        sword.target.node.y - sword.node.y,
-        sword.target.node.x - sword.node.x,
-      );
+      const desiredAngle = Math.atan2(sword.target.node.y - sword.node.y, sword.target.node.x - sword.node.x);
       const angleDelta = Phaser.Math.Angle.Wrap(desiredAngle - sword.angle);
       const maxTurn = COMBAT.player.flyingSwordTurnRateRadPerSec * dt;
       sword.angle += Phaser.Math.Clamp(angleDelta, -maxTurn, maxTurn);
@@ -240,10 +314,7 @@ export class GameScene extends Phaser.Scene {
       }
 
       const distance = Phaser.Math.Distance.Between(
-        sword.node.x,
-        sword.node.y,
-        sword.target.node.x,
-        sword.target.node.y,
+        sword.node.x, sword.node.y, sword.target.node.x, sword.target.node.y,
       );
 
       if (distance <= COMBAT.player.flyingSwordHitRadius) {
@@ -253,7 +324,6 @@ export class GameScene extends Phaser.Scene {
         const originX = sword.node.x;
         const originY = sword.node.y;
 
-        // Remove the projectile before damage can trigger a realm transition that clears all projectiles.
         this.destroyFlyingSword(i);
         this.damageEnemy(
           target,
@@ -263,15 +333,8 @@ export class GameScene extends Phaser.Scene {
           originX,
           originY,
         );
-        const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32)
-          .setStrokeStyle(2, 0xf1e4bd, 0.7);
-        this.tweens.add({
-          targets: impact,
-          scale: 2.1,
-          alpha: 0,
-          duration: 150,
-          onComplete: () => impact.destroy(),
-        });
+        const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);
+        this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });
       }
     }
   }
@@ -280,22 +343,14 @@ export class GameScene extends Phaser.Scene {
     const tailX = sword.node.x - Math.cos(sword.angle) * 28;
     const tailY = sword.node.y - Math.sin(sword.angle) * 28;
     const trail = this.add.line(
-      0,
-      0,
-      sword.node.x,
-      sword.node.y,
-      tailX,
-      tailY,
+      0, 0,
+      sword.node.x, sword.node.y,
+      tailX, tailY,
       this.profile.realm === 2 ? 0xc9efe5 : 0xdce7dc,
       this.profile.realm === 2 ? 0.58 : 0.42,
-    ).setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 4 : 3).setDepth(7);
+    ).setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 4 : 3).setDepth(17);
 
-    this.tweens.add({
-      targets: trail,
-      alpha: 0,
-      duration: 150,
-      onComplete: () => trail.destroy(),
-    });
+    this.tweens.add({ targets: trail, alpha: 0, duration: 150, onComplete: () => trail.destroy() });
   }
 
   private destroyFlyingSword(index: number): void {
@@ -314,6 +369,15 @@ export class GameScene extends Phaser.Scene {
     for (const enemy of this.enemies) {
       if (!enemy.node.active) continue;
       const distance = this.distanceToPlayer(enemy);
+
+      if (!enemy.trial) {
+        if (isSettlementY(this.player.y)) {
+          enemy.node.y = Math.min(enemy.node.y, WORLD.safeBoundaryY - 54);
+          enemy.nextActionAt = Math.max(enemy.nextActionAt, time + 300);
+          continue;
+        }
+        if (distance > 570) continue;
+      }
 
       if (enemy.kind === 'melee') {
         this.updateMelee(enemy, distance, time, delta);
@@ -358,7 +422,7 @@ export class GameScene extends Phaser.Scene {
 
     this.time.delayedCall(320, () => {
       if (!enemy.node.active || this.dead) return;
-      const orb = this.add.circle(enemy.node.x, enemy.node.y, 11, 0xb46d58, 0.95);
+      const orb = this.add.circle(enemy.node.x, enemy.node.y, 11, 0xb46d58, 0.95).setDepth(16);
       this.tweens.add({
         targets: orb,
         x: targetX,
@@ -391,6 +455,7 @@ export class GameScene extends Phaser.Scene {
     if (enemy.phase === 'charge') {
       enemy.node.x += enemy.chargeX * cfg.chargeSpeed * delta / 1000;
       enemy.node.y += enemy.chargeY * cfg.chargeSpeed * delta / 1000;
+      this.clampEnemyToWorld(enemy);
       if (!enemy.chargeHit && this.distanceToPlayer(enemy) < 48) {
         enemy.chargeHit = true;
         this.damagePlayer(cfg.damage, enemy);
@@ -443,41 +508,46 @@ export class GameScene extends Phaser.Scene {
   private spawnEncounter(): void {
     this.clearFlyingSwords();
     this.clearEnemies();
-    const { width, height } = this.scale;
-    this.spawnEnemy('melee', width * 0.28, height * 0.36);
-    this.spawnEnemy('ranged', width * 0.69, height * 0.31);
-    this.spawnEnemy('charger', width * 0.75, height * 0.51);
+    const { x, y } = WORLD.encounterCenter;
+    this.spawnEnemy('melee', x - 190, y + 80);
+    this.spawnEnemy('ranged', x + 145, y - 100);
+    this.spawnEnemy('charger', x + 240, y + 155);
   }
 
   private spawnBreakthroughTrial(): void {
     this.clearFlyingSwords();
     this.clearEnemies();
-    const { width, height } = this.scale;
-    this.spawnEnemy('melee', width * 0.23, height * 0.34, true);
-    this.spawnEnemy('ranged', width * 0.72, height * 0.29, true);
-    this.spawnEnemy('charger', width * 0.78, height * 0.49, true);
+    const x = this.player.x;
+    const y = this.player.y;
+    this.spawnEnemy('melee', x - 190, y - 245, true);
+    this.spawnEnemy('ranged', x + 190, y - 210, true);
+    this.spawnEnemy('charger', x + 245, y + 40, true);
   }
 
   private spawnEnemy(kind: EnemyKind, x: number, y: number, trial = false): void {
     const cfg = COMBAT.enemy[kind];
+    const clampedX = Phaser.Math.Clamp(x, WORLD.edgePadding, WORLD.width - WORLD.edgePadding);
+    const maxY = trial ? WORLD.height - WORLD.edgePadding : WORLD.safeBoundaryY - 70;
+    const clampedY = Phaser.Math.Clamp(y, WORLD.edgePadding, maxY);
     const node = this.add.circle(
-      x,
-      y,
+      clampedX,
+      clampedY,
       kind === 'charger' ? 35 : 31,
       trial ? 0x77564d : this.enemyColor(kind),
-    ).setStrokeStyle(trial ? 5 : 3, trial ? 0xd7b36d : 0x332f2a);
+    ).setStrokeStyle(trial ? 5 : 3, trial ? 0xd7b36d : 0x332f2a).setDepth(9);
     const hp = cfg.hp;
     this.enemies.push({
       kind,
       node,
       hp,
       maxHp: hp,
-      nextActionAt: 700,
+      nextActionAt: this.time.now + 700,
       phase: 'chase',
       phaseUntil: 0,
       chargeX: 0,
       chargeY: 0,
       chargeHit: false,
+      trial,
     });
   }
 
@@ -515,7 +585,7 @@ export class GameScene extends Phaser.Scene {
   ): void {
     if (!enemy.node.active) return;
     const fx = this.add.line(0, 0, originX, originY, enemy.node.x, enemy.node.y, color, 0.95)
-      .setOrigin(0, 0).setLineWidth(width);
+      .setOrigin(0, 0).setLineWidth(width).setDepth(19);
     this.tweens.add({ targets: fx, alpha: 0, duration: 150, onComplete: () => fx.destroy() });
 
     enemy.hp -= damage;
@@ -552,13 +622,14 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBreakthroughUi(width: number): void {
-    this.breakthroughButton = this.add.rectangle(width / 2, 190, 250, 62, 0x654c35, 0.92)
+    this.breakthroughButton = this.add.rectangle(width / 2, 205, 250, 62, 0x654c35, 0.92)
       .setStrokeStyle(3, 0xe5cf9c, 0.95)
-      .setDepth(20)
+      .setDepth(120)
+      .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
-    this.breakthroughLabel = this.add.text(width / 2, 190, 'ĐỘT PHÁ\n50 Linh Khí + 3 Tinh Hoa', {
+    this.breakthroughLabel = this.add.text(width / 2, 205, 'ĐỘT PHÁ\n50 Linh Khí + 3 Tinh Hoa', {
       fontFamily: 'serif', fontSize: '17px', color: '#fff1cd', fontStyle: 'bold', align: 'center',
-    }).setOrigin(0.5).setDepth(21);
+    }).setOrigin(0.5).setDepth(121).setScrollFactor(0);
 
     this.breakthroughButton.on('pointerdown', () => this.startBreakthroughTrial());
     this.breakthroughButton.setVisible(false).disableInteractive();
@@ -572,11 +643,8 @@ export class GameScene extends Phaser.Scene {
 
     this.breakthroughButton.setVisible(ready);
     this.breakthroughLabel.setVisible(ready);
-    if (ready) {
-      this.breakthroughButton.setInteractive({ useHandCursor: true });
-    } else {
-      this.breakthroughButton.disableInteractive();
-    }
+    if (ready) this.breakthroughButton.setInteractive({ useHandCursor: true });
+    else this.breakthroughButton.disableInteractive();
   }
 
   private startBreakthroughTrial(): void {
@@ -590,14 +658,8 @@ export class GameScene extends Phaser.Scene {
 
     const aura = this.add.circle(this.player.x, this.player.y, 58, 0xd8c27d, 0.1)
       .setStrokeStyle(5, 0xd8c27d, 0.75)
-      .setDepth(4);
-    this.tweens.add({
-      targets: aura,
-      scale: 3.2,
-      alpha: 0,
-      duration: 650,
-      onComplete: () => aura.destroy(),
-    });
+      .setDepth(14);
+    this.tweens.add({ targets: aura, scale: 3.2, alpha: 0, duration: 650, onComplete: () => aura.destroy() });
 
     this.spawnBreakthroughTrial();
   }
@@ -617,14 +679,8 @@ export class GameScene extends Phaser.Scene {
 
     const ascension = this.add.circle(this.player.x, this.player.y, 64, 0xc7eee3, 0.16)
       .setStrokeStyle(7, 0xdff9ef, 0.85)
-      .setDepth(5);
-    this.tweens.add({
-      targets: ascension,
-      scale: 4.2,
-      alpha: 0,
-      duration: 900,
-      onComplete: () => ascension.destroy(),
-    });
+      .setDepth(15);
+    this.tweens.add({ targets: ascension, scale: 4.2, alpha: 0, duration: 900, onComplete: () => ascension.destroy() });
 
     this.statusText.setText('TRÚC CƠ THÀNH • Phi kiếm +1 sát thương • Sinh lực +2');
     this.refreshHud();
@@ -639,6 +695,7 @@ export class GameScene extends Phaser.Scene {
   private damagePlayer(damage: number, source?: EnemyState): void {
     const now = this.time.now;
     if (this.dead || now < this.invulnerableUntil) return;
+    if (source && !source.trial && isSettlementY(this.player.y)) return;
 
     this.playerHp = Math.max(0, this.playerHp - damage);
     this.invulnerableUntil = now + 380;
@@ -676,6 +733,7 @@ export class GameScene extends Phaser.Scene {
     this.statusText.setText('');
     this.spawnEncounter();
     this.refreshHud();
+    this.refreshZoneHud();
   }
 
   private startDodge(): void {
@@ -710,7 +768,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     const pulse = this.add.circle(this.player.x, this.player.y, 52, 0xe7d49a, 0.1)
-      .setStrokeStyle(5, 0xe7d49a, 0.7);
+      .setStrokeStyle(5, 0xe7d49a, 0.7)
+      .setDepth(13);
     this.tweens.add({ targets: pulse, scale: 2.7, alpha: 0, duration: 240, onComplete: () => pulse.destroy() });
   }
 
@@ -732,14 +791,22 @@ export class GameScene extends Phaser.Scene {
     const mag = Math.max(1, Math.hypot(dx, dy));
     enemy.node.x += dx / mag * speed * delta / 1000;
     enemy.node.y += dy / mag * speed * delta / 1000;
+    this.clampEnemyToWorld(enemy);
   }
 
   private moveEnemyAway(enemy: EnemyState, speed: number, delta: number): void {
     const dx = enemy.node.x - this.player.x;
     const dy = enemy.node.y - this.player.y;
     const mag = Math.max(1, Math.hypot(dx, dy));
-    enemy.node.x = Phaser.Math.Clamp(enemy.node.x + dx / mag * speed * delta / 1000, 42, this.scale.width - 42);
-    enemy.node.y = Phaser.Math.Clamp(enemy.node.y + dy / mag * speed * delta / 1000, 155, this.scale.height - 300);
+    enemy.node.x += dx / mag * speed * delta / 1000;
+    enemy.node.y += dy / mag * speed * delta / 1000;
+    this.clampEnemyToWorld(enemy);
+  }
+
+  private clampEnemyToWorld(enemy: EnemyState): void {
+    enemy.node.x = Phaser.Math.Clamp(enemy.node.x, WORLD.edgePadding, WORLD.width - WORLD.edgePadding);
+    const maxY = enemy.trial ? WORLD.height - WORLD.edgePadding : WORLD.safeBoundaryY - 54;
+    enemy.node.y = Phaser.Math.Clamp(enemy.node.y, WORLD.edgePadding, maxY);
   }
 
   private distanceToPlayer(enemy: EnemyState): number {
@@ -747,8 +814,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createJoystick(x: number, y: number): void {
-    this.joystickBase = this.add.circle(x, y, 86, 0x242923, 0.16).setStrokeStyle(3, 0x33372f, 0.45);
-    this.joystickNub = this.add.circle(x, y, 40, 0x4e5a4d, 0.62);
+    this.joystickBase = this.add.circle(x, y, 86, 0x242923, 0.16)
+      .setStrokeStyle(3, 0x33372f, 0.45)
+      .setScrollFactor(0)
+      .setDepth(110);
+    this.joystickNub = this.add.circle(x, y, 40, 0x4e5a4d, 0.62)
+      .setScrollFactor(0)
+      .setDepth(111);
   }
 
   private bindTouchControls(): void {
@@ -793,7 +865,7 @@ export class GameScene extends Phaser.Scene {
 
     this.add.text(width - 172, height - 238, 'Đánh thường: PHI KIẾM • Skill: Trảm Kích', {
       fontFamily: 'sans-serif', fontSize: '15px', color: '#4b4a42', align: 'center',
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(110);
   }
 
   private createCombatButton(
@@ -806,11 +878,13 @@ export class GameScene extends Phaser.Scene {
   ): void {
     const circle = this.add.circle(x, y, radius, 0x343a33, 0.78)
       .setStrokeStyle(3, 0xded3b8, 0.85)
+      .setScrollFactor(0)
+      .setDepth(112)
       .setInteractive({ useHandCursor: true });
     circle.on('pointerdown', action);
     const text = this.add.text(x, y, label, {
       fontFamily: 'sans-serif', fontSize: '20px', color: '#f7efdc', fontStyle: 'bold', align: 'center',
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(113);
     this.buttonLabels[key] = text;
   }
 
@@ -831,9 +905,7 @@ export class GameScene extends Phaser.Scene {
 
   private refreshHud(): void {
     this.hpText.setText(`Sinh lực ${this.playerHp}/${maxHpForRealm(this.profile.realm)}`);
-    this.spiritText.setText(
-      `${realmName(this.profile.realm)} • Linh khí ${this.profile.spirit}/${this.profile.maxSpirit}`,
-    );
+    this.spiritText.setText(`${realmName(this.profile.realm)} • Linh khí ${this.profile.spirit}/${this.profile.maxSpirit}`);
     this.materialText.setText(
       this.profile.realm === 1
         ? `Tinh Hoa ${this.profile.essence} • Đột phá cần 50 Linh Khí + 3 Tinh Hoa`
