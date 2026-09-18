@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { MELEE_RUNTIME_ANIMATION } from './art/animationConfig';
 import { C4_ART_SCALE } from './art/artScaleConfig';
 import { C4_ASSETS } from './art/assetManifest';
 import type { EnemyKind } from './combatConfig';
@@ -42,6 +43,58 @@ function queueMaleRuntimeTexture(
   scene.load.start();
 }
 
+function installMeleeRuntimeMotion(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  image: Phaser.GameObjects.Image,
+  baseScale: number,
+): void {
+  let lastX = container.x;
+  let lastY = container.y;
+  const phaseOffset = (container.x * 0.17 + container.y * 0.11) % (Math.PI * 2);
+
+  const updateMotion = (): void => {
+    if (!container.active || !image.active) return;
+
+    const dx = container.x - lastX;
+    const dy = container.y - lastY;
+    const moving = Math.hypot(dx, dy) > 0.18;
+    const now = scene.time.now;
+
+    if (moving) {
+      const cfg = MELEE_RUNTIME_ANIMATION.move;
+      const phase = (now % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2 + phaseOffset;
+      const bounce = Math.abs(Math.sin(phase));
+      const facingSign = Math.abs(dx) > 0.05 ? Math.sign(dx) : 1;
+      image.y = C4_ART_SCALE.enemyMelee.offsetY - bounce * cfg.bobPx;
+      image.setScale(
+        baseScale * (1 + bounce * cfg.squashScale),
+        baseScale * (1 - bounce * cfg.squashScale * 0.7),
+      );
+      image.setRotation(facingSign * cfg.leanRad + Math.cos(phase) * cfg.leanRad * 0.22);
+    } else {
+      const cfg = MELEE_RUNTIME_ANIMATION.idle;
+      const phase = (now % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2 + phaseOffset;
+      const breath = Math.sin(phase);
+      image.y = C4_ART_SCALE.enemyMelee.offsetY + breath * cfg.bobPx;
+      image.setScale(
+        baseScale * (1 - breath * cfg.breatheScale * 0.45),
+        baseScale * (1 + breath * cfg.breatheScale),
+      );
+      image.setRotation(breath * 0.008);
+    }
+
+    lastX = container.x;
+    lastY = container.y;
+  };
+
+  scene.events.on(Phaser.Scenes.Events.POST_UPDATE, updateMotion);
+  container.once('destroy', () => scene.events.off(Phaser.Scenes.Events.POST_UPDATE, updateMotion));
+  scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+    scene.events.off(Phaser.Scenes.Events.POST_UPDATE, updateMotion);
+  });
+}
+
 function applyMeleeRuntimeTexture(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
@@ -56,6 +109,11 @@ function applyMeleeRuntimeTexture(
       scene.add.circle(0, 0, 46, 0xd7b36d, 0.07)
         .setStrokeStyle(3, 0xd7b36d, 0.42),
     );
+  } else {
+    children.push(
+      scene.add.ellipse(0, 1, 76, 88, 0x5f4754, 0.055)
+        .setStrokeStyle(2, 0x725462, 0.14),
+    );
   }
   children.push(scene.add.ellipse(0, 30, 66, 20, 0x252724, 0.2));
   const image = scene.add.image(0, C4_ART_SCALE.enemyMelee.offsetY, ENEMY_MELEE_TEXTURE_KEY)
@@ -64,6 +122,7 @@ function applyMeleeRuntimeTexture(
   image.setScale(scale);
   children.push(image);
   container.add(children);
+  installMeleeRuntimeMotion(scene, container, image, scale);
 }
 
 function queueMeleeRuntimeTexture(
