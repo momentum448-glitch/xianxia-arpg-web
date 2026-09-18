@@ -12,6 +12,7 @@ import {
 import { NPCS, type NpcDefinition } from '../game/npcConfig';
 import { BOSS_GATE, ENCOUNTERS, WORLD_EVENTS, type EncounterDefinition, type WorldEventDefinition } from '../game/regionContentConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
+import { basicAttackRangeForProfile } from '../game/playerStats';
 import { WORLD, isSettlementY, zoneAt, type WorldZoneId } from '../game/worldConfig';
 
 interface EnemyState {
@@ -484,7 +485,7 @@ CỔ MÔN • PHONG ẤN`, {
     const now = this.time.now;
     if (this.dead || (isSettlementY(this.player.y) && !this.breakthroughTrialActive)) return;
     if (now < this.cooldowns.attack || now < this.actionLockedUntil || now < this.dodgeUntil) return;
-    const target = this.getNearestEnemy(COMBAT.player.basicAttackRange);
+    const target = this.getNearestEnemy(basicAttackRangeForProfile(this.profile));
     if (!target) return;
 
     this.cooldowns.attack = now + COMBAT.player.basicAttackCooldownMs;
