@@ -1,0 +1,61 @@
+name: Patch sword runtime integration
+on:
+  push:
+    branches: [feat/sword-vfx-runtime]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/sword-vfx-runtime
+      - name: Patch runtime
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/game/art/assetManifest.ts')
+          s = p.read_text()
+          s = s.replace("  enemyMeleeIdleSouth: 'assets/c4/actors/enemies/melee/en_melee_idle_s.png',\n", "  enemyMeleeIdleSouth: 'assets/c4/actors/enemies/melee/en_melee_idle_s.png',\n  flyingSwordR1: 'assets/c4/vfx/sword/fx_sword_r1.png',\n")
+          p.write_text(s)
+
+          p = Path('src/game/art/artScaleConfig.ts')
+          s = p.read_text()
+          s = s.replace("  enemyMelee: {\n    displayHeight: 104,\n    originX: 0.5,\n    originY: 0.84,\n    offsetY: 18,\n  },\n", "  enemyMelee: {\n    displayHeight: 104,\n    originX: 0.5,\n    originY: 0.84,\n    offsetY: 18,\n  },\n  flyingSword: {\n    displayWidth: 84,\n    originX: 0.5,\n    originY: 0.5,\n  },\n")
+          p.write_text(s)
+
+          p = Path('src/game/actorVisuals.ts')
+          s = p.read_text()
+          s = s.replace("const ENEMY_MELEE_TEXTURE_KEY = 'c4-enemy-melee-idle-s';\n", "const ENEMY_MELEE_TEXTURE_KEY = 'c4-enemy-melee-idle-s';\nconst FLYING_SWORD_TEXTURE_KEY = 'c4-flying-sword-r1';\n")
+          old = '''export function createFlyingSwordVisual(\n  scene: Phaser.Scene,\n  x: number,\n  y: number,\n  realm: 1 | 2,\n): Phaser.GameObjects.Container {\n  const qi = realm === 2 ? 0xc9efe5 : 0xe2e6d8;\n  const aura = scene.add.ellipse(7, 0, 54, realm === 2 ? 18 : 14, qi, realm === 2 ? 0.18 : 0.11);\n  const blade = scene.add.polygon(9, 0, [-21, -4, 15, -4, 29, 0, 15, 4, -21, 4], 0xf3ead4, 1)\n    .setStrokeStyle(1, 0x61665f, 0.9);\n  const ridge = scene.add.line(0, 0, -10, 0, 30, 0, realm === 2 ? 0x9ed9ce : 0xbebcae, 0.72)\n    .setOrigin(0.5).setLineWidth(1);\n  const guard = scene.add.polygon(-14, 0, [-2, -11, 3, -4, 3, 4, -2, 11, -6, 5, -6, -5], 0xb7955b, 0.98);\n  const hilt = scene.add.rectangle(-25, 0, 17, 5, 0x5e4936, 1);\n  const pommel = scene.add.circle(-34, 0, 3, 0xc3a266, 1);\n  return scene.add.container(x, y, [aura, blade, ridge, guard, hilt, pommel]).setDepth(18);\n}\n'''
+          new = '''export function createFlyingSwordVisual(\n  scene: Phaser.Scene,\n  x: number,\n  y: number,\n  realm: 1 | 2,\n): Phaser.GameObjects.Container {\n  const qi = realm === 2 ? 0xc9efe5 : 0xe2e6d8;\n  const aura = scene.add.ellipse(6, 0, 70, realm === 2 ? 22 : 18, qi, realm === 2 ? 0.16 : 0.1);\n\n  if (scene.textures.exists(FLYING_SWORD_TEXTURE_KEY)) {\n    const image = scene.add.image(0, 0, FLYING_SWORD_TEXTURE_KEY)\n      .setOrigin(C4_ART_SCALE.flyingSword.originX, C4_ART_SCALE.flyingSword.originY);\n    const scale = C4_ART_SCALE.flyingSword.displayWidth / image.width;\n    image.setScale(scale);\n    if (realm === 2) image.setTint(0xe8fff7);\n    return scene.add.container(x, y, [aura, image]).setDepth(18);\n  }\n\n  const blade = scene.add.polygon(9, 0, [-21, -4, 15, -4, 29, 0, 15, 4, -21, 4], 0xf3ead4, 1)\n    .setStrokeStyle(1, 0x61665f, 0.9);\n  const ridge = scene.add.line(0, 0, -10, 0, 30, 0, realm === 2 ? 0x9ed9ce : 0xbebcae, 0.72)\n    .setOrigin(0.5).setLineWidth(1);\n  const guard = scene.add.polygon(-14, 0, [-2, -11, 3, -4, 3, 4, -2, 11, -6, 5, -6, -5], 0xb7955b, 0.98);\n  const hilt = scene.add.rectangle(-25, 0, 17, 5, 0x5e4936, 1);\n  const pommel = scene.add.circle(-34, 0, 3, 0xc3a266, 1);\n  return scene.add.container(x, y, [aura, blade, ridge, guard, hilt, pommel]).setDepth(18);\n}\n'''
+          if old not in s:
+              raise SystemExit('createFlyingSwordVisual block not found')
+          p.write_text(s.replace(old, new))
+
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+          s = s.replace("    if (!this.textures.exists('c4-enemy-melee-idle-s')) {\n      this.load.image('c4-enemy-melee-idle-s', c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth));\n    }\n", "    if (!this.textures.exists('c4-enemy-melee-idle-s')) {\n      this.load.image('c4-enemy-melee-idle-s', c4AssetUrl(C4_ASSETS.enemyMeleeIdleSouth));\n    }\n    if (!this.textures.exists('c4-flying-sword-r1')) {\n      this.load.image('c4-flying-sword-r1', c4AssetUrl(C4_ASSETS.flyingSwordR1));\n    }\n")
+          s = s.replace("    const launchFlash = this.add.circle(this.player.x, this.player.y, 11, 0xe7dcc0, 0.35).setDepth(17);\n    this.tweens.add({ targets: launchFlash, scale: 2.2, alpha: 0, duration: 130, onComplete: () => launchFlash.destroy() });\n", "    const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;\n    const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)\n      .setRotation(angle)\n      .setDepth(17);\n    const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);\n    this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });\n    this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });\n")
+          old_trail = '''  private emitFlyingSwordTrail(sword: FlyingSwordState): void {\n    const tailX = sword.node.x - Math.cos(sword.angle) * 28;\n    const tailY = sword.node.y - Math.sin(sword.angle) * 28;\n    const trail = this.add.line(\n      0, 0,\n      sword.node.x, sword.node.y,\n      tailX, tailY,\n      this.profile.realm === 2 ? 0xc9efe5 : 0xdce7dc,\n      this.profile.realm === 2 ? 0.58 : 0.42,\n    ).setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 4 : 3).setDepth(17);\n\n    this.tweens.add({ targets: trail, alpha: 0, duration: 150, onComplete: () => trail.destroy() });\n  }\n'''
+          new_trail = '''  private emitFlyingSwordTrail(sword: FlyingSwordState): void {\n    const length = this.profile.realm === 2 ? 48 : 42;\n    const tailX = sword.node.x - Math.cos(sword.angle) * length;\n    const tailY = sword.node.y - Math.sin(sword.angle) * length;\n    const color = this.profile.realm === 2 ? 0xc9efe5 : 0xdfe9df;\n    const outer = this.add.line(0, 0, sword.node.x, sword.node.y, tailX, tailY, color, 0.16)\n      .setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 8 : 7).setDepth(16);\n    const core = this.add.line(0, 0, sword.node.x, sword.node.y, tailX, tailY, color, this.profile.realm === 2 ? 0.62 : 0.5)\n      .setOrigin(0, 0).setLineWidth(this.profile.realm === 2 ? 3 : 2).setDepth(17);\n\n    this.tweens.add({ targets: outer, alpha: 0, duration: 145, onComplete: () => outer.destroy() });\n    this.tweens.add({ targets: core, alpha: 0, duration: 120, onComplete: () => core.destroy() });\n  }\n'''
+          if old_trail not in s:
+              raise SystemExit('trail block not found')
+          s = s.replace(old_trail, new_trail)
+          old_impact = "          const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32).setStrokeStyle(2, 0xf1e4bd, 0.7);\n          this.tweens.add({ targets: impact, scale: 2.1, alpha: 0, duration: 150, onComplete: () => impact.destroy() });\n"
+          new_impact = "          const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;\n          const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)\n            .setStrokeStyle(3, impactColor, 0.78)\n            .setDepth(20);\n          const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);\n          this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });\n          this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });\n"
+          if old_impact not in s:
+              raise SystemExit('impact block not found')
+          p.write_text(s.replace(old_impact, new_impact))
+          PY
+      - name: Commit patch and remove workflow
+        run: |
+          rm .github/workflows/patch-sword-vfx.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/game/art/assetManifest.ts src/game/art/artScaleConfig.ts src/game/actorVisuals.ts src/scenes/GameScene.ts .github/workflows/patch-sword-vfx.yml
+          git commit -m "feat(art): integrate flying sword and restrained VFX"
+          git push origin HEAD:feat/sword-vfx-runtime
