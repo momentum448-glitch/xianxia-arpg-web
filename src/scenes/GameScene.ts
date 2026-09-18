@@ -153,32 +153,53 @@ export class GameScene extends Phaser.Scene {
       fontFamily: 'serif', fontSize: '23px', color: '#6d5b43', fontStyle: 'bold',
     }).setOrigin(0.5).setAlpha(0.8).setDepth(-4);
 
+    const settlement = WORLD.zones.find((zone) => zone.id === 'settlement')!;
+    const plains = WORLD.zones.find((zone) => zone.id === 'plains')!;
+    const forest = WORLD.zones.find((zone) => zone.id === 'forest')!;
+    const danger = WORLD.zones.find((zone) => zone.id === 'danger')!;
+
     const houses = [
-      { x: 300, y: 3650, w: 210, h: 145 },
-      { x: 780, y: 3680, w: 220, h: 155 },
-      { x: 330, y: 4040, w: 230, h: 150 },
-      { x: 755, y: 4050, w: 205, h: 140 },
+      { x: WORLD.width * 0.24, y: settlement.yMin + 420, w: 250, h: 165 },
+      { x: WORLD.width * 0.72, y: settlement.yMin + 470, w: 270, h: 175 },
+      { x: WORLD.width * 0.30, y: settlement.yMin + 1040, w: 280, h: 175 },
+      { x: WORLD.width * 0.70, y: settlement.yMin + 1110, w: 245, h: 160 },
+      { x: WORLD.width * 0.50, y: settlement.yMin + 1460, w: 300, h: 180 },
     ];
     for (const house of houses) {
       this.add.rectangle(house.x, house.y, house.w, house.h, 0xc2a77d, 0.72)
         .setStrokeStyle(5, 0x765f43, 0.65)
         .setDepth(-3);
-      this.add.triangle(house.x, house.y - house.h / 2 - 35, -120, 45, 120, 45, 0, -45, 0x75624b, 0.75)
+      this.add.triangle(house.x, house.y - house.h / 2 - 35, -140, 50, 140, 50, 0, -50, 0x75624b, 0.75)
         .setDepth(-2);
     }
 
-    for (let i = 0; i < 14; i += 1) {
-      const x = 120 + (i % 5) * 205 + (i % 2) * 28;
-      const y = 1250 + Math.floor(i / 5) * 300 + (i % 3) * 45;
-      this.add.circle(x, y, 46, 0x6f805c, 0.38).setDepth(-6);
-      this.add.circle(x + 22, y - 20, 34, 0x657754, 0.3).setDepth(-6);
+    for (let i = 0; i < 24; i += 1) {
+      const columns = 6;
+      const xStep = (WORLD.width - 300) / (columns - 1);
+      const x = 150 + (i % columns) * xStep + (i % 2) * 34;
+      const rows = Math.ceil(24 / columns);
+      const row = Math.floor(i / columns);
+      const yStep = (forest.yMax - forest.yMin - 520) / Math.max(1, rows - 1);
+      const y = forest.yMin + 260 + row * yStep + (i % 3) * 70;
+      this.add.circle(x, y, 54, 0x6f805c, 0.38).setDepth(-6);
+      this.add.circle(x + 26, y - 24, 40, 0x657754, 0.3).setDepth(-6);
     }
 
-    for (let i = 0; i < 10; i += 1) {
-      const x = 120 + (i % 4) * 270;
-      const y = 190 + Math.floor(i / 4) * 310 + (i % 2) * 65;
-      this.add.polygon(x, y, [0, -42, 34, -12, 27, 35, -22, 43, -39, 2], 0x6e6b62, 0.35)
+    for (let i = 0; i < 18; i += 1) {
+      const columns = 5;
+      const xStep = (WORLD.width - 320) / (columns - 1);
+      const x = 160 + (i % columns) * xStep;
+      const row = Math.floor(i / columns);
+      const y = danger.yMin + 240 + row * 470 + (i % 2) * 85;
+      this.add.polygon(x, y, [0, -48, 40, -14, 31, 40, -26, 48, -45, 2], 0x6e6b62, 0.35)
         .setDepth(-6);
+    }
+
+    for (let i = 0; i < 16; i += 1) {
+      const x = 140 + (i % 5) * ((WORLD.width - 280) / 4);
+      const row = Math.floor(i / 5);
+      const y = plains.yMin + 340 + row * 610 + (i % 2) * 95;
+      this.add.ellipse(x, y, 86, 34, 0x8b865f, 0.2).setDepth(-7);
     }
   }
 
