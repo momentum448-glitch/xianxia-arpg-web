@@ -1,0 +1,27 @@
+name: Fix melee loader event
+
+on:
+  push:
+    branches:
+      - feat/melee-runtime-art
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/melee-runtime-art
+      - name: Fix Phaser loader event
+        run: sed -i 's/Phaser.Loader.Events.LOAD_ERROR/Phaser.Loader.Events.FILE_LOAD_ERROR/' src/game/actorVisuals.ts
+      - name: Commit fix and remove workflow
+        run: |
+          rm .github/workflows/fix-melee-loader-event.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/game/actorVisuals.ts .github/workflows/fix-melee-loader-event.yml
+          git commit -m "fix(art): use Phaser file-load error event"
+          git push origin HEAD:feat/melee-runtime-art
