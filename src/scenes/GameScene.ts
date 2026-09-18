@@ -56,6 +56,8 @@ interface WorldEventState {
   triggered: boolean;
 }
 
+const SWORD_RAW_QC = true;
+
 type CombatButtonKey = 'attack' | 'dodge' | 'skill';
 
 interface Cooldowns {
@@ -533,13 +535,15 @@ CỔ MÔN • PHONG ẤN`, {
       .setRotation(angle)
       .setScale(this.profile.realm === 2 ? 1.08 : 0.94);
 
-    const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;
-    const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)
-      .setRotation(angle)
-      .setDepth(17);
-    const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);
-    this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });
-    this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });
+    if (!SWORD_RAW_QC) {
+      const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;
+      const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)
+        .setRotation(angle)
+        .setDepth(17);
+      const launchCore = this.add.circle(this.player.x, this.player.y, 7, launchColor, 0.62).setDepth(18);
+      this.tweens.add({ targets: launchHalo, scaleX: 2.2, scaleY: 1.5, alpha: 0, duration: 130, onComplete: () => launchHalo.destroy() });
+      this.tweens.add({ targets: launchCore, scale: 1.9, alpha: 0, duration: 105, onComplete: () => launchCore.destroy() });
+    }
 
     this.flyingSwords.push({
       node: sword,
@@ -575,7 +579,7 @@ CỔ MÔN • PHONG ẤN`, {
       sword.node.y += Math.sin(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
       sword.node.setRotation(sword.angle);
 
-      if (time >= sword.nextTrailAt) {
+      if (!SWORD_RAW_QC && time >= sword.nextTrailAt) {
         sword.nextTrailAt = time + COMBAT.player.flyingSwordTrailIntervalMs;
         this.emitFlyingSwordTrail(sword);
       }
@@ -605,13 +609,15 @@ CỔ MÔN • PHONG ẤN`, {
             originX,
             originY,
           );
-          const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;
-          const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)
-            .setStrokeStyle(3, impactColor, 0.78)
-            .setDepth(20);
-          const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);
-          this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });
-          this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });
+          if (!SWORD_RAW_QC) {
+            const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;
+            const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)
+              .setStrokeStyle(3, impactColor, 0.78)
+              .setDepth(20);
+            const impactCore = this.add.circle(hitX, hitY, 6, impactColor, 0.72).setDepth(21);
+            this.tweens.add({ targets: impactRing, scale: 2.35, alpha: 0, duration: 165, onComplete: () => impactRing.destroy() });
+            this.tweens.add({ targets: impactCore, scale: 1.75, alpha: 0, duration: 95, onComplete: () => impactCore.destroy() });
+          }
           continue;
         }
       }
