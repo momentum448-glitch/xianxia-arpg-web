@@ -149,7 +149,7 @@ function queueMeleeRuntimeTexture(
     pendingMeleeByScene.delete(scene);
     meleeLoadStarted.delete(scene);
   });
-  scene.load.once(Phaser.Loader.Events.LOAD_ERROR, () => {
+  scene.load.once(Phaser.Loader.Events.FILE_LOAD_ERROR, () => {
     pendingMeleeByScene.delete(scene);
     meleeLoadStarted.delete(scene);
   });
