@@ -31,27 +31,37 @@ Anti-duplication reminder:
 - do not redesign the male player unless a future QC decision explicitly marks it `REVISE`;
 - generate only the missing production deliverable.
 
-## 2026-09-18 — PLY-M-BASE runtime integration
+## 2026-09-18 — Male player runtime integration
 
-Asset state: `INTEGRATED`
-Animation checkpoint: implemented, phone QC pending
+Status: INTEGRATED / phone QC pending
 
 Completed:
-- accepted male player art isolated and stored as the production PNG under `public/assets/c4/actors/player/male/`;
-- runtime asset manifest and scale/pivot config added;
-- production sprite replaces the previous procedural male visual while the invisible gameplay hitbox stays separate;
-- phone QC accepted the current display size;
-- the visible white rectangle was traced to the old hitbox stroke and removed without changing collision;
-- manual `ATK` control replaced auto basic attack, with buildable range and attack-speed stat hooks recorded in the main plan;
-- current base attack range is 205 and untargeted presses still launch a straight flying sword;
-- minimum runtime animation proof now covers idle breathing, run bob/lean, manual ATK launch response, dodge stretch/motion cue, and skill anticipation/recovery;
-- animation parameters are centralized in `src/game/art/animationConfig.ts`;
-- true four-direction production poses are still required before final C4.2 acceptance; this proof uses the accepted base sprite with directional mirror/lean where possible.
+- accepted male player art exported as a transparent runtime PNG;
+- runtime asset path registered through the C4 manifest;
+- scale/pivot configuration centralized under `src/game/art/`;
+- GameScene uses the production texture while preserving the invisible gameplay hitbox;
+- minimum runtime animation implemented for idle, run, ATK response, dodge and skill.
 
-QC status:
-- build/typecheck must remain green;
-- next user-facing checkpoint is live phone animation QC;
-- do not promote `PLY-M-BASE` to `PHONE_PASS` until that live QC is accepted.
+Phone QC remains required before `PHONE_PASS`.
 
-Next action after animation phone PASS:
-- continue with `EN-MELEE-BASE` isolation/integration; do not regenerate the accepted melee design unless QC explicitly marks it `REVISE`.
+## 2026-09-18 — Melee enemy runtime candidate
+
+Status: TECH_REWORK / integrated candidate for phone QC
+
+Completed:
+- old isolated candidate bytes were confirmed unavailable and were not silently treated as recovered;
+- a fresh isolated transparent melee candidate was technically exported from the current locked melee reference without HUD/map/text;
+- runtime path registered as `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`;
+- melee scale/pivot and runtime animation tuning added centrally;
+- procedural melee visual remains the fallback if the production texture fails to load.
+
+QC required before promotion:
+- reads immediately as melee pressure at phone scale;
+- no baked background/HUD/telegraph remnants;
+- move/chase motion feels alive enough;
+- wind-up/attack tell is clearly readable;
+- silhouette fits the accepted corrupted-melee direction closely enough to keep `EN-MELEE-BASE`, otherwise mark `REVISE` instead of silently redefining it.
+
+Next action:
+- run CI + live phone QC for the melee candidate;
+- only after user acceptance may `EN-MELEE-BASE` advance toward `PHONE_PASS`.
