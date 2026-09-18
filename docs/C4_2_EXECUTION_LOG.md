@@ -54,7 +54,8 @@ Completed:
 - runtime file prepared at `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`;
 - source normalized to 136×160 indexed PNG for mobile-safe texture size while preserving transparency;
 - melee scale/pivot and runtime animation tuning added centrally;
-- procedural melee visual remains the fallback if the production texture fails to load.
+- procedural melee visual remains the fallback if the production texture fails to load;
+- first CI pass caught a Phaser loader event naming mismatch; `LOAD_ERROR` was corrected to `FILE_LOAD_ERROR` before merge.
 
 QC required before promotion:
 - reads immediately as melee pressure at phone scale;
@@ -64,5 +65,5 @@ QC required before promotion:
 - silhouette fits the accepted corrupted-melee direction closely enough to keep `EN-MELEE-BASE`, otherwise mark `REVISE` instead of silently redefining it.
 
 Next action:
-- run CI + live phone QC for the melee candidate;
+- rerun CI and deploy the live phone-QC build for the melee candidate;
 - only after user acceptance may `EN-MELEE-BASE` advance toward `PHONE_PASS`.
