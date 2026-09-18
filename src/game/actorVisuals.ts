@@ -109,11 +109,6 @@ function applyMeleeRuntimeTexture(
       scene.add.circle(0, 0, 46, 0xd7b36d, 0.07)
         .setStrokeStyle(3, 0xd7b36d, 0.42),
     );
-  } else {
-    children.push(
-      scene.add.ellipse(0, 1, 76, 88, 0x5f4754, 0.055)
-        .setStrokeStyle(2, 0x725462, 0.14),
-    );
   }
   children.push(scene.add.ellipse(0, 30, 66, 20, 0x252724, 0.2));
   const image = scene.add.image(0, C4_ART_SCALE.enemyMelee.offsetY, ENEMY_MELEE_TEXTURE_KEY)
