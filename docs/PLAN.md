@@ -1,7 +1,7 @@
 # Xianxia ARPG Development Plan
 
-Version: 0.8
-Status: C3.3 biome encounters + short events implemented on feature branch; CI/device validation next
+Version: 0.9
+Status: C4.1 art identity foundation implemented on feature branch; CI/device validation next
 Source of truth: this repository
 
 ## Product goal
@@ -82,7 +82,7 @@ Implemented:
 - breakthrough runtime freeze hotfix: projectile cleanup is re-entrancy safe when the third Kiếp Ảnh dies
 
 ### C3 — Continuous map + NPC layer
-Status: In progress
+Status: Structurally complete; gameplay tuning debt recorded for later pass
 
 #### C3.1 — Continuous world shell
 Status: Complete and phone-QC passed
@@ -116,7 +116,7 @@ Implemented:
 - right-thumb combat UX remains exactly Skill + Dodge
 
 #### C3.3 — Encounter regions + short events
-Status: Implemented on feature branch; CI/device validation next
+Status: Structural phone-QC accepted; challenge/distribution tuning deferred
 
 Implemented:
 - biome encounter definitions centralized in `src/game/regionContentConfig.ts`
@@ -133,23 +133,48 @@ Implemented:
 - placeholder `Phong Ấn Cổ Môn` placed at the top of U Minh Cốc as the future boss gate
 - combat controls, NPC interaction and breakthrough flow remain unchanged
 
-C3.3 phone acceptance questions:
-- Does each biome now feel mechanically different rather than only visually different?
-- Is the jump from Hoang Nguyên -> Linh Lâm -> U Minh Cốc noticeable without becoming unfair?
-- Do encounter groups stay local instead of pulling across large travel distances?
-- Are the three event markers readable enough to invite exploration on a phone screen?
-- Does the U Minh Bi ambush feel surprising but survivable?
-- Does reaching Phong Ấn Cổ Môn feel like a clear end-of-route objective?
+Recorded phone feedback to revisit after C4 readability stabilizes:
+- overall combat challenge is too low because normal enemies rarely connect hits against a moving player;
+- enemy placement feels too regular and encounter-clustered across the long map;
+- later tuning should improve pursuit/tracking, attack coverage, multi-enemy pressure and more organic patrol/ambush/resource-guard distributions.
 
 ### C4 — Art identity
-Status: Planned
+Status: In progress
 
-- male/female player sprites
-- enemy families and boss art
-- environment kit
-- ink-wash UI/VFX accents
+Art direction source of truth: `docs/ART_BIBLE.md`.
+
+#### C4.1 — Readable actor silhouette foundation
+Status: Implemented on feature branch; CI/device validation next
+
+Implemented:
+- male/female player rectangle replaced visually by an original layered xianxia silhouette while retaining the same invisible gameplay hitbox;
+- melee/ranged/charger circular placeholders replaced visually by distinct authored role silhouettes while retaining existing hitboxes and combat timing;
+- breakthrough trial enemies reuse role silhouettes with pale amber spiritual treatment;
+- flying sword upgraded to a longer readable blade with guard, ridge and realm-sensitive qi aura;
+- gameplay collision bodies remain separate from visuals so art QC does not contaminate C3 combat-balance evidence;
+- `docs/ART_BIBLE.md` locks silhouette, palette, readability and future asset rules.
+
+C4.1 phone acceptance questions:
+- Are male/female player silhouettes readable and distinct at normal phone zoom?
+- Can melee/ranged/charger roles be recognized before they attack?
+- Does the flying sword remain clearly a sword during fast travel?
+- Do the new silhouettes stay readable against all four biome backgrounds?
+- Does combat feel visually clearer without making telegraphs harder to see?
+
+#### C4.2 — Final actor/environment asset pass
+Planned:
+- generated/integrated player and enemy texture set based on accepted silhouettes
+- environment kit for settlement/plains/forest/danger zone
+- NPC visual pass
+- replace temporary geometric landscape landmarks
+
+#### C4.3 — VFX/UI finish
+Planned:
+- qi and breakthrough effects
+- final enemy telegraph treatment
+- boss gate art
 - skill/item/cultivation icons
-- replace geometric flying-sword placeholder with final xianxia sword art/VFX
+- phone readability pass under real combat density
 
 ### C5 — Full MVP loop
 Status: Planned
@@ -157,19 +182,21 @@ Status: Planned
 - boss
 - 15–30 minute pacing
 - save/resume
+- post-C4 combat challenge and encounter-distribution tuning
 - mobile performance profiling
 - device QC and go/revise decision
 
 ## Current validation question
-Do biome-specific fights and compact exploration events turn the enlarged continuous map into a meaningful journey with a readable danger gradient toward the future boss gate?
+Do the C4.1 player, enemy and flying-sword silhouettes establish a readable original xianxia identity on a phone without changing the gameplay evidence gathered in C3?
 
 ## Working assumptions
-- Placeholder geometry remains intentional through C3.
+- C4.1 uses authored Phaser composite silhouettes as an art-direction checkpoint before final generated texture integration.
 - World route is authored rather than procedural for MVP.
 - Combat remains manually simulated until feel stabilizes.
 - Merchant economy stays deferred until the exploration/combat route proves fun enough to justify another progression layer.
 - C2 breakthrough may be started anywhere; its trial temporarily overrides settlement safety and restores authored biome encounters afterward.
 - C3.3 events are one-time per current run; persistence comes with the save/resume milestone.
+- Combat challenge and enemy-distribution feedback from C3.3 is deliberately deferred until C4 actor readability is stable.
 - Tuning should follow phone evidence rather than desktop feel.
 
 ## Out of scope until MVP proves itself
