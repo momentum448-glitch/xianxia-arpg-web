@@ -216,6 +216,7 @@ export class GameScene extends Phaser.Scene {
 
     for (let i = this.flyingSwords.length - 1; i >= 0; i -= 1) {
       const sword = this.flyingSwords[i];
+      if (!sword) continue;
       if (!sword.target.node.active || time >= sword.expiresAt) {
         this.destroyFlyingSword(i);
         continue;
@@ -246,15 +247,23 @@ export class GameScene extends Phaser.Scene {
       );
 
       if (distance <= COMBAT.player.flyingSwordHitRadius) {
+        const target = sword.target;
+        const hitX = target.node.x;
+        const hitY = target.node.y;
+        const originX = sword.node.x;
+        const originY = sword.node.y;
+
+        // Remove the projectile before damage can trigger a realm transition that clears all projectiles.
+        this.destroyFlyingSword(i);
         this.damageEnemy(
-          sword.target,
+          target,
           flyingSwordDamageForRealm(this.profile.realm),
           0xf2e4b8,
           5,
-          sword.node.x,
-          sword.node.y,
+          originX,
+          originY,
         );
-        const impact = this.add.circle(sword.target.node.x, sword.target.node.y, 14, 0xf1e4bd, 0.32)
+        const impact = this.add.circle(hitX, hitY, 14, 0xf1e4bd, 0.32)
           .setStrokeStyle(2, 0xf1e4bd, 0.7);
         this.tweens.add({
           targets: impact,
@@ -263,7 +272,6 @@ export class GameScene extends Phaser.Scene {
           duration: 150,
           onComplete: () => impact.destroy(),
         });
-        this.destroyFlyingSword(i);
       }
     }
   }
@@ -291,7 +299,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private destroyFlyingSword(index: number): void {
-    this.flyingSwords[index].node.destroy(true);
+    const sword = this.flyingSwords[index];
+    if (!sword) return;
+    sword.node.destroy(true);
     this.flyingSwords.splice(index, 1);
   }
 
