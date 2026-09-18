@@ -1,0 +1,155 @@
+name: Patch melee runtime animation
+
+on:
+  push:
+    branches: [feat/melee-runtime-art]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/melee-runtime-art
+      - name: Patch GameScene melee presentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+
+          old = "import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';"
+          new = "import { MELEE_RUNTIME_ANIMATION, PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';"
+          assert old in s
+          s = s.replace(old, new, 1)
+
+          old = '''  private updateMelee(enemy: EnemyState, distance: number, time: number, delta: number): void {
+    const cfg = COMBAT.enemy.melee;
+    if (distance > cfg.attackRange) {
+      this.moveEnemyToward(enemy, cfg.speed, delta);
+      return;
+    }
+    if (time < enemy.nextActionAt) return;
+
+    enemy.nextActionAt = time + cfg.cooldownMs;
+    const warning = this.add.circle(enemy.node.x, enemy.node.y, 48, 0xb95745, 0.14)
+      .setStrokeStyle(4, 0xb95745, 0.65);
+    this.tweens.add({ targets: warning, scale: 1.35, alpha: 0, duration: 260, onComplete: () => warning.destroy() });
+    this.time.delayedCall(240, () => {
+      if (!enemy.node.active || this.dead) return;
+      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
+    });
+  }
+'''
+          new = '''  private updateMelee(enemy: EnemyState, distance: number, time: number, delta: number): void {
+    const cfg = COMBAT.enemy.melee;
+    if (distance > cfg.attackRange) {
+      enemy.phase = 'chase';
+      this.moveEnemyToward(enemy, cfg.speed, delta);
+      return;
+    }
+
+    if (enemy.phase === 'windup' && time >= enemy.phaseUntil) enemy.phase = 'recover';
+    if (enemy.phase === 'recover' && time >= enemy.phaseUntil) enemy.phase = 'chase';
+    if (time < enemy.nextActionAt) return;
+
+    enemy.nextActionAt = time + cfg.cooldownMs;
+    enemy.phase = 'windup';
+    enemy.phaseUntil = time + MELEE_RUNTIME_ANIMATION.attackTell.durationMs;
+    const warning = this.add.circle(enemy.node.x, enemy.node.y, 48, 0xb95745, 0.14)
+      .setStrokeStyle(4, 0xb95745, 0.65);
+    this.tweens.add({
+      targets: warning,
+      scale: 1.35,
+      alpha: 0,
+      duration: MELEE_RUNTIME_ANIMATION.attackTell.durationMs + 20,
+      onComplete: () => warning.destroy(),
+    });
+    this.time.delayedCall(MELEE_RUNTIME_ANIMATION.attackTell.durationMs, () => {
+      if (!enemy.node.active || this.dead) return;
+      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) {
+        this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
+      }
+      if (enemy.node.active) {
+        enemy.phase = 'recover';
+        enemy.phaseUntil = this.time.now + 180;
+      }
+    });
+  }
+'''
+          assert old in s
+          s = s.replace(old, new, 1)
+
+          old = '''  private syncEnemyVisuals(): void {
+    for (const enemy of this.enemies) {
+      if (!enemy.node.active || !enemy.visual.active) continue;
+      enemy.visual.setPosition(enemy.node.x, enemy.node.y);
+    }
+  }
+'''
+          new = '''  private syncEnemyVisuals(): void {
+    const now = this.time.now;
+    for (const enemy of this.enemies) {
+      if (!enemy.node.active || !enemy.visual.active) continue;
+      if (enemy.kind !== 'melee') {
+        enemy.visual.setPosition(enemy.node.x, enemy.node.y);
+        continue;
+      }
+
+      const dx = this.player.x - enemy.node.x;
+      const facingSign = dx < -4 ? -1 : 1;
+      const distance = this.distanceToPlayer(enemy);
+      let offsetY = 0;
+      let rotation = 0;
+      let scaleX = 1;
+      let scaleY = 1;
+
+      if (enemy.phase === 'windup' && now < enemy.phaseUntil) {
+        const cfg = MELEE_RUNTIME_ANIMATION.attackTell;
+        const progress = Phaser.Math.Clamp(1 - (enemy.phaseUntil - now) / cfg.durationMs, 0, 1);
+        const tension = Math.sin(progress * Math.PI / 2);
+        offsetY = cfg.crouchPx * tension;
+        scaleX = 1 + cfg.squashX * tension;
+        scaleY = 1 - cfg.squashY * tension;
+        rotation = -facingSign * cfg.tiltRad * tension;
+      } else if (enemy.phase === 'chase' && distance > COMBAT.enemy.melee.attackRange) {
+        const cfg = MELEE_RUNTIME_ANIMATION.move;
+        const phase = ((now + enemy.node.x * 2.3) % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2;
+        const step = Math.sin(phase);
+        const bounce = Math.abs(step);
+        offsetY = -bounce * cfg.bobPx;
+        scaleX = 1 + bounce * cfg.squashScale;
+        scaleY = 1 - bounce * cfg.squashScale * 0.7;
+        rotation = facingSign * cfg.leanRad + Math.cos(phase) * cfg.leanRad * 0.22;
+      } else {
+        const cfg = MELEE_RUNTIME_ANIMATION.idle;
+        const phase = ((now + enemy.node.x) % cfg.cycleMs) / cfg.cycleMs * Math.PI * 2;
+        const breath = Math.sin(phase);
+        offsetY = breath * cfg.bobPx;
+        scaleX = 1 - breath * cfg.breatheScale * 0.45;
+        scaleY = 1 + breath * cfg.breatheScale;
+      }
+
+      enemy.visual
+        .setPosition(enemy.node.x, enemy.node.y + offsetY)
+        .setScale(facingSign * scaleX, scaleY)
+        .setRotation(rotation);
+    }
+  }
+'''
+          assert old in s
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-melee-runtime-animation.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/scenes/GameScene.ts .github/workflows/patch-melee-runtime-animation.yml
+          git commit -m "feat(art): animate melee runtime candidate"
+          git push origin HEAD:feat/melee-runtime-art
