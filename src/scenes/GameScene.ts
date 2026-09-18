@@ -56,7 +56,7 @@ interface WorldEventState {
   triggered: boolean;
 }
 
-const SWORD_VFX_QC = { launch: true, trail: true, impact: false } as const;
+const SWORD_VFX_QC = { launch: true, trail: true, impact: true } as const;
 
 type CombatButtonKey = 'attack' | 'dodge' | 'skill';
 
