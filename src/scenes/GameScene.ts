@@ -56,7 +56,7 @@ interface WorldEventState {
   triggered: boolean;
 }
 
-const SWORD_RAW_QC = true;
+const SWORD_VFX_QC = { launch: true, trail: false, impact: false } as const;
 
 type CombatButtonKey = 'attack' | 'dodge' | 'skill';
 
@@ -535,7 +535,7 @@ CỔ MÔN • PHONG ẤN`, {
       .setRotation(angle)
       .setScale(this.profile.realm === 2 ? 1.08 : 0.94);
 
-    if (!SWORD_RAW_QC) {
+    if (SWORD_VFX_QC.launch) {
       const launchColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe3eadf;
       const launchHalo = this.add.ellipse(this.player.x, this.player.y, 38, 16, launchColor, 0.2)
         .setRotation(angle)
@@ -579,7 +579,7 @@ CỔ MÔN • PHONG ẤN`, {
       sword.node.y += Math.sin(sword.angle) * COMBAT.player.flyingSwordSpeed * dt;
       sword.node.setRotation(sword.angle);
 
-      if (!SWORD_RAW_QC && time >= sword.nextTrailAt) {
+      if (SWORD_VFX_QC.trail && time >= sword.nextTrailAt) {
         sword.nextTrailAt = time + COMBAT.player.flyingSwordTrailIntervalMs;
         this.emitFlyingSwordTrail(sword);
       }
@@ -609,7 +609,7 @@ CỔ MÔN • PHONG ẤN`, {
             originX,
             originY,
           );
-          if (!SWORD_RAW_QC) {
+          if (SWORD_VFX_QC.impact) {
             const impactColor = this.profile.realm === 2 ? 0xc9efe5 : 0xe5eee3;
             const impactRing = this.add.circle(hitX, hitY, 12, impactColor, 0.08)
               .setStrokeStyle(3, impactColor, 0.78)
