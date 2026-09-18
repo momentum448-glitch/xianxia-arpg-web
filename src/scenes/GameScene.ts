@@ -631,7 +631,7 @@ CỔ MÔN • PHONG ẤN`, {
     this.tweens.add({ targets: warning, scale: 1.35, alpha: 0, duration: 260, onComplete: () => warning.destroy() });
     this.time.delayedCall(240, () => {
       if (!enemy.node.active || this.dead) return;
-      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) this.damagePlayer(Math.max(1, Math.ceil(cfg.damage * enemy.damageMultiplier)), enemy);
+      if (this.distanceToPlayer(enemy) <= cfg.attackRange + 18) this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
     });
   }
 
@@ -659,7 +659,7 @@ CỔ MÔN • PHONG ẤN`, {
         ease: 'Linear',
         onComplete: () => {
           if (!this.dead && Phaser.Math.Distance.Between(this.player.x, this.player.y, targetX, targetY) < 48) {
-            this.damagePlayer(Math.max(1, Math.ceil(cfg.damage * enemy.damageMultiplier)), enemy);
+            this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
           }
           orb.destroy();
         },
@@ -686,7 +686,7 @@ CỔ MÔN • PHONG ẤN`, {
       this.clampEnemyToWorld(enemy);
       if (!enemy.chargeHit && this.distanceToPlayer(enemy) < 48) {
         enemy.chargeHit = true;
-        this.damagePlayer(Math.max(1, Math.ceil(cfg.damage * enemy.damageMultiplier)), enemy);
+        this.damagePlayer(Math.max(1, Math.round(cfg.damage * enemy.damageMultiplier)), enemy);
       }
       if (time >= enemy.phaseUntil) {
         enemy.phase = 'recover';
