@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
 import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
+import { createSettlementEnvironment } from '../game/environmentVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
   CULTIVATION,
@@ -215,20 +216,7 @@ export class GameScene extends Phaser.Scene {
     const forest = WORLD.zones.find((zone) => zone.id === 'forest')!;
     const danger = WORLD.zones.find((zone) => zone.id === 'danger')!;
 
-    const houses = [
-      { x: WORLD.width * 0.24, y: settlement.yMin + 420, w: 250, h: 165 },
-      { x: WORLD.width * 0.72, y: settlement.yMin + 470, w: 270, h: 175 },
-      { x: WORLD.width * 0.30, y: settlement.yMin + 1040, w: 280, h: 175 },
-      { x: WORLD.width * 0.70, y: settlement.yMin + 1110, w: 245, h: 160 },
-      { x: WORLD.width * 0.50, y: settlement.yMin + 1460, w: 300, h: 180 },
-    ];
-    for (const house of houses) {
-      this.add.rectangle(house.x, house.y, house.w, house.h, 0xc2a77d, 0.72)
-        .setStrokeStyle(5, 0x765f43, 0.65)
-        .setDepth(-3);
-      this.add.triangle(house.x, house.y - house.h / 2 - 35, -140, 50, 140, 50, 0, -50, 0x75624b, 0.75)
-        .setDepth(-2);
-    }
+    createSettlementEnvironment(this, settlement);
 
     for (let i = 0; i < 24; i += 1) {
       const columns = 6;
