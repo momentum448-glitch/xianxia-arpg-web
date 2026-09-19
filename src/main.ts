@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import './style.css';
 import { CharacterSelectScene } from './scenes/CharacterSelectScene';
-import { GameScene } from './scenes/GameScene';
+import { SettlementPropsProofScene } from './scenes/SettlementPropsProofScene';
 
 const buildBadge = document.createElement('div');
 buildBadge.id = 'build-id';
@@ -14,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
   width: 720,
   height: 1280,
   backgroundColor: '#171914',
-  scene: [CharacterSelectScene, GameScene],
+  scene: [CharacterSelectScene, SettlementPropsProofScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
