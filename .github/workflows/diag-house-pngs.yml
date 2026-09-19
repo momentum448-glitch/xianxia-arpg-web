@@ -1,0 +1,43 @@
+name: Diagnose settlement house PNGs
+
+on:
+  push:
+    branches:
+      - diag/settlement-house-runtime
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet pillow
+      - name: Inspect house PNGs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, math
+          from PIL import Image, ImageFilter, ImageStat
+
+          root = Path('public/assets/c4/environment/settlement')
+          for path in sorted(root.glob('env_house_*.png')):
+              data = path.read_bytes()
+              with Image.open(path) as im:
+                  im.load()
+                  rgba = im.convert('RGBA')
+                  alpha = rgba.getchannel('A').getextrema()
+                  gray = rgba.convert('L')
+                  edges = gray.filter(ImageFilter.FIND_EDGES)
+                  stat = ImageStat.Stat(edges)
+                  edge_rms = stat.rms[0]
+                  print(
+                      f'{path.name} bytes={len(data)} sha256={hashlib.sha256(data).hexdigest()} '
+                      f'size={im.size} mode={im.mode} bit_depth={data[24]} color_type={data[25]} '
+                      f'alpha={alpha} edge_rms={edge_rms:.3f}'
+                  )
+          PY
