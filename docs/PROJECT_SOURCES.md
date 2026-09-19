@@ -122,7 +122,38 @@ Therefore:
 
 An important asset should not remain only in Library after it becomes a locked project reference.
 
-## 7. Source manifest entry format
+## 7. Current Drive asset vault
+
+A verified ARPG binary vault already exists in Google Drive and should remain registered as a durable backup/source path:
+
+```text
+20_RUNTIME_READY
+├── 00_INBOX
+├── 10_QC_PASS
+└── 90_ARCHIVE_REJECT
+```
+
+Verified IDs on 2026-09-19:
+
+- `20_RUNTIME_READY`: `1pwArqr68G-3o9iXdffpDb8bMUyuR9-2f`
+- `00_INBOX`: `1XM05mGrxcjcwCTJXEC-rkE-z4GK2v8wY`
+- `10_QC_PASS`: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
+- `90_ARCHIVE_REJECT`: `1EEO5QVs2F6YkBC7p266X82S4HgzOnsXW`
+
+Current important source in `10_QC_PASS`:
+
+- `env_house_hall_a.png`
+- Asset ID: `ENV-HOUSE-HALL-A-CLEAN`
+- Drive file ID: `1MLnoQAUL1jfuW-mQFMTxXxDb58FBpkDr`
+- verified size: `22,633` bytes
+
+Recommended Project Sources setup:
+
+- add/link the `20_RUNTIME_READY` Drive folder as a project source when the UI supports connected Drive sources;
+- still promote the most important visual anchors individually into Project Sources when visual comparison is frequent;
+- never infer PASS merely from a file being present in the Drive vault. `ASSET_REGISTRY.md` remains the status authority.
+
+## 8. Source manifest entry format
 
 For every critical Project Source, add or update the corresponding `ASSET_REGISTRY.md` entry with:
 
@@ -140,7 +171,7 @@ Next action:
 
 This prevents two files with similar thumbnails from being confused in later chats.
 
-## 8. Handoff synchronization
+## 9. Handoff synchronization
 
 Before moving to a new chat:
 
@@ -153,7 +184,7 @@ Before moving to a new chat:
 
 The handoff is complete only when both **context** and **required binary/reference assets** survive the chat boundary.
 
-## 9. New-chat startup asset check
+## 10. New-chat startup asset check
 
 After reading the normal startup docs, the new chat must check `ASSET_REGISTRY.md` and ask itself:
 
