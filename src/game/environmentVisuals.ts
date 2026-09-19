@@ -8,6 +8,13 @@ export const SETTLEMENT_HOUSE_TEXTURES = {
   thatchB: 'c4-settlement-house-thatch-b',
 } as const;
 
+export const SETTLEMENT_GROUND_TEXTURES = {
+  pathA: 'c4-settlement-path-a',
+  pathB: 'c4-settlement-path-b',
+  patchA: 'c4-settlement-ground-patch-a',
+  forecourtA: 'c4-settlement-forecourt-a',
+} as const;
+
 type SettlementHouseTexture = typeof SETTLEMENT_HOUSE_TEXTURES[keyof typeof SETTLEMENT_HOUSE_TEXTURES];
 
 type OrganicPathNode = {
@@ -340,40 +347,45 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     addPaperWash(scene, wash.x, wash.y, wash.w, wash.h, wash.c, wash.a, wash.r);
   }
 
-  // Production-style ground proof: freeform path ribbons replace the visible
-  // ellipse stamps from the previous geometry proof. Edge noise, worn center,
-  // faint ruts and sparse verge patches make the route read as travelled earth.
-  const mainPath: OrganicPathNode[] = [
-    { x: 765, y: top + 30, width: 232 },
-    { x: 720, y: top + 220, width: 250 },
-    { x: 828, y: top + 425, width: 280 },
-    { x: 748, y: top + 630, width: 238 },
-    { x: 850, y: top + 825, width: 290 },
-    { x: 782, y: top + 1020, width: 258 },
-    { x: 820, y: top + 1205, width: 242 },
-  ];
-  addPaintedPathRibbon(scene, mainPath, 54, 7, 0.3, true);
+  // Production ground-art proof. The route is now built from transparent
+  // painterly decals. Slight overlap, alternating source segments and small
+  // rotations keep the path organic while the code only authors composition.
+  const groundImage = (
+    texture: string,
+    x: number,
+    y: number,
+    width: number,
+    rotation = 0,
+    flipX = false,
+    alpha = 0.9,
+    depth = -7,
+  ): Phaser.GameObjects.Image => {
+    const image = scene.add.image(x, y, texture)
+      .setOrigin(0.5)
+      .setRotation(rotation)
+      .setAlpha(alpha)
+      .setDepth(depth);
+    const scale = width / image.width;
+    image.setScale(flipX ? -scale : scale, scale);
+    return image;
+  };
 
-  addPaintedPathRibbon(scene, [
-    { x: 770, y: top + 380, width: 156 },
-    { x: 640, y: top + 410, width: 146 },
-    { x: 515, y: top + 442, width: 132 },
-    { x: 430, y: top + 458, width: 116 },
-  ], 24, 17, 0.24, false);
+  const pathPieces = [
+    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 760, y: top + 130, w: 250, r: -0.06, flip: false },
+    { texture: SETTLEMENT_GROUND_TEXTURES.pathB, x: 725, y: top + 360, w: 258, r: 0.08, flip: true },
+    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 790, y: top + 590, w: 270, r: -0.08, flip: true },
+    { texture: SETTLEMENT_GROUND_TEXTURES.pathB, x: 755, y: top + 820, w: 260, r: 0.07, flip: false },
+    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 815, y: top + 1050, w: 252, r: -0.04, flip: false },
+  ] as const;
+  for (const piece of pathPieces) {
+    groundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.82, -7);
+  }
 
-  addPaintedPathRibbon(scene, [
-    { x: 840, y: top + 470, width: 160 },
-    { x: 970, y: top + 460, width: 148 },
-    { x: 1080, y: top + 482, width: 132 },
-    { x: 1160, y: top + 510, width: 116 },
-  ], 24, 29, 0.24, false);
-
-  // Small authored forecourts make the house approaches feel inhabited rather
-  // than stopping abruptly at a sprite boundary.
-  addRoughPatch(scene, 435, top + 462, 92, 44, SETTLEMENT.path, 0.16, 61, -7, 20);
-  addRoughPatch(scene, 1160, top + 510, 98, 46, SETTLEMENT.path, 0.16, 67, -7, 20);
-  addRoughPatch(scene, 540, top + 645, 82, 31, SETTLEMENT.dryGrass, 0.06, 71, -6, 16);
-  addRoughPatch(scene, 1080, top + 690, 90, 34, SETTLEMENT.moss, 0.055, 73, -6, 16);
+  // A broad worn patch softens the main junction, while two forecourt decals
+  // connect the road to the first production-house pair.
+  groundImage(SETTLEMENT_GROUND_TEXTURES.patchA, 790, top + 515, 430, 0.02, false, 0.52, -8);
+  groundImage(SETTLEMENT_GROUND_TEXTURES.forecourtA, 500, top + 430, 300, -0.03, false, 0.82, -6);
+  groundImage(SETTLEMENT_GROUND_TEXTURES.forecourtA, 1110, top + 485, 320, 0.04, true, 0.82, -6);
 
   // Keep the lower slice unchanged for one more phone comparison.
   for (let i = 5; i < 8; i += 1) {

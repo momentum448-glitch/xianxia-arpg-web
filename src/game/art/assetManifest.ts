@@ -6,6 +6,10 @@ export const C4_ASSETS = {
   settlementHouseTileA: 'assets/c4/environment/settlement/env_house_tile_a.png',
   settlementHouseHallA: 'assets/c4/environment/settlement/env_house_hall_a.png',
   settlementHouseThatchB: 'assets/c4/environment/settlement/env_house_thatch_b.png',
+  settlementPathSegA: 'assets/c4/environment/settlement/env_settlement_path_seg_a.png',
+  settlementPathSegB: 'assets/c4/environment/settlement/env_settlement_path_seg_b.png',
+  settlementGroundPatchA: 'assets/c4/environment/settlement/env_settlement_ground_patch_a.png',
+  settlementForecourtA: 'assets/c4/environment/settlement/env_settlement_forecourt_a.png',
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;
