@@ -6,6 +6,7 @@ on:
       - fix/settlement-house-rgba
     paths:
       - '.github/workflows/convert-settlement-house-rgba.yml'
+      - '.asset_stage_rgba/**'
 
 permissions:
   contents: read
