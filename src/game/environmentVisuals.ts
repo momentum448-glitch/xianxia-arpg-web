@@ -1,20 +1,24 @@
 import Phaser from 'phaser';
 import type { WorldZone } from './worldConfig';
 
+export const SETTLEMENT_HOUSE_TEXTURES = {
+  thatchA: 'c4-settlement-house-thatch-a',
+  tileA: 'c4-settlement-house-tile-a',
+  hallA: 'c4-settlement-house-hall-a',
+  thatchB: 'c4-settlement-house-thatch-b',
+} as const;
+
+type SettlementHouseTexture = typeof SETTLEMENT_HOUSE_TEXTURES[keyof typeof SETTLEMENT_HOUSE_TEXTURES];
+
 const SETTLEMENT = {
   warmPaper: 0xe3d5b5,
   path: 0xd7c59f,
   pathEdge: 0xb9a57e,
   oldWood: 0x765f43,
-  darkWood: 0x514538,
-  roof: 0x625548,
-  roofLight: 0x8c775c,
-  plaster: 0xcab58e,
   stone: 0x8d8878,
   moss: 0x7b8065,
   foliage: 0x65745d,
   foliageDark: 0x4f5f50,
-  lantern: 0xc99158,
 } as const;
 
 function addPaperWash(
@@ -36,51 +40,43 @@ function addHouse(
   scene: Phaser.Scene,
   x: number,
   y: number,
-  scale: number,
-  flip = false,
+  textureKey: SettlementHouseTexture,
+  displayWidth: number,
 ): void {
-  const shadow = scene.add.ellipse(0, 30, 208, 74, 0x322d27, 0.1);
-  const wall = scene.add.rectangle(0, 16, 156, 96, SETTLEMENT.plaster, 0.78)
-    .setStrokeStyle(3, SETTLEMENT.oldWood, 0.42);
-  const roof = scene.add.polygon(0, -34, [
-    -98, 20,
-    -70, -35,
-    70, -35,
-    98, 20,
-    68, 42,
-    -68, 42,
-  ], SETTLEMENT.roof, 0.9)
-    .setStrokeStyle(3, SETTLEMENT.darkWood, 0.5);
-  const ridge = scene.add.rectangle(0, -67, 126, 8, SETTLEMENT.roofLight, 0.75);
-  const porch = scene.add.rectangle(0, 68, 106, 18, SETTLEMENT.oldWood, 0.58);
-  const door = scene.add.rectangle(flip ? 28 : -28, 32, 34, 54, SETTLEMENT.darkWood, 0.74);
-  const window = scene.add.rectangle(flip ? -34 : 34, 14, 28, 24, 0xe7d8b5, 0.34)
-    .setStrokeStyle(2, SETTLEMENT.oldWood, 0.5);
-  const lantern = scene.add.circle(flip ? -62 : 62, 34, 7, SETTLEMENT.lantern, 0.62)
-    .setStrokeStyle(2, SETTLEMENT.darkWood, 0.45);
+  if (!scene.textures.exists(textureKey)) {
+    scene.add.rectangle(x, y, displayWidth, 150, 0xff00aa, 0.75)
+      .setStrokeStyle(4, 0xffffff, 0.9)
+      .setDepth(-3);
+    scene.add.text(x, y, 'HOUSE TEX MISS', {
+      fontFamily: 'monospace', fontSize: '18px', color: '#ffffff', fontStyle: 'bold',
+      backgroundColor: '#7a004f', padding: { x: 6, y: 4 },
+    }).setOrigin(0.5).setDepth(-2);
+    return;
+  }
 
-  scene.add.container(x, y, [shadow, wall, roof, ridge, porch, door, window, lantern])
-    .setScale(scale)
+  const image = scene.add.image(x, y, textureKey)
+    .setOrigin(0.5, 0.58)
     .setDepth(-3);
+  image.setScale(displayWidth / image.width);
 }
 
 function addFence(scene: Phaser.Scene, x: number, y: number, width: number): void {
   const postCount = Math.max(3, Math.round(width / 54));
   const spacing = width / (postCount - 1);
   for (let i = 0; i < postCount; i += 1) {
-    scene.add.rectangle(x - width / 2 + i * spacing, y, 8, 38, SETTLEMENT.oldWood, 0.46)
+    scene.add.rectangle(x - width / 2 + i * spacing, y, 8, 38, SETTLEMENT.oldWood, 0.36)
       .setDepth(-4);
   }
-  scene.add.rectangle(x, y - 8, width, 7, SETTLEMENT.oldWood, 0.4).setDepth(-4);
-  scene.add.rectangle(x, y + 8, width, 7, SETTLEMENT.oldWood, 0.34).setDepth(-4);
+  scene.add.rectangle(x, y - 8, width, 7, SETTLEMENT.oldWood, 0.3).setDepth(-4);
+  scene.add.rectangle(x, y + 8, width, 7, SETTLEMENT.oldWood, 0.25).setDepth(-4);
 }
 
 function addTreeCluster(scene: Phaser.Scene, x: number, y: number, scale: number): void {
-  const shadow = scene.add.ellipse(0, 28, 92, 30, 0x2c3029, 0.08);
-  const trunk = scene.add.rectangle(0, 10, 14, 54, SETTLEMENT.oldWood, 0.55);
-  const crownA = scene.add.circle(-18, -18, 34, SETTLEMENT.foliageDark, 0.42);
-  const crownB = scene.add.circle(16, -24, 40, SETTLEMENT.foliage, 0.42);
-  const crownC = scene.add.circle(0, -47, 30, SETTLEMENT.foliage, 0.34);
+  const shadow = scene.add.ellipse(0, 28, 92, 30, 0x2c3029, 0.06);
+  const trunk = scene.add.rectangle(0, 10, 14, 54, SETTLEMENT.oldWood, 0.42);
+  const crownA = scene.add.circle(-18, -18, 34, SETTLEMENT.foliageDark, 0.3);
+  const crownB = scene.add.circle(16, -24, 40, SETTLEMENT.foliage, 0.3);
+  const crownC = scene.add.circle(0, -47, 30, SETTLEMENT.foliage, 0.24);
   scene.add.container(x, y, [shadow, trunk, crownA, crownB, crownC])
     .setScale(scale)
     .setDepth(-4);
@@ -88,9 +84,9 @@ function addTreeCluster(scene: Phaser.Scene, x: number, y: number, scale: number
 
 function addStonePatch(scene: Phaser.Scene, x: number, y: number, flip = false): void {
   const direction = flip ? -1 : 1;
-  scene.add.ellipse(x, y, 62, 24, SETTLEMENT.stone, 0.14).setDepth(-6);
-  scene.add.ellipse(x + 32 * direction, y + 8, 34, 18, SETTLEMENT.stone, 0.12).setDepth(-6);
-  scene.add.ellipse(x - 24 * direction, y - 8, 26, 14, SETTLEMENT.moss, 0.12).setDepth(-6);
+  scene.add.ellipse(x, y, 62, 24, SETTLEMENT.stone, 0.12).setDepth(-6);
+  scene.add.ellipse(x + 32 * direction, y + 8, 34, 18, SETTLEMENT.stone, 0.1).setDepth(-6);
+  scene.add.ellipse(x - 24 * direction, y - 8, 26, 14, SETTLEMENT.moss, 0.1).setDepth(-6);
 }
 
 export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone): void {
@@ -119,12 +115,12 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     }
   }
 
-  addHouse(scene, 365, top + 390, 1.0, false);
-  addHouse(scene, 1240, top + 455, 1.04, true);
-  addHouse(scene, 420, top + 1000, 1.08, true);
-  addHouse(scene, 1210, top + 1090, 0.96, false);
-  addHouse(scene, 390, top + 1520, 0.9, false);
-  addHouse(scene, 1200, top + 1560, 0.92, true);
+  addHouse(scene, 365, top + 390, SETTLEMENT_HOUSE_TEXTURES.thatchA, 290);
+  addHouse(scene, 1240, top + 455, SETTLEMENT_HOUSE_TEXTURES.tileA, 310);
+  addHouse(scene, 420, top + 1000, SETTLEMENT_HOUSE_TEXTURES.hallA, 325);
+  addHouse(scene, 1210, top + 1090, SETTLEMENT_HOUSE_TEXTURES.tileA, 285);
+  addHouse(scene, 390, top + 1520, SETTLEMENT_HOUSE_TEXTURES.thatchB, 275);
+  addHouse(scene, 1200, top + 1560, SETTLEMENT_HOUSE_TEXTURES.hallA, 295);
 
   addFence(scene, 360, top + 650, 260);
   addFence(scene, 1235, top + 720, 230);
@@ -151,6 +147,6 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
   ];
   for (const mark of courtyardMarks) {
     scene.add.ellipse(mark.x, mark.y, 110, 52, SETTLEMENT.pathEdge, 0.07).setDepth(-6);
-    scene.add.circle(mark.x + 32, mark.y - 6, 9, SETTLEMENT.oldWood, 0.28).setDepth(-5);
+    scene.add.circle(mark.x + 32, mark.y - 6, 9, SETTLEMENT.oldWood, 0.22).setDepth(-5);
   }
 }

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
 import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
-import { createSettlementEnvironment } from '../game/environmentVisuals';
+import { createSettlementEnvironment, SETTLEMENT_HOUSE_TEXTURES } from '../game/environmentVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
   CULTIVATION,
@@ -132,6 +132,16 @@ export class GameScene extends Phaser.Scene {
     }
     if (!this.textures.exists('c4-flying-sword-r1')) {
       this.load.image('c4-flying-sword-r1', c4AssetUrl(C4_ASSETS.flyingSwordR1));
+    }
+
+    const settlementHouseAssets = [
+      [SETTLEMENT_HOUSE_TEXTURES.thatchA, C4_ASSETS.settlementHouseThatchA],
+      [SETTLEMENT_HOUSE_TEXTURES.tileA, C4_ASSETS.settlementHouseTileA],
+      [SETTLEMENT_HOUSE_TEXTURES.hallA, C4_ASSETS.settlementHouseHallA],
+      [SETTLEMENT_HOUSE_TEXTURES.thatchB, C4_ASSETS.settlementHouseThatchB],
+    ] as const;
+    for (const [key, path] of settlementHouseAssets) {
+      if (!this.textures.exists(key)) this.load.image(key, c4AssetUrl(path));
     }
   }
 
