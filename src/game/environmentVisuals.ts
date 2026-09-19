@@ -42,6 +42,7 @@ function addHouse(
   y: number,
   textureKey: SettlementHouseTexture,
   displayWidth: number,
+  flipX = false,
 ): void {
   if (!scene.textures.exists(textureKey)) {
     scene.add.rectangle(x, y, displayWidth, 150, 0xff00aa, 0.75)
@@ -57,7 +58,8 @@ function addHouse(
   const image = scene.add.image(x, y, textureKey)
     .setOrigin(0.5, 0.58)
     .setDepth(-3);
-  image.setScale(displayWidth / image.width);
+  const scale = displayWidth / image.width;
+  image.setScale(flipX ? -scale : scale, scale);
 }
 
 function addFence(scene: Phaser.Scene, x: number, y: number, width: number): void {
@@ -116,7 +118,7 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
   }
 
   addHouse(scene, 365, top + 390, SETTLEMENT_HOUSE_TEXTURES.thatchA, 290);
-  addHouse(scene, 1240, top + 455, SETTLEMENT_HOUSE_TEXTURES.tileA, 310);
+  addHouse(scene, 1240, top + 455, SETTLEMENT_HOUSE_TEXTURES.tileA, 310, true);
   addHouse(scene, 420, top + 1000, SETTLEMENT_HOUSE_TEXTURES.hallA, 325);
   addHouse(scene, 1210, top + 1090, SETTLEMENT_HOUSE_TEXTURES.tileA, 285);
   addHouse(scene, 390, top + 1520, SETTLEMENT_HOUSE_TEXTURES.thatchB, 275);
