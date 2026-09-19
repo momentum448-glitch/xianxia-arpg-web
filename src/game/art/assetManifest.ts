@@ -10,6 +10,10 @@ export const C4_ASSETS = {
   settlementPathSegB: 'assets/c4/environment/settlement/env_settlement_path_seg_b.png',
   settlementGroundPatchA: 'assets/c4/environment/settlement/env_settlement_ground_patch_a.png',
   settlementForecourtA: 'assets/c4/environment/settlement/env_settlement_forecourt_a.png',
+  settlementTreeA: 'assets/c4/environment/settlement/env_tree_village_a.png',
+  settlementFenceA: 'assets/c4/environment/settlement/env_fence_village_a.png',
+  settlementRockGrassA: 'assets/c4/environment/settlement/env_rockgrass_village_a.png',
+  settlementLanternPostA: 'assets/c4/environment/settlement/env_lanternpost_village_a.png',
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;
