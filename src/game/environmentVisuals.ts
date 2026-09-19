@@ -257,9 +257,27 @@ function prepareSettlementGroundTextures(scene: Phaser.Scene): void {
   createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.forecourtA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 'forecourt');
 }
 
+function trimLegacyWorldCorridorForSettlement(scene: Phaser.Scene, zone: WorldZone): void {
+  const legacyRoad = scene.children.list.find((child) =>
+    child instanceof Phaser.GameObjects.Rectangle
+    && child.depth === -8
+    && Math.abs(child.x - 800) < 1
+    && Math.abs(child.displayWidth - 170) < 1
+    && child.displayHeight > zone.yMax - zone.yMin
+  );
+
+  if (!(legacyRoad instanceof Phaser.GameObjects.Rectangle)) return;
+  legacyRoad.setPosition(800, zone.yMin / 2).setDisplaySize(170, zone.yMin);
+}
+
 export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone): void {
   const centerX = 800;
   const top = zone.yMin;
+
+  // The old world-shell corridor was a straight debug strip through the full
+  // map. Preserve it outside the village, but stop it at the settlement gate
+  // so the authored painterly route is the only road visible inside the town.
+  trimLegacyWorldCorridorForSettlement(scene, zone);
 
   const washes = [
     { x: 300, y: top + 250, w: 620, h: 330, c: 0xcbb98f, a: 0.055, r: -0.08 },
