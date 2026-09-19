@@ -3,9 +3,19 @@
 Snapshot: 2026-09-19
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified `main`: `0bcbbeb101ae06e311def5d8100507e724dc9700`
-Visible build shorthand: `BUILD 0bcbbeb`
 Current milestone: C4.2 production-art correction
+
+## Snapshot semantics
+
+Functional/gameplay baseline at the moment the current blocker was captured:
+
+`0bcbbeb101ae06e311def5d8100507e724dc9700` (`BUILD 0bcbbeb`)
+
+That commit contains PR #39, the settlement production-house integration and the black-rendering bug described below.
+
+PR #40 later merged the cross-chat documentation system only. Therefore live `main` is expected to be newer than `0bcbbeb` even if no gameplay/asset fix has happened.
+
+**Always verify live `main`, open PRs, and relevant branches before acting. Do not treat the baseline SHA above as a permanent current-main pointer.**
 
 ## Current objective
 
@@ -33,9 +43,9 @@ Fix the settlement production-house black-render bug with the smallest possible 
 
 ### Settlement house integration
 
-PR #39 (`C4.2 Phase 1: integrate settlement production houses`) was merged to `main`.
+PR #39 (`C4.2 Phase 1: integrate settlement production houses`) was merged.
 
-Runtime house files are under:
+Runtime house files:
 
 ```text
 public/assets/c4/environment/settlement/
@@ -45,43 +55,36 @@ public/assets/c4/environment/settlement/
   env_house_thatch_b.png
 ```
 
-The runtime now preloads/render these textures and uses fail-loud `HOUSE TEX MISS` diagnostics instead of silently falling back to procedural houses.
+Runtime preloads/renders these textures and exposes `HOUSE TEX MISS` instead of silently falling back to procedural houses.
 
 ## Current unfinished state
 
-The house integration is **not phone-passed**.
+The production-house integration is **not phone-passed**.
 
-Observed live symptom:
+Observed symptom:
 
 - production houses render as black blocks on phone/live build.
 
-Best-supported technical diagnosis:
+Best-supported diagnosis:
 
 - integrated house PNGs are palette/indexed PNGs (`color type 3`);
-- the known-good direction is true RGBA PNG (`color type 6`, Pillow mode `RGBA`, real alpha channel);
+- the known-good runtime direction is true RGBA PNG (`color type 6`, Pillow mode `RGBA`, real alpha channel);
 - this matches the class of failure previously solved for the flying-sword texture.
 
 No gameplay/layout redesign is required to test this diagnosis.
 
-## Current branch truth
-
-### `main`
-
-- `0bcbbeb101ae06e311def5d8100507e724dc9700`
-- contains PR #39 house integration;
-- still contains the black-rendering production-house assets.
+## Branch truth at the snapshot
 
 ### `fix/settlement-house-rgba`
 
 At last verification:
 
-- based on current `main`;
-- ahead of `main` with staging/workflow commits;
-- no PR exists for it;
-- no merge/deploy has occurred;
-- runtime house PNGs have not actually been replaced by a finished fix.
+- contains staging/workflow commits;
+- had no PR;
+- had not been merged/deployed;
+- had not actually replaced the runtime house PNGs with a finished fix.
 
-Known branch contents include staging/proof material such as:
+Known contents included:
 
 ```text
 .asset_stage_rgba/env_house_hall_a.part0
@@ -90,7 +93,7 @@ Known branch contents include staging/proof material such as:
 .github/workflows/convert-settlement-house-rgba.yml
 ```
 
-The Hall verification workflow expects, among other properties:
+The Hall verification workflow expected:
 
 - PNG signature;
 - bit depth 8;
@@ -99,15 +102,17 @@ The Hall verification workflow expects, among other properties:
 - Hall dimensions 128 × 89;
 - alpha extrema 0–255.
 
-Interpretation: this branch contains technical staging/proof machinery, not a completed runtime repair.
+Interpretation: technical staging/proof machinery, not a completed runtime repair.
 
 ### `fix/settlement-hall-direct-proof`
 
 At last verification:
 
-- identical to `main`;
+- identical to the functional baseline;
 - no useful delta;
 - no completed proof.
+
+A newer chat must re-check both branches because GitHub may have advanced after this snapshot.
 
 ## Do not repeat blindly
 
@@ -132,7 +137,7 @@ Do not call the house bug fixed until the validated file is the actual runtime P
 
 A Hall image blob attempt previously hung at the blob-creation step.
 
-Do not wait indefinitely or retry the same opaque operation without checking whether it partially succeeded.
+Do not retry the same opaque write without first checking whether anything partially succeeded.
 
 ### PC / Work / Drive bridge approaches
 
@@ -148,9 +153,9 @@ These introduced synchronization ambiguity and duplicate-write risk. They are no
 
 ## Exact next actions
 
-1. Re-verify live GitHub state before writing: `main`, active house-fix branches, and any PR created after this snapshot.
-2. Continue from a clean branch based on current `main` unless a newer branch already contains a clean runtime Hall replacement.
-3. Replace only `public/assets/c4/environment/settlement/env_house_hall_a.png` with a verified true-RGBA runtime PNG; keep code/layout/gameplay unchanged for the proof.
+1. Re-verify live GitHub state: current `main`, open PRs, `fix/settlement-house-rgba`, `fix/settlement-hall-direct-proof`, and any newer Hall-fix branch.
+2. If no clean runtime proof already exists, create/continue a clean branch from verified current `main`.
+3. Replace only `public/assets/c4/environment/settlement/env_house_hall_a.png` with a verified true-RGBA runtime PNG; keep code/layout/gameplay unchanged.
 4. Build/deploy and confirm a new visible Build ID.
 5. Phone-QC Hall rendering.
 6. Only after Hall PASS, convert/install the other three house PNGs and re-check all six placements.
@@ -159,14 +164,14 @@ These introduced synchronization ambiguity and duplicate-write risk. They are no
 
 Do not expand the fix until all are true:
 
-- Hall file is a valid 8-bit true-RGBA PNG with transparency;
+- Hall is a valid 8-bit true-RGBA PNG with transparency;
 - project build passes;
 - deployment completes;
 - visible Build ID proves the new bundle is loaded;
 - Hall does not show `HOUSE TEX MISS`;
 - Hall does not render as a black/white rectangle;
 - no dirty alpha edge is visible;
-- house scale still reads correctly against player/NPC;
+- scale still reads correctly against player/NPC;
 - user confirms the result on phone.
 
 ## Final settlement phone gate
@@ -190,7 +195,7 @@ The following older wording must not override newer merged decisions:
 - `docs/PLAN.md` has a lower C4.2 paragraph that still mentions a 620 ms attack cooldown even though the newer locked value is 800 ms.
 - older C4.2 registry status tables may lag behind later execution work.
 
-Use `DECISION_LOG.md`, current code/Git history, and this handoff to resolve those conflicts until the stale files are corrected.
+Use `DECISION_LOG.md`, current code/Git history, and this handoff to resolve those conflicts until those source docs are cleaned up.
 
 ## After the house fix
 
@@ -198,7 +203,7 @@ Continue C4.2 before broad gameplay expansion:
 
 - finish environment production quality beyond the house proof;
 - validate minimum viable animation pipeline;
-- then expand production art to female player, ranged enemy, charger enemy, NPCs, and remaining biome assets.
+- expand production art to female player, ranged enemy, charger enemy, NPCs, and remaining biome assets.
 
 After visual readability stabilizes, return to deferred C3 combat-pressure and enemy-distribution tuning.
 
@@ -206,4 +211,4 @@ C5 later adds boss, save/resume, 15–30 minute end-to-end pacing, mobile perfor
 
 ## Resume sentence
 
-Verify whether GitHub has advanced beyond `0bcbbeb`; if not, start with a clean one-Hall true-RGBA runtime proof and do not batch-convert the remaining settlement houses until that Hall passes phone QC.
+Verify live GitHub state first; if no newer clean fix exists, continue with a one-Hall true-RGBA runtime proof and do not batch-convert the remaining settlement houses until that Hall passes phone QC.
