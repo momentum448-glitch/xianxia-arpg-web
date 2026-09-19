@@ -1,0 +1,58 @@
+name: Finalize settlement house assets
+
+on:
+  push:
+    branches: [c4/settlement-house-assets]
+    paths:
+      - '.github/workflows/finalize-settlement-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c4/settlement-house-assets
+      - name: Rebuild and verify PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/assets/c4/environment/settlement
+          cat .asset_stage/env_house_thatch_a.part1 .asset_stage/env_house_thatch_a.part2 | tr -d '\n\r ' | base64 -d > public/assets/c4/environment/settlement/env_house_thatch_a.png
+          cat .asset_stage/env_house_tile_a.part1 .asset_stage/env_house_tile_a.part2 | tr -d '\n\r ' | base64 -d > public/assets/c4/environment/settlement/env_house_tile_a.png
+          python - <<'PY'
+          import hashlib, pathlib, struct
+
+          root = pathlib.Path('public/assets/c4/environment/settlement')
+          expected = {
+              'env_house_hall_a.png': (256, 172, None),
+              'env_house_thatch_a.png': (256, 206, 'f109c7859411cc5c644113ca1f8d782e4362790d6285ed3c2e21e10783f650cc'),
+              'env_house_thatch_b.png': (256, 209, None),
+              'env_house_tile_a.png': (256, 183, '41716b51e0a8dd4c4e17b1924a4999a7d50e6a7569ff7884bc69f5452152c3d7'),
+          }
+          for name, (ew, eh, expected_sha) in expected.items():
+              p = root / name
+              data = p.read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n', f'{name}: bad PNG signature'
+              width, height = struct.unpack('>II', data[16:24])
+              assert (width, height) == (ew, eh), f'{name}: got {(width,height)}, expected {(ew,eh)}'
+              assert b'tRNS' in data or data[25] in (4, 6), f'{name}: no transparency channel/chunk'
+              sha = hashlib.sha256(data).hexdigest()
+              if expected_sha:
+                  assert sha == expected_sha, f'{name}: staged bytes do not match approved runtime asset'
+              print(name, len(data), f'{width}x{height}', sha)
+          PY
+      - name: Commit finalized assets and remove staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -rf .asset_stage
+          rm -f .github/workflows/finalize-settlement-assets.yml
+          git add -A
+          git commit -m 'feat(art): finalize settlement house production assets'
+          git push origin HEAD:c4/settlement-house-assets
