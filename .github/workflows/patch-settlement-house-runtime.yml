@@ -1,0 +1,45 @@
+name: Patch settlement house runtime
+
+on:
+  push:
+    branches: [c4/settlement-house-assets]
+    paths:
+      - '.github/workflows/patch-settlement-house-runtime.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c4/settlement-house-assets
+      - name: Patch GameScene preload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/scenes/GameScene.ts')
+          s = p.read_text()
+          old_import = "import { createSettlementEnvironment } from '../game/environmentVisuals';"
+          new_import = "import { createSettlementEnvironment, SETTLEMENT_HOUSE_TEXTURES } from '../game/environmentVisuals';"
+          assert old_import in s
+          s = s.replace(old_import, new_import, 1)
+          old = """    if (!this.textures.exists('c4-flying-sword-r1')) {\n      this.load.image('c4-flying-sword-r1', c4AssetUrl(C4_ASSETS.flyingSwordR1));\n    }\n"""
+          new = """    if (!this.textures.exists('c4-flying-sword-r1')) {\n      this.load.image('c4-flying-sword-r1', c4AssetUrl(C4_ASSETS.flyingSwordR1));\n    }\n\n    const settlementHouseAssets = [\n      [SETTLEMENT_HOUSE_TEXTURES.thatchA, C4_ASSETS.settlementHouseThatchA],\n      [SETTLEMENT_HOUSE_TEXTURES.tileA, C4_ASSETS.settlementHouseTileA],\n      [SETTLEMENT_HOUSE_TEXTURES.hallA, C4_ASSETS.settlementHouseHallA],\n      [SETTLEMENT_HOUSE_TEXTURES.thatchB, C4_ASSETS.settlementHouseThatchB],\n    ] as const;\n    for (const [key, path] of settlementHouseAssets) {\n      if (!this.textures.exists(key)) this.load.image(key, c4AssetUrl(path));\n    }\n"""
+          assert old in s
+          p.write_text(s.replace(old, new, 1))
+          PY
+      - name: Commit runtime integration and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -f .github/workflows/patch-settlement-house-runtime.yml
+          git add -A
+          git commit -m 'feat(art): preload settlement production houses'
+          git push origin HEAD:c4/settlement-house-assets
