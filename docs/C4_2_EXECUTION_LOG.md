@@ -66,26 +66,54 @@ Result:
 
 ## 2026-09-18 — Flying sword + restrained VFX candidate
 
-Status: ISOLATED_READY / INTEGRATED candidate / phone QC pending
+Status: PHONE_PASS
 
 Completed:
-- `FX-SWORD` isolated as a single 163×74 RGBA transparent PNG;
-- asset registered under `public/assets/c4/vfx/sword/fx_sword_r1.png`;
-- flying sword texture uses centralized manifest and art scale configuration;
-- procedural sword remains a safe fallback if the texture is unavailable;
-- launch feedback upgraded to a short white-jade halo/core flash;
-- trail upgraded to a restrained two-layer white-jade streak;
-- impact upgraded to a brief bright core + expanding ring;
-- homing, contact damage, no-pierce behavior, attack range, projectile speed and combat timing are unchanged.
+- `FX-SWORD` isolated as a single transparent PNG and integrated through the central manifest;
+- a binary corruption / black-block render issue was diagnosed and repaired;
+- launch, trail and impact were re-enabled one layer at a time and phone-QC'd independently;
+- user confirmed launch cue, trail readability and impact feedback all pass on phone;
+- homing, contact damage, no-pierce behavior, attack range, projectile speed and combat timing remain unchanged.
 
-Phone QC required before promotion:
-- flying sword must read clearly as a sword at full speed;
-- no baked rectangle/background or dirty alpha edge;
-- launch/trail remain subtle enough not to obscure enemies;
-- impact is the brightest moment;
-- Realm 1 stays restrained while Realm 2 can read slightly brighter/jade-tinted.
+Result:
+- `FX-SWORD`, launch, Realm 1 trail and impact complete the Phase 1 phone gate;
+- current VFX remain intentionally restrained, with impact the brightest moment.
 
-Next action:
-- CI + Pages deploy;
-- phone QC on the exact Build ID;
-- if PASS, proceed to the Phase 1 settlement ground + minimal village props proof.
+## 2026-09-18 — Settlement runtime layout proof
+
+Status: LAYOUT_PASS
+
+Completed:
+- old geometric house placeholders were replaced by a dedicated settlement environment module;
+- warm-paper ground variation, central travel path, sparse fences/trees/stones and six house placements were tested live;
+- no new collision was added, so the art proof does not alter movement/gameplay;
+- user confirmed the settlement layout and density are acceptable.
+
+Decision:
+- keep this approved placement/layout;
+- do not revisit village composition while replacing house visuals with production textures.
+
+## 2026-09-19 — Settlement production house assets
+
+Status: INTEGRATED candidate / phone QC pending
+
+Completed:
+- four approved production house assets were isolated and normalized as transparent PNGs;
+- runtime files live under `public/assets/c4/environment/settlement/`:
+  - `env_house_thatch_a.png`;
+  - `env_house_tile_a.png`;
+  - `env_house_hall_a.png`;
+  - `env_house_thatch_b.png`;
+- finalized files were verified for PNG signature, expected dimensions and transparency before integration;
+- all four paths were registered in the central C4 manifest with per-build cache busting;
+- GameScene preloads the four house textures;
+- `environmentVisuals.ts` now renders the approved settlement house placements from real textures instead of procedural house geometry;
+- missing textures fail visibly with `HOUSE TEX MISS` rather than silently falling back to code houses;
+- surrounding runtime proof props remain temporary and intentionally subdued until the house phone QC passes.
+
+Phone QC gate:
+- all six house placements show production art, not `HOUSE TEX MISS`;
+- no black/white rectangle or dirty alpha edge;
+- house scale is believable relative to player/NPC;
+- central route remains readable and uncluttered;
+- duplicated house variants are acceptable at normal phone zoom.
