@@ -13,66 +13,61 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Forensic inspect Thatch B PNG
+      - name: Recover partial Thatch B scanline coverage
         run: |
           python - <<'PY'
           from pathlib import Path
           import struct, zlib, hashlib
 
-          path = Path('public/assets/c4/environment/settlement/env_house_thatch_b.png')
-          data = path.read_bytes()
-          print('bytes', len(data), 'sha256', hashlib.sha256(data).hexdigest())
-          assert data[:8] == b'\x89PNG\r\n\x1a\n'
+          data = Path('public/assets/c4/environment/settlement/env_house_thatch_b.png').read_bytes()
           pos = 8
+          w = h = depth = ctype = interlace = None
           idat = bytearray()
-          chunks = []
-          while pos + 12 <= len(data):
+          while pos + 8 <= len(data):
               n = struct.unpack('>I', data[pos:pos+4])[0]
               typ = data[pos+4:pos+8]
-              end = pos + 12 + n
-              if end > len(data):
-                  print('TRUNCATED_CHUNK', typ, 'declared', n, 'available', len(data) - pos - 12)
-                  break
-              payload = data[pos+8:pos+8+n]
-              stored_crc = struct.unpack('>I', data[pos+8+n:pos+12+n])[0]
-              actual_crc = zlib.crc32(typ)
-              actual_crc = zlib.crc32(payload, actual_crc) & 0xffffffff
-              ok = stored_crc == actual_crc
-              print('chunk', typ.decode('ascii', 'replace'), 'len', n, 'crc_ok', ok)
-              chunks.append((typ, n, ok))
-              if typ == b'IHDR':
+              payload_start = pos + 8
+              payload_end = payload_start + n
+              if typ == b'IHDR' and payload_end <= len(data):
+                  payload = data[payload_start:payload_end]
                   w, h, depth, ctype, comp, filt, interlace = struct.unpack('>IIBBBBB', payload)
-                  print('IHDR', w, h, depth, ctype, comp, filt, interlace)
               if typ == b'IDAT':
-                  idat.extend(payload)
-              pos = end
+                  available_end = min(payload_end, len(data))
+                  idat.extend(data[payload_start:available_end])
+                  if payload_end + 4 > len(data):
+                      print('IDAT_TRUNCATED declared', n, 'available_payload', len(data) - payload_start,
+                            'missing_payload', max(0, payload_end - len(data)))
+                      break
+              if payload_end + 4 > len(data):
+                  break
+              pos = payload_end + 4
               if typ == b'IEND':
                   break
-          print('parsed_end', pos, 'file_len', len(data), 'idat_bytes', len(idat))
+
+          print('IHDR', w, h, depth, ctype, 'interlace', interlace, 'partial_idat_bytes', len(idat))
           d = zlib.decompressobj()
           out = bytearray()
-          error_at = None
+          error = None
           for i in range(0, len(idat), 64):
-              block = bytes(idat[i:i+64])
               try:
-                  out.extend(d.decompress(block))
+                  out.extend(d.decompress(bytes(idat[i:i+64])))
               except Exception as exc:
-                  error_at = i
-                  print('zlib_error_at_compressed_offset', i, type(exc).__name__, str(exc))
+                  error = (i, type(exc).__name__, str(exc))
                   break
-          if error_at is None:
-              try:
-                  out.extend(d.flush())
-                  print('zlib_flush_ok', 'eof', d.eof, 'unused', len(d.unused_data), 'unconsumed', len(d.unconsumed_tail))
-              except Exception as exc:
-                  print('zlib_flush_error', type(exc).__name__, str(exc))
-          print('decompressed_bytes_before_error', len(out))
-          expected = (w + 1) * h if depth == 8 and ctype == 3 and interlace == 0 else None
-          print('expected_unfiltered_stream_bytes_approx', expected)
-          if expected:
-              print('coverage_ratio', round(len(out) / expected, 6))
-              print('whole_rows_available_approx', len(out) // (w + 1), 'of', h)
+          print('zlib_error', error, 'eof', d.eof)
+          print('raw_scanline_bytes_recovered', len(out))
+          row_size = w + 1
+          expected = row_size * h
+          full_rows = len(out) // row_size
+          partial_bytes = len(out) % row_size
+          print('expected_scanline_bytes', expected)
+          print('full_rows_recovered', full_rows, 'of', h, 'partial_next_row_bytes', partial_bytes,
+                'coverage', round(len(out)/expected, 6))
+          if full_rows:
+              filter_counts = {}
+              for y in range(full_rows):
+                  f = out[y*row_size]
+                  filter_counts[f] = filter_counts.get(f, 0) + 1
+              print('recovered_filter_types', filter_counts)
+          print('file_sha256', hashlib.sha256(data).hexdigest())
           PY
