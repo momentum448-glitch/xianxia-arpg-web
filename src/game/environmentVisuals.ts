@@ -15,6 +15,13 @@ export const SETTLEMENT_GROUND_TEXTURES = {
   forecourtA: 'c4-settlement-forecourt-a',
 } as const;
 
+export const SETTLEMENT_PROP_TEXTURES = {
+  treeA: 'c4-settlement-tree-a',
+  fenceA: 'c4-settlement-fence-a',
+  rockGrassA: 'c4-settlement-rockgrass-a',
+  lanternPostA: 'c4-settlement-lanternpost-a',
+} as const;
+
 const SETTLEMENT_GROUND_RUNTIME_TEXTURES = {
   pathA: 'c4-settlement-path-a-masked',
   pathB: 'c4-settlement-path-b-masked',
@@ -440,19 +447,28 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
   addHouse(scene, 390, top + 1520, SETTLEMENT_HOUSE_TEXTURES.thatchB, 275);
   addHouse(scene, 1200, top + 1560, SETTLEMENT_HOUSE_TEXTURES.hallA, 295);
 
-  addFence(scene, 360, top + 650, 260);
+  // C4.2 production prop proof: one small cluster only, preserving gameplay geometry.
+  const propImage = (texture: string, x: number, y: number, width: number, depth = -4, flipX = false): void => {
+    const image = scene.add.image(x, y, texture).setOrigin(0.5, 0.82).setDepth(depth);
+    const scale = width / image.width;
+    image.setScale(flipX ? -scale : scale, scale);
+  };
+  propImage(SETTLEMENT_PROP_TEXTURES.treeA, 190, top + 310, 205, -4);
+  propImage(SETTLEMENT_PROP_TEXTURES.fenceA, 360, top + 650, 260, -4);
+  propImage(SETTLEMENT_PROP_TEXTURES.rockGrassA, 610, top + 350, 125, -5);
+  propImage(SETTLEMENT_PROP_TEXTURES.lanternPostA, 500, top + 470, 78, -3);
+
+
   addFence(scene, 1235, top + 720, 230);
   addFence(scene, 390, top + 1290, 220);
   addFence(scene, 1190, top + 1370, 250);
 
-  addTreeCluster(scene, 190, top + 310, 1.0);
   addTreeCluster(scene, 1420, top + 270, 0.92);
   addTreeCluster(scene, 210, top + 890, 0.82);
   addTreeCluster(scene, 1410, top + 930, 0.9);
   addTreeCluster(scene, 180, top + 1490, 0.78);
   addTreeCluster(scene, 1430, top + 1530, 0.82);
 
-  addStonePatch(scene, 610, top + 350, false);
   addStonePatch(scene, 1005, top + 610, true);
   addStonePatch(scene, 590, top + 1190, true);
   addStonePatch(scene, 1015, top + 1470, false);

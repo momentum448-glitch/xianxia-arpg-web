@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { PLAYER_RUNTIME_ANIMATION } from '../game/art/animationConfig';
 import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
 import { createEnemyVisual, createFlyingSwordVisual, createPlayerVisual } from '../game/actorVisuals';
-import { createSettlementEnvironment, SETTLEMENT_GROUND_TEXTURES, SETTLEMENT_HOUSE_TEXTURES } from '../game/environmentVisuals';
+import { createSettlementEnvironment, SETTLEMENT_GROUND_TEXTURES, SETTLEMENT_HOUSE_TEXTURES, SETTLEMENT_PROP_TEXTURES } from '../game/environmentVisuals';
 import { COMBAT, type EnemyKind } from '../game/combatConfig';
 import {
   CULTIVATION,
@@ -151,6 +151,16 @@ export class GameScene extends Phaser.Scene {
       [SETTLEMENT_GROUND_TEXTURES.forecourtA, C4_ASSETS.settlementForecourtA],
     ] as const;
     for (const [key, path] of settlementGroundAssets) {
+      if (!this.textures.exists(key)) this.load.image(key, c4AssetUrl(path));
+    }
+
+    const settlementPropAssets = [
+      [SETTLEMENT_PROP_TEXTURES.treeA, C4_ASSETS.settlementTreeA],
+      [SETTLEMENT_PROP_TEXTURES.fenceA, C4_ASSETS.settlementFenceA],
+      [SETTLEMENT_PROP_TEXTURES.rockGrassA, C4_ASSETS.settlementRockGrassA],
+      [SETTLEMENT_PROP_TEXTURES.lanternPostA, C4_ASSETS.settlementLanternPostA],
+    ] as const;
+    for (const [key, path] of settlementPropAssets) {
       if (!this.textures.exists(key)) this.load.image(key, c4AssetUrl(path));
     }
   }
