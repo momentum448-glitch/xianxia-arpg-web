@@ -15,13 +15,15 @@ export const SETTLEMENT_GROUND_TEXTURES = {
   forecourtA: 'c4-settlement-forecourt-a',
 } as const;
 
-type SettlementHouseTexture = typeof SETTLEMENT_HOUSE_TEXTURES[keyof typeof SETTLEMENT_HOUSE_TEXTURES];
+const SETTLEMENT_GROUND_RUNTIME_TEXTURES = {
+  pathA: 'c4-settlement-path-a-masked',
+  pathB: 'c4-settlement-path-b-masked',
+  patchA: 'c4-settlement-ground-patch-a-masked',
+  forecourtA: 'c4-settlement-forecourt-a-masked',
+} as const;
 
-type OrganicPathNode = {
-  x: number;
-  y: number;
-  width: number;
-};
+type SettlementHouseTexture = typeof SETTLEMENT_HOUSE_TEXTURES[keyof typeof SETTLEMENT_HOUSE_TEXTURES];
+type GroundMaskMode = 'path-a' | 'path-b' | 'patch' | 'forecourt';
 
 const SETTLEMENT = {
   warmPaper: 0xe3d5b5,
@@ -82,154 +84,6 @@ function addRoughPatch(
     .fillStyle(color, alpha)
     .fillPoints(points, true)
     .setDepth(depth);
-}
-
-function pathWidthAt(nodes: OrganicPathNode[], t: number): number {
-  const segmentFloat = t * (nodes.length - 1);
-  const segmentIndex = Math.min(nodes.length - 2, Math.floor(segmentFloat));
-  const localT = segmentFloat - segmentIndex;
-  return nodes[segmentIndex].width
-    + (nodes[segmentIndex + 1].width - nodes[segmentIndex].width) * localT;
-}
-
-function makeRibbonPoints(
-  curve: Phaser.Curves.Spline,
-  nodes: OrganicPathNode[],
-  samples: number,
-  widthScale: number,
-  seed: number,
-): Phaser.Math.Vector2[] {
-  const left: Phaser.Math.Vector2[] = [];
-  const right: Phaser.Math.Vector2[] = [];
-
-  for (let i = 0; i <= samples; i += 1) {
-    const t = i / samples;
-    const point = curve.getPoint(t);
-    const tangent = curve.getTangent(t).normalize();
-    const normalX = -tangent.y;
-    const normalY = tangent.x;
-    const width = pathWidthAt(nodes, t) * widthScale;
-    const halfWidth = width * 0.5;
-    const edgeNoise = roughUnit(seed, i) * 0.055;
-    const asymmetry = roughUnit(seed + 11, i) * 0.035;
-    const leftWidth = halfWidth * (1 + edgeNoise + asymmetry);
-    const rightWidth = halfWidth * (1 + edgeNoise - asymmetry);
-
-    left.push(new Phaser.Math.Vector2(
-      point.x + normalX * leftWidth,
-      point.y + normalY * leftWidth,
-    ));
-    right.push(new Phaser.Math.Vector2(
-      point.x - normalX * rightWidth,
-      point.y - normalY * rightWidth,
-    ));
-  }
-
-  return [...left, ...right.reverse()];
-}
-
-function addPathRuts(
-  scene: Phaser.Scene,
-  curve: Phaser.Curves.Spline,
-  nodes: OrganicPathNode[],
-  samples: number,
-  offsetScale: number,
-  color: number,
-  alpha: number,
-): void {
-  const leftRut: Phaser.Math.Vector2[] = [];
-  const rightRut: Phaser.Math.Vector2[] = [];
-
-  for (let i = 0; i <= samples; i += 1) {
-    const t = i / samples;
-    const point = curve.getPoint(t);
-    const tangent = curve.getTangent(t).normalize();
-    const normalX = -tangent.y;
-    const normalY = tangent.x;
-    const offset = pathWidthAt(nodes, t) * offsetScale;
-    const wobble = Math.sin(i * 0.83) * 3.5;
-
-    leftRut.push(new Phaser.Math.Vector2(
-      point.x + normalX * (offset + wobble),
-      point.y + normalY * (offset + wobble),
-    ));
-    rightRut.push(new Phaser.Math.Vector2(
-      point.x - normalX * (offset - wobble),
-      point.y - normalY * (offset - wobble),
-    ));
-  }
-
-  const graphics = scene.add.graphics().setDepth(-6);
-  graphics.lineStyle(4, color, alpha);
-  graphics.beginPath();
-  graphics.moveTo(leftRut[0].x, leftRut[0].y);
-  for (let i = 1; i < leftRut.length; i += 1) graphics.lineTo(leftRut[i].x, leftRut[i].y);
-  graphics.strokePath();
-  graphics.beginPath();
-  graphics.moveTo(rightRut[0].x, rightRut[0].y);
-  for (let i = 1; i < rightRut.length; i += 1) graphics.lineTo(rightRut[i].x, rightRut[i].y);
-  graphics.strokePath();
-}
-
-function addPaintedPathRibbon(
-  scene: Phaser.Scene,
-  nodes: OrganicPathNode[],
-  samples: number,
-  seed: number,
-  alpha = 0.28,
-  withRuts = true,
-): void {
-  if (nodes.length < 2) return;
-
-  const curve = new Phaser.Curves.Spline(
-    nodes.map(({ x, y }) => new Phaser.Math.Vector2(x, y)),
-  );
-
-  scene.add.graphics()
-    .fillStyle(SETTLEMENT.pathEdge, alpha * 0.33)
-    .fillPoints(makeRibbonPoints(curve, nodes, samples, 1.1, seed + 3), true)
-    .setDepth(-8);
-
-  scene.add.graphics()
-    .fillStyle(SETTLEMENT.path, alpha)
-    .fillPoints(makeRibbonPoints(curve, nodes, samples, 1, seed), true)
-    .setDepth(-7);
-
-  scene.add.graphics()
-    .fillStyle(SETTLEMENT.soil, alpha * 0.36)
-    .fillPoints(makeRibbonPoints(curve, nodes, samples, 0.58, seed + 7), true)
-    .setDepth(-6);
-
-  if (withRuts) {
-    addPathRuts(scene, curve, nodes, samples, 0.13, SETTLEMENT.pathEdge, 0.075);
-  }
-
-  for (let i = 4; i < samples; i += 7) {
-    const t = i / samples;
-    const point = curve.getPoint(t);
-    const tangent = curve.getTangent(t).normalize();
-    const normalX = -tangent.y;
-    const normalY = tangent.x;
-    const width = pathWidthAt(nodes, t);
-    const side = (i + seed) % 2 === 0 ? 1 : -1;
-    const edgeDistance = width * (0.42 + Math.abs(roughUnit(seed + 5, i)) * 0.08);
-    const detailX = point.x + normalX * edgeDistance * side;
-    const detailY = point.y + normalY * edgeDistance * side;
-    const detailRadius = 18 + (i % 3) * 7;
-
-    addRoughPatch(
-      scene,
-      detailX,
-      detailY,
-      detailRadius * 1.5,
-      detailRadius * 0.55,
-      i % 3 === 0 ? SETTLEMENT.moss : SETTLEMENT.dryGrass,
-      0.075,
-      seed + i,
-      -6,
-      12,
-    );
-  }
 }
 
 function addHouseGrounding(
@@ -332,6 +186,77 @@ function addStonePatch(scene: Phaser.Scene, x: number, y: number, flip = false):
   scene.add.ellipse(x - 24 * direction, y - 8, 26, 14, SETTLEMENT.moss, 0.1).setDepth(-6);
 }
 
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function createMaskedGroundTexture(
+  scene: Phaser.Scene,
+  sourceKey: string,
+  outputKey: string,
+  mode: GroundMaskMode,
+): void {
+  if (scene.textures.exists(outputKey) || !scene.textures.exists(sourceKey)) return;
+
+  const source = scene.textures.get(sourceKey).getSourceImage() as CanvasImageSource & { width: number; height: number };
+  const width = source.width;
+  const height = source.height;
+  const target = scene.textures.createCanvas(outputKey, width, height);
+  if (!target) return;
+
+  const context = target.getContext();
+  context.clearRect(0, 0, width, height);
+  context.drawImage(source, 0, 0, width, height);
+  const imageData = context.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4 + 3;
+      const originalAlpha = pixels[index] / 255;
+      let mask = 1;
+
+      if (mode === 'path-a' || mode === 'path-b') {
+        const phase = mode === 'path-a' ? 0.2 : 1.3;
+        const centerAmp = width * (mode === 'path-a' ? 0.052 : 0.06);
+        const center = width * 0.5
+          + centerAmp * Math.sin((y / height) * Math.PI * 2 * 1.15 + phase)
+          + width * 0.02 * Math.sin((y / height) * Math.PI * 2 * 2.4 + phase * 0.3);
+        const halfBase = width * (mode === 'path-a' ? 0.26 : 0.25);
+        const halfWidth = halfBase
+          + width * 0.045 * Math.sin((y / height) * Math.PI * 2 * 1.6 + phase + 0.8)
+          + width * 0.016 * Math.sin((y / height) * Math.PI * 2 * 3.3 + 0.2);
+        const feather = width * 0.083;
+        const sideMask = clamp01((halfWidth + feather - Math.abs(x - center)) / feather);
+        const fade = height * 0.18;
+        const verticalMask = Math.min(clamp01(y / fade), clamp01((height - 1 - y) / fade));
+        mask = sideMask * verticalMask;
+      } else if (mode === 'patch') {
+        const nx = (x - width * 0.5) / (width * 0.46);
+        const ny = (y - height * 0.5) / (height * 0.46);
+        const radius = Math.sqrt(nx * nx + ny * ny);
+        mask = clamp01((1.08 - radius) / 0.12);
+      } else {
+        const edgeDistance = Math.min(x, width - 1 - x, y, height - 1 - y);
+        mask = clamp01(edgeDistance / 14);
+      }
+
+      const maskedAlpha = originalAlpha * mask;
+      pixels[index] = maskedAlpha < 0.035 ? 0 : Math.round(maskedAlpha * 255);
+    }
+  }
+
+  context.putImageData(imageData, 0, 0);
+  target.refresh();
+}
+
+function prepareSettlementGroundTextures(scene: Phaser.Scene): void {
+  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.pathA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, 'path-a');
+  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.pathB, SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, 'path-b');
+  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.patchA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 'patch');
+  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.forecourtA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 'forecourt');
+}
+
 export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone): void {
   const centerX = 800;
   const top = zone.yMin;
@@ -347,9 +272,8 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     addPaperWash(scene, wash.x, wash.y, wash.w, wash.h, wash.c, wash.a, wash.r);
   }
 
-  // Production ground-art proof. The route is now built from transparent
-  // painterly decals. Slight overlap, alternating source segments and small
-  // rotations keep the path organic while the code only authors composition.
+  prepareSettlementGroundTextures(scene);
+
   const groundImage = (
     texture: string,
     x: number,
@@ -370,24 +294,30 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     return image;
   };
 
+  // Phone-QC TECH_REWORK: stronger transparent masks and deeper overlap remove
+  // the visible rectangular strip. The route also weaves laterally and opens
+  // into a junction before branching toward the first house pair.
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 805, top + 520, 430, 0.02, false, 0.42, -8.5);
+
   const pathPieces = [
-    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 760, y: top + 130, w: 250, r: -0.06, flip: false },
-    { texture: SETTLEMENT_GROUND_TEXTURES.pathB, x: 725, y: top + 360, w: 258, r: 0.08, flip: true },
-    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 790, y: top + 590, w: 270, r: -0.08, flip: true },
-    { texture: SETTLEMENT_GROUND_TEXTURES.pathB, x: 755, y: top + 820, w: 260, r: 0.07, flip: false },
-    { texture: SETTLEMENT_GROUND_TEXTURES.pathA, x: 815, y: top + 1050, w: 252, r: -0.04, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 770, y: top + 90, w: 245, r: -0.03, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 715, y: top + 280, w: 250, r: 0.09, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 760, y: top + 470, w: 255, r: -0.13, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 855, y: top + 660, w: 260, r: -0.12, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 920, y: top + 850, w: 252, r: 0.06, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 870, y: top + 1040, w: 246, r: 0.13, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 790, y: top + 1220, w: 238, r: -0.07, flip: false },
   ] as const;
   for (const piece of pathPieces) {
-    groundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.82, -7);
+    groundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.86, -7);
   }
 
-  // A broad worn patch softens the main junction, while two forecourt decals
-  // connect the road to the first production-house pair.
-  groundImage(SETTLEMENT_GROUND_TEXTURES.patchA, 790, top + 515, 430, 0.02, false, 0.52, -8);
-  groundImage(SETTLEMENT_GROUND_TEXTURES.forecourtA, 500, top + 430, 300, -0.03, false, 0.82, -6);
-  groundImage(SETTLEMENT_GROUND_TEXTURES.forecourtA, 1110, top + 485, 320, 0.04, true, 0.82, -6);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, 575, top + 410, 178, 1.28, true, 0.78, -6.5);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 410, top + 400, 300, -0.04, false, 0.8, -6);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, 1050, top + 455, 185, -1.22, false, 0.78, -6.5);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 1210, top + 445, 315, 0.04, true, 0.8, -6);
 
-  // Keep the lower slice unchanged for one more phone comparison.
+  // Keep the lower slice unchanged for A/B phone comparison until this route passes.
   for (let i = 5; i < 8; i += 1) {
     const y = top + 110 + i * 225;
     const wobble = i % 3 === 0 ? -18 : i % 3 === 1 ? 14 : 0;
