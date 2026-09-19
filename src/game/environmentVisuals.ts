@@ -27,8 +27,6 @@ type GroundMaskMode = 'path-a' | 'path-b' | 'patch' | 'forecourt';
 
 const SETTLEMENT = {
   warmPaper: 0xe3d5b5,
-  path: 0xd7c59f,
-  pathEdge: 0xb9a57e,
   soil: 0xc8b287,
   dryGrass: 0x9b956f,
   oldWood: 0x765f43,
@@ -144,8 +142,12 @@ function addHouse(
       .setStrokeStyle(4, 0xffffff, 0.9)
       .setDepth(-3);
     scene.add.text(x, y, 'HOUSE TEX MISS', {
-      fontFamily: 'monospace', fontSize: '18px', color: '#ffffff', fontStyle: 'bold',
-      backgroundColor: '#7a004f', padding: { x: 6, y: 4 },
+      fontFamily: 'monospace',
+      fontSize: '18px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      backgroundColor: '#7a004f',
+      padding: { x: 6, y: 4 },
     }).setOrigin(0.5).setDepth(-2);
     return;
   }
@@ -198,7 +200,10 @@ function createMaskedGroundTexture(
 ): void {
   if (scene.textures.exists(outputKey) || !scene.textures.exists(sourceKey)) return;
 
-  const source = scene.textures.get(sourceKey).getSourceImage() as CanvasImageSource & { width: number; height: number };
+  const source = scene.textures.get(sourceKey).getSourceImage() as CanvasImageSource & {
+    width: number;
+    height: number;
+  };
   const width = source.width;
   const height = source.height;
   const target = scene.textures.createCanvas(outputKey, width, height);
@@ -251,10 +256,30 @@ function createMaskedGroundTexture(
 }
 
 function prepareSettlementGroundTextures(scene: Phaser.Scene): void {
-  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.pathA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, 'path-a');
-  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.pathB, SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, 'path-b');
-  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.patchA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 'patch');
-  createMaskedGroundTexture(scene, SETTLEMENT_GROUND_TEXTURES.forecourtA, SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 'forecourt');
+  createMaskedGroundTexture(
+    scene,
+    SETTLEMENT_GROUND_TEXTURES.pathA,
+    SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA,
+    'path-a',
+  );
+  createMaskedGroundTexture(
+    scene,
+    SETTLEMENT_GROUND_TEXTURES.pathB,
+    SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB,
+    'path-b',
+  );
+  createMaskedGroundTexture(
+    scene,
+    SETTLEMENT_GROUND_TEXTURES.patchA,
+    SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA,
+    'patch',
+  );
+  createMaskedGroundTexture(
+    scene,
+    SETTLEMENT_GROUND_TEXTURES.forecourtA,
+    SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA,
+    'forecourt',
+  );
 }
 
 function trimLegacyWorldCorridorForSettlement(scene: Phaser.Scene, zone: WorldZone): void {
@@ -270,14 +295,33 @@ function trimLegacyWorldCorridorForSettlement(scene: Phaser.Scene, zone: WorldZo
   legacyRoad.setPosition(800, zone.yMin / 2).setDisplaySize(170, zone.yMin);
 }
 
+function removeSettlementDebugWorldMarks(scene: Phaser.Scene, zone: WorldZone): void {
+  const children = [...scene.children.list];
+  for (const child of children) {
+    if (child instanceof Phaser.GameObjects.Text) {
+      const isSettlementTitle = child.text === zone.name && child.depth === -7;
+      const isSafeLabel = child.text === 'THANH VÂN THÔN • AN TOÀN' && child.depth === -4;
+      if (isSettlementTitle || isSafeLabel) child.destroy();
+      continue;
+    }
+
+    if (
+      child instanceof Phaser.GameObjects.Rectangle
+      && child.depth === -5
+      && Math.abs(child.y - zone.yMin) < 2
+      && child.displayHeight <= 12
+      && child.displayWidth > 1000
+    ) {
+      child.destroy();
+    }
+  }
+}
+
 export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone): void {
-  const centerX = 800;
   const top = zone.yMin;
 
-  // The old world-shell corridor was a straight debug strip through the full
-  // map. Preserve it outside the village, but stop it at the settlement gate
-  // so the authored painterly route is the only road visible inside the town.
   trimLegacyWorldCorridorForSettlement(scene, zone);
+  removeSettlementDebugWorldMarks(scene, zone);
 
   const washes = [
     { x: 300, y: top + 250, w: 620, h: 330, c: 0xcbb98f, a: 0.055, r: -0.08 },
@@ -312,43 +356,68 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     return image;
   };
 
-  // Phone-QC TECH_REWORK: stronger transparent masks and deeper overlap remove
-  // the visible rectangular strip. The route also weaves laterally and opens
-  // into a junction before branching toward the first house pair.
-  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 805, top + 520, 430, 0.02, false, 0.42, -8.5);
-
   const pathPieces = [
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 770, y: top + 90, w: 245, r: -0.03, flip: false },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 715, y: top + 280, w: 250, r: 0.09, flip: true },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 760, y: top + 470, w: 255, r: -0.13, flip: true },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 855, y: top + 660, w: 260, r: -0.12, flip: false },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 920, y: top + 850, w: 252, r: 0.06, flip: false },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 870, y: top + 1040, w: 246, r: 0.13, flip: true },
-    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 790, y: top + 1220, w: 238, r: -0.07, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 770, y: top + 85, w: 245, r: -0.03, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 715, y: top + 270, w: 250, r: 0.09, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 760, y: top + 455, w: 255, r: -0.13, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 855, y: top + 640, w: 260, r: -0.12, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 920, y: top + 825, w: 252, r: 0.06, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 870, y: top + 1010, w: 246, r: 0.13, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 790, y: top + 1195, w: 242, r: -0.07, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 735, y: top + 1375, w: 248, r: 0.1, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 805, y: top + 1550, w: 250, r: -0.11, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 850, y: top + 1715, w: 238, r: 0.05, flip: true },
   ] as const;
+
   for (const piece of pathPieces) {
     groundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.86, -7);
   }
 
-  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, 575, top + 410, 178, 1.28, true, 0.78, -6.5);
-  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 410, top + 400, 300, -0.04, false, 0.8, -6);
-  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, 1050, top + 455, 185, -1.22, false, 0.78, -6.5);
-  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA, 1210, top + 445, 315, 0.04, true, 0.8, -6);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 805, top + 520, 430, 0.02, false, 0.42, -8.5);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 835, top + 1080, 390, -0.03, true, 0.34, -8.5);
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 790, top + 1515, 360, 0.04, false, 0.3, -8.5);
 
-  // Keep the lower slice unchanged for A/B phone comparison until this route passes.
-  for (let i = 5; i < 8; i += 1) {
-    const y = top + 110 + i * 225;
-    const wobble = i % 3 === 0 ? -18 : i % 3 === 1 ? 14 : 0;
-    scene.add.ellipse(centerX + wobble, y, 242 + (i % 2) * 24, 176, SETTLEMENT.path, 0.16)
-      .setDepth(-7);
-    if (i % 2 === 0) {
-      scene.add.ellipse(centerX + wobble + 70, y + 32, 98, 46, SETTLEMENT.pathEdge, 0.06)
-        .setDepth(-7);
-    }
+  const branches = [
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 575, y: top + 410, w: 178, r: 1.28, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 1050, y: top + 455, w: 185, r: -1.22, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 650, y: top + 985, w: 190, r: 1.24, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 1045, y: top + 1080, w: 184, r: -1.26, flip: true },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 590, y: top + 1505, w: 184, r: 1.3, flip: false },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 1045, y: top + 1550, w: 188, r: -1.27, flip: true },
+  ] as const;
+
+  for (const branch of branches) {
+    groundImage(branch.texture, branch.x, branch.y, branch.w, branch.r, branch.flip, 0.78, -6.5);
+  }
+
+  const forecourts = [
+    { x: 410, y: top + 400, w: 300, r: -0.04, flip: false },
+    { x: 1210, y: top + 445, w: 315, r: 0.04, flip: true },
+    { x: 455, y: top + 995, w: 300, r: -0.03, flip: true },
+    { x: 1160, y: top + 1085, w: 290, r: 0.05, flip: false },
+    { x: 430, y: top + 1510, w: 285, r: -0.02, flip: false },
+    { x: 1160, y: top + 1560, w: 292, r: 0.04, flip: true },
+  ] as const;
+
+  for (const forecourt of forecourts) {
+    groundImage(
+      SETTLEMENT_GROUND_RUNTIME_TEXTURES.forecourtA,
+      forecourt.x,
+      forecourt.y,
+      forecourt.w,
+      forecourt.r,
+      forecourt.flip,
+      0.8,
+      -6,
+    );
   }
 
   addHouseGrounding(scene, 365, top + 390, 325, false);
   addHouseGrounding(scene, 1240, top + 455, 347, true);
+  addHouseGrounding(scene, 420, top + 1000, 325, false);
+  addHouseGrounding(scene, 1210, top + 1090, 285, false);
+  addHouseGrounding(scene, 390, top + 1520, 275, false);
+  addHouseGrounding(scene, 1200, top + 1560, 295, false);
 
   addHouse(scene, 365, top + 390, SETTLEMENT_HOUSE_TEXTURES.thatchA, 325);
   addHouse(scene, 1240, top + 455, SETTLEMENT_HOUSE_TEXTURES.tileA, 347, true);
@@ -373,15 +442,4 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
   addStonePatch(scene, 1005, top + 610, true);
   addStonePatch(scene, 590, top + 1190, true);
   addStonePatch(scene, 1015, top + 1470, false);
-
-  const courtyardMarks = [
-    { x: 540, y: top + 770 },
-    { x: 1070, y: top + 870 },
-    { x: 550, y: top + 1390 },
-    { x: 1060, y: top + 1320 },
-  ];
-  for (const mark of courtyardMarks) {
-    scene.add.ellipse(mark.x, mark.y, 110, 52, SETTLEMENT.pathEdge, 0.07).setDepth(-6);
-    scene.add.circle(mark.x + 32, mark.y - 6, 9, SETTLEMENT.oldWood, 0.22).setDepth(-5);
-  }
 }
