@@ -1,0 +1,55 @@
+name: Fix settlement house RGBA
+
+on:
+  push:
+    branches:
+      - fix/settlement-house-rgba
+
+permissions:
+  contents: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/settlement-house-rgba
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Convert palette PNGs to RGBA truecolor
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          root = Path('public/assets/c4/environment/settlement')
+          names = [
+              'env_house_hall_a.png',
+              'env_house_thatch_a.png',
+              'env_house_thatch_b.png',
+              'env_house_tile_a.png',
+          ]
+          for name in names:
+              path = root / name
+              with Image.open(path) as im:
+                  rgba = im.convert('RGBA')
+                  rgba.save(path, format='PNG', optimize=True, compress_level=9)
+              raw = path.read_bytes()
+              assert raw[:8] == b'\x89PNG\r\n\x1a\n'
+              assert raw[24] == 8, (name, 'bit depth', raw[24])
+              assert raw[25] == 6, (name, 'color type', raw[25])
+              with Image.open(path) as check:
+                  assert check.mode == 'RGBA', (name, check.mode)
+                  print(name, check.size, check.mode, len(raw), 'color_type=6')
+          PY
+      - name: Commit converted production assets and remove temporary workflow
+        run: |
+          rm .github/workflows/fix-settlement-house-rgba.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/c4/environment/settlement .github/workflows/fix-settlement-house-rgba.yml
+          git commit -m 'fix(art): convert settlement houses to RGBA PNG'
+          git push origin HEAD:fix/settlement-house-rgba
