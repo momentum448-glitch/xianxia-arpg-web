@@ -7,12 +7,13 @@ This file is the entry point for any new ChatGPT conversation, coding agent, or 
 Before proposing or changing anything, read these files in order:
 
 1. `AGENTS.md` — operating instructions.
-2. `docs/HANDOFF_CURRENT.md` — latest verified working state and exact resume point.
-3. `docs/ASSET_REGISTRY.md` — canonical identity/location/QC state of important assets.
-4. `docs/PROJECT_SOURCES.md` — which non-runtime references must survive across ChatGPT chats.
-5. `docs/DECISION_LOG.md` — durable decisions and what they supersede.
-6. `docs/PROJECT_CONTEXT.md` — stable product/architecture context.
-7. The milestone-specific source documents relevant to the task, especially:
+2. `docs/DISCOVERY_DECISION_PROTOCOL.md` — how to handle unclear problems without premature solutions or question overload.
+3. `docs/HANDOFF_CURRENT.md` — latest verified working state and exact resume point.
+4. `docs/ASSET_REGISTRY.md` — canonical identity/location/QC state of important assets.
+5. `docs/PROJECT_SOURCES.md` — which non-runtime references must survive across ChatGPT chats.
+6. `docs/DECISION_LOG.md` — durable decisions and what they supersede.
+7. `docs/PROJECT_CONTEXT.md` — stable product/architecture context.
+8. The milestone-specific source documents relevant to the task, especially:
    - `docs/PLAN.md`
    - `docs/C4_2_PRODUCTION_PLAN.md`
    - `docs/C4_2_EXECUTION_LOG.md`
@@ -61,17 +62,38 @@ Do not let an older document or similarly named image silently override a newer 
 - If a tool operation appears stuck for roughly 5–10 minutes with no state change, checkpoint actual repo state and switch method instead of waiting indefinitely.
 - Do not broaden scope while a blocking proof is unresolved. Prove one minimal asset/path/interaction first, then scale the solution.
 
-## 4. Communication / decision style
+## 4. Discovery and decision discipline
 
-For unclear problems, focus on at most 5–7 high-impact decisions per round. State low-impact assumptions explicitly instead of asking endless questions.
+When a problem is still unclear, do **not** jump straight to a complete solution. Follow `docs/DISCOVERY_DECISION_PROTOCOL.md`.
 
-Separate:
+First identify the real problem, affected actors/objects, desired outcome, material unknowns/assumptions, and foundational decisions that could change the solution direction.
 
-- what the user must decide;
-- what can be temporarily assumed;
-- what can be measured or tested directly.
+Prioritize no more than **5–7 highest-impact questions or decisions per round**. For lower-impact unknowns, make a reasonable working assumption and state it explicitly.
 
-When the user has already provided enough information, execute rather than re-confirming.
+Separate unresolved items into:
+
+- **ASK** — the user must decide because it depends on intent, preference, creative direction, priority, or acceptable trade-off;
+- **ASSUME** — a low-impact, reversible detail the assistant can temporarily assume;
+- **VERIFY** — a fact that should be researched, inspected, measured, built, or tested instead of guessed or pushed back to the user.
+
+For decision questions, present realistic options, consequences/trade-offs, and a preliminary recommendation when useful.
+
+For VERIFY items, use available tools to inspect code, GitHub, assets, logs, runtime evidence, external documentation, or perform a minimal experiment whenever possible.
+
+After each meaningful discovery round, summarize:
+
+- established facts;
+- locked decisions;
+- working assumptions;
+- remaining open issues;
+- the next smallest action.
+
+Important guardrails:
+
+- do not reopen decisions already locked in `DECISION_LOG.md` unless the user explicitly wants to reconsider them;
+- do not ask the user for information that can be checked directly with available tools;
+- do not keep asking questions once the problem is sufficiently clear;
+- when enough information exists, execute rather than re-confirming.
 
 ## 5. Branch / PR discipline
 
