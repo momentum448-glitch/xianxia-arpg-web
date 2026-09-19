@@ -16,38 +16,63 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install --quiet pillow
-      - name: Inspect house PNGs
+      - name: Forensic inspect Thatch B PNG
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib
-          from PIL import Image, ImageFile, ImageFilter, ImageStat
+          import struct, zlib, hashlib
 
-          root = Path('public/assets/c4/environment/settlement')
-          for path in sorted(root.glob('env_house_*.png')):
-              data = path.read_bytes()
-              strict_ok = True
-              strict_error = ''
+          path = Path('public/assets/c4/environment/settlement/env_house_thatch_b.png')
+          data = path.read_bytes()
+          print('bytes', len(data), 'sha256', hashlib.sha256(data).hexdigest())
+          assert data[:8] == b'\x89PNG\r\n\x1a\n'
+          pos = 8
+          idat = bytearray()
+          chunks = []
+          while pos + 12 <= len(data):
+              n = struct.unpack('>I', data[pos:pos+4])[0]
+              typ = data[pos+4:pos+8]
+              end = pos + 12 + n
+              if end > len(data):
+                  print('TRUNCATED_CHUNK', typ, 'declared', n, 'available', len(data) - pos - 12)
+                  break
+              payload = data[pos+8:pos+8+n]
+              stored_crc = struct.unpack('>I', data[pos+8+n:pos+12+n])[0]
+              actual_crc = zlib.crc32(typ)
+              actual_crc = zlib.crc32(payload, actual_crc) & 0xffffffff
+              ok = stored_crc == actual_crc
+              print('chunk', typ.decode('ascii', 'replace'), 'len', n, 'crc_ok', ok)
+              chunks.append((typ, n, ok))
+              if typ == b'IHDR':
+                  w, h, depth, ctype, comp, filt, interlace = struct.unpack('>IIBBBBB', payload)
+                  print('IHDR', w, h, depth, ctype, comp, filt, interlace)
+              if typ == b'IDAT':
+                  idat.extend(payload)
+              pos = end
+              if typ == b'IEND':
+                  break
+          print('parsed_end', pos, 'file_len', len(data), 'idat_bytes', len(idat))
+          d = zlib.decompressobj()
+          out = bytearray()
+          error_at = None
+          for i in range(0, len(idat), 64):
+              block = bytes(idat[i:i+64])
               try:
-                  with Image.open(path) as im:
-                      im.load()
+                  out.extend(d.decompress(block))
               except Exception as exc:
-                  strict_ok = False
-                  strict_error = f'{type(exc).__name__}: {exc}'
-
-              ImageFile.LOAD_TRUNCATED_IMAGES = True
-              with Image.open(path) as im:
-                  im.load()
-                  rgba = im.convert('RGBA')
-                  alpha = rgba.getchannel('A').getextrema()
-                  edges = rgba.convert('L').filter(ImageFilter.FIND_EDGES)
-                  edge_rms = ImageStat.Stat(edges).rms[0]
-                  print(
-                      f'{path.name} bytes={len(data)} sha256={hashlib.sha256(data).hexdigest()} '
-                      f'size={im.size} mode={im.mode} bit_depth={data[24]} color_type={data[25]} '
-                      f'alpha={alpha} edge_rms={edge_rms:.3f} strict_ok={strict_ok} '
-                      f'strict_error={strict_error!r}'
-                  )
-              ImageFile.LOAD_TRUNCATED_IMAGES = False
+                  error_at = i
+                  print('zlib_error_at_compressed_offset', i, type(exc).__name__, str(exc))
+                  break
+          if error_at is None:
+              try:
+                  out.extend(d.flush())
+                  print('zlib_flush_ok', 'eof', d.eof, 'unused', len(d.unused_data), 'unconsumed', len(d.unconsumed_tail))
+              except Exception as exc:
+                  print('zlib_flush_error', type(exc).__name__, str(exc))
+          print('decompressed_bytes_before_error', len(out))
+          expected = (w + 1) * h if depth == 8 and ctype == 3 and interlace == 0 else None
+          print('expected_unfiltered_stream_bytes_approx', expected)
+          if expected:
+              print('coverage_ratio', round(len(out) / expected, 6))
+              print('whole_rows_available_approx', len(out) // (w + 1), 'of', h)
           PY
