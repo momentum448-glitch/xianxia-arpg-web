@@ -1,4 +1,4 @@
-name: Preview salvage settlement houses
+name: Verify clean settlement house staging
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  salvage-preview:
+  verify-hall:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,38 +27,25 @@ jobs:
       - name: Install Pillow
         run: python -m pip install --quiet pillow
 
-      - name: Salvage into preview folder
+      - name: Decode and verify Hall
         run: |
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageFile
+          import base64, hashlib, io
+          from PIL import Image
 
-          ImageFile.LOAD_TRUNCATED_IMAGES = True
-          src_dir = Path('public/assets/c4/environment/settlement')
-          out_dir = Path('salvage_preview')
-          out_dir.mkdir(exist_ok=True)
-          names = [
-              'env_house_hall_a.png',
-              'env_house_thatch_a.png',
-              'env_house_thatch_b.png',
-              'env_house_tile_a.png',
-          ]
-
-          for name in names:
-              src_path = src_dir / name
-              out_path = out_dir / name
-              with Image.open(src_path) as src:
-                  rgba = src.convert('RGBA')
-                  rgba.save(out_path, format='PNG', optimize=True)
-              with Image.open(out_path) as check:
-                  alpha = check.getchannel('A')
-                  lo, hi = alpha.getextrema()
-                  print(f'{name}: size={check.size} mode={check.mode} alpha={lo}-{hi} bbox={alpha.getbbox()}')
+          stage = Path('.asset_stage_rgba')
+          text = (stage / 'env_house_hall_a.part0').read_text().strip() + (stage / 'env_house_hall_a.part1').read_text().strip()
+          data = base64.b64decode(text, validate=True)
+          expected = 'f047b6d275dbce9c50c6f3a00ae236b9a489f7bd4e2182f0b42cf3f60e45304f'
+          actual = hashlib.sha256(data).hexdigest()
+          assert actual == expected, (actual, expected)
+          assert data[:8] == b'\x89PNG\r\n\x1a\n'
+          assert data[24] == 8 and data[25] == 6, (data[24], data[25])
+          with Image.open(io.BytesIO(data)) as im:
+              im.load()
+              assert im.mode == 'RGBA', im.mode
+              assert im.size == (128, 89), im.size
+              assert im.getchannel('A').getextrema() == (0, 255), im.getchannel('A').getextrema()
+          print('HALL CLEAN RGBA PASS', len(data), actual)
           PY
-
-      - name: Upload salvage preview
-        uses: actions/upload-artifact@v4
-        with:
-          name: settlement-house-salvage-preview
-          path: salvage_preview/*.png
-          if-no-files-found: error
