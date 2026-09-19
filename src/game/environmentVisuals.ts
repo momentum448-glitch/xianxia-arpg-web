@@ -44,11 +44,133 @@ function addPaperWash(
     .setDepth(-9);
 }
 
-function addOrganicPath(
+function roughUnit(seed: number, index: number): number {
+  return Math.sin(seed * 12.9898 + index * 78.233) * 0.5
+    + Math.sin(seed * 4.123 + index * 19.19) * 0.25;
+}
+
+function addRoughPatch(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  radiusX: number,
+  radiusY: number,
+  color: number,
+  alpha: number,
+  seed: number,
+  depth: number,
+  pointsCount = 18,
+): void {
+  const points: Phaser.Math.Vector2[] = [];
+  for (let i = 0; i < pointsCount; i += 1) {
+    const angle = (i / pointsCount) * Math.PI * 2;
+    const ripple = 1 + roughUnit(seed, i) * 0.16;
+    points.push(new Phaser.Math.Vector2(
+      x + Math.cos(angle) * radiusX * ripple,
+      y + Math.sin(angle) * radiusY * ripple,
+    ));
+  }
+
+  scene.add.graphics()
+    .fillStyle(color, alpha)
+    .fillPoints(points, true)
+    .setDepth(depth);
+}
+
+function pathWidthAt(nodes: OrganicPathNode[], t: number): number {
+  const segmentFloat = t * (nodes.length - 1);
+  const segmentIndex = Math.min(nodes.length - 2, Math.floor(segmentFloat));
+  const localT = segmentFloat - segmentIndex;
+  return nodes[segmentIndex].width
+    + (nodes[segmentIndex + 1].width - nodes[segmentIndex].width) * localT;
+}
+
+function makeRibbonPoints(
+  curve: Phaser.Curves.Spline,
+  nodes: OrganicPathNode[],
+  samples: number,
+  widthScale: number,
+  seed: number,
+): Phaser.Math.Vector2[] {
+  const left: Phaser.Math.Vector2[] = [];
+  const right: Phaser.Math.Vector2[] = [];
+
+  for (let i = 0; i <= samples; i += 1) {
+    const t = i / samples;
+    const point = curve.getPoint(t);
+    const tangent = curve.getTangent(t).normalize();
+    const normalX = -tangent.y;
+    const normalY = tangent.x;
+    const width = pathWidthAt(nodes, t) * widthScale;
+    const halfWidth = width * 0.5;
+    const edgeNoise = roughUnit(seed, i) * 0.055;
+    const asymmetry = roughUnit(seed + 11, i) * 0.035;
+    const leftWidth = halfWidth * (1 + edgeNoise + asymmetry);
+    const rightWidth = halfWidth * (1 + edgeNoise - asymmetry);
+
+    left.push(new Phaser.Math.Vector2(
+      point.x + normalX * leftWidth,
+      point.y + normalY * leftWidth,
+    ));
+    right.push(new Phaser.Math.Vector2(
+      point.x - normalX * rightWidth,
+      point.y - normalY * rightWidth,
+    ));
+  }
+
+  return [...left, ...right.reverse()];
+}
+
+function addPathRuts(
+  scene: Phaser.Scene,
+  curve: Phaser.Curves.Spline,
+  nodes: OrganicPathNode[],
+  samples: number,
+  offsetScale: number,
+  color: number,
+  alpha: number,
+): void {
+  const leftRut: Phaser.Math.Vector2[] = [];
+  const rightRut: Phaser.Math.Vector2[] = [];
+
+  for (let i = 0; i <= samples; i += 1) {
+    const t = i / samples;
+    const point = curve.getPoint(t);
+    const tangent = curve.getTangent(t).normalize();
+    const normalX = -tangent.y;
+    const normalY = tangent.x;
+    const offset = pathWidthAt(nodes, t) * offsetScale;
+    const wobble = Math.sin(i * 0.83) * 3.5;
+
+    leftRut.push(new Phaser.Math.Vector2(
+      point.x + normalX * (offset + wobble),
+      point.y + normalY * (offset + wobble),
+    ));
+    rightRut.push(new Phaser.Math.Vector2(
+      point.x - normalX * (offset - wobble),
+      point.y - normalY * (offset - wobble),
+    ));
+  }
+
+  const graphics = scene.add.graphics().setDepth(-6);
+  graphics.lineStyle(4, color, alpha);
+  graphics.beginPath();
+  graphics.moveTo(leftRut[0].x, leftRut[0].y);
+  for (let i = 1; i < leftRut.length; i += 1) graphics.lineTo(leftRut[i].x, leftRut[i].y);
+  graphics.strokePath();
+  graphics.beginPath();
+  graphics.moveTo(rightRut[0].x, rightRut[0].y);
+  for (let i = 1; i < rightRut.length; i += 1) graphics.lineTo(rightRut[i].x, rightRut[i].y);
+  graphics.strokePath();
+}
+
+function addPaintedPathRibbon(
   scene: Phaser.Scene,
   nodes: OrganicPathNode[],
   samples: number,
-  alpha = 0.23,
+  seed: number,
+  alpha = 0.28,
+  withRuts = true,
 ): void {
   if (nodes.length < 2) return;
 
@@ -56,54 +178,50 @@ function addOrganicPath(
     nodes.map(({ x, y }) => new Phaser.Math.Vector2(x, y)),
   );
 
-  for (let i = 0; i <= samples; i += 1) {
+  scene.add.graphics()
+    .fillStyle(SETTLEMENT.pathEdge, alpha * 0.33)
+    .fillPoints(makeRibbonPoints(curve, nodes, samples, 1.1, seed + 3), true)
+    .setDepth(-8);
+
+  scene.add.graphics()
+    .fillStyle(SETTLEMENT.path, alpha)
+    .fillPoints(makeRibbonPoints(curve, nodes, samples, 1, seed), true)
+    .setDepth(-7);
+
+  scene.add.graphics()
+    .fillStyle(SETTLEMENT.soil, alpha * 0.36)
+    .fillPoints(makeRibbonPoints(curve, nodes, samples, 0.58, seed + 7), true)
+    .setDepth(-6);
+
+  if (withRuts) {
+    addPathRuts(scene, curve, nodes, samples, 0.13, SETTLEMENT.pathEdge, 0.075);
+  }
+
+  for (let i = 4; i < samples; i += 7) {
     const t = i / samples;
     const point = curve.getPoint(t);
     const tangent = curve.getTangent(t).normalize();
-    const segmentFloat = t * (nodes.length - 1);
-    const segmentIndex = Math.min(nodes.length - 2, Math.floor(segmentFloat));
-    const localT = segmentFloat - segmentIndex;
-    const width = nodes[segmentIndex].width
-      + (nodes[segmentIndex + 1].width - nodes[segmentIndex].width) * localT;
-    const brushHeight = Math.max(52, width * 0.25);
-    const rotation = Math.atan2(tangent.y, tangent.x) - Math.PI / 2;
+    const normalX = -tangent.y;
+    const normalY = tangent.x;
+    const width = pathWidthAt(nodes, t);
+    const side = (i + seed) % 2 === 0 ? 1 : -1;
+    const edgeDistance = width * (0.42 + Math.abs(roughUnit(seed + 5, i)) * 0.08);
+    const detailX = point.x + normalX * edgeDistance * side;
+    const detailY = point.y + normalY * edgeDistance * side;
+    const detailRadius = 18 + (i % 3) * 7;
 
-    scene.add.ellipse(point.x, point.y, width, brushHeight, SETTLEMENT.path, alpha)
-      .setRotation(rotation)
-      .setDepth(-7);
-
-    if (i % 4 === 0) {
-      const normalX = -tangent.y;
-      const normalY = tangent.x;
-      const side = i % 8 === 0 ? 1 : -1;
-      const edgeOffset = width * 0.4 * side;
-      scene.add.ellipse(
-        point.x + normalX * edgeOffset,
-        point.y + normalY * edgeOffset,
-        width * 0.22,
-        brushHeight * 0.48,
-        SETTLEMENT.pathEdge,
-        alpha * 0.34,
-      )
-        .setRotation(rotation + side * 0.12)
-        .setDepth(-6);
-    }
-
-    if (i % 5 === 2) {
-      const normalX = -tangent.y;
-      const normalY = tangent.x;
-      const side = i % 10 < 5 ? 1 : -1;
-      scene.add.ellipse(
-        point.x + normalX * width * 0.17 * side,
-        point.y + normalY * width * 0.17 * side,
-        width * 0.14,
-        Math.max(15, brushHeight * 0.24),
-        SETTLEMENT.soil,
-        alpha * 0.28,
-      )
-        .setRotation(rotation - side * 0.08)
-        .setDepth(-6);
-    }
+    addRoughPatch(
+      scene,
+      detailX,
+      detailY,
+      detailRadius * 1.5,
+      detailRadius * 0.55,
+      i % 3 === 0 ? SETTLEMENT.moss : SETTLEMENT.dryGrass,
+      0.075,
+      seed + i,
+      -6,
+      12,
+    );
   }
 }
 
@@ -116,35 +234,39 @@ function addHouseGrounding(
 ): void {
   const direction = flip ? -1 : 1;
 
-  scene.add.ellipse(x, y + 48, displayWidth * 0.78, displayWidth * 0.2, 0x3f392f, 0.07)
-    .setDepth(-4);
-  scene.add.ellipse(
+  addRoughPatch(scene, x, y + 50, displayWidth * 0.43, displayWidth * 0.105, 0x3f392f, 0.075, 21, -5);
+  addRoughPatch(
+    scene,
     x + 14 * direction,
-    y + 54,
-    displayWidth * 0.64,
-    displayWidth * 0.14,
+    y + 57,
+    displayWidth * 0.37,
+    displayWidth * 0.078,
     SETTLEMENT.soil,
-    0.13,
-  )
-    .setRotation(direction * 0.035)
-    .setDepth(-5);
+    0.15,
+    31,
+    -4,
+  );
 
   const marks = [
-    { dx: -0.34, dy: 0.2, w: 0.14, h: 0.045, color: SETTLEMENT.moss, alpha: 0.13 },
-    { dx: 0.29, dy: 0.24, w: 0.11, h: 0.038, color: SETTLEMENT.dryGrass, alpha: 0.13 },
-    { dx: -0.18, dy: 0.29, w: 0.09, h: 0.032, color: SETTLEMENT.stone, alpha: 0.11 },
-    { dx: 0.4, dy: 0.14, w: 0.07, h: 0.026, color: SETTLEMENT.moss, alpha: 0.1 },
+    { dx: -0.36, dy: 0.2, rx: 0.07, ry: 0.022, color: SETTLEMENT.moss, alpha: 0.12, seed: 41 },
+    { dx: 0.3, dy: 0.24, rx: 0.055, ry: 0.019, color: SETTLEMENT.dryGrass, alpha: 0.12, seed: 43 },
+    { dx: -0.18, dy: 0.29, rx: 0.045, ry: 0.016, color: SETTLEMENT.stone, alpha: 0.11, seed: 47 },
+    { dx: 0.4, dy: 0.15, rx: 0.038, ry: 0.014, color: SETTLEMENT.moss, alpha: 0.1, seed: 53 },
   ];
 
   for (const mark of marks) {
-    scene.add.ellipse(
+    addRoughPatch(
+      scene,
       x + mark.dx * displayWidth * direction,
       y + mark.dy * displayWidth,
-      mark.w * displayWidth,
-      mark.h * displayWidth,
+      mark.rx * displayWidth,
+      mark.ry * displayWidth,
       mark.color,
       mark.alpha,
-    ).setDepth(-4);
+      mark.seed,
+      -4,
+      10,
+    );
   }
 }
 
@@ -208,41 +330,52 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
   const top = zone.yMin;
 
   const washes = [
-    { x: 300, y: top + 250, w: 620, h: 330, c: 0xcbb98f, a: 0.08, r: -0.08 },
-    { x: 1270, y: top + 330, w: 520, h: 280, c: 0xb9b084, a: 0.07, r: 0.09 },
-    { x: 330, y: top + 970, w: 560, h: 360, c: 0xc7b289, a: 0.07, r: 0.05 },
-    { x: 1260, y: top + 1180, w: 620, h: 390, c: 0xb8ad86, a: 0.065, r: -0.07 },
-    { x: 720, y: top + 1570, w: 760, h: 270, c: SETTLEMENT.warmPaper, a: 0.08, r: 0.03 },
+    { x: 300, y: top + 250, w: 620, h: 330, c: 0xcbb98f, a: 0.055, r: -0.08 },
+    { x: 1270, y: top + 330, w: 520, h: 280, c: 0xb9b084, a: 0.05, r: 0.09 },
+    { x: 330, y: top + 970, w: 560, h: 360, c: 0xc7b289, a: 0.055, r: 0.05 },
+    { x: 1260, y: top + 1180, w: 620, h: 390, c: 0xb8ad86, a: 0.05, r: -0.07 },
+    { x: 720, y: top + 1570, w: 760, h: 270, c: SETTLEMENT.warmPaper, a: 0.065, r: 0.03 },
   ];
   for (const wash of washes) {
     addPaperWash(scene, wash.x, wash.y, wash.w, wash.h, wash.c, wash.a, wash.r);
   }
 
-  // Environment proof: an organic, authored route replaces the ruler-straight
-  // upper settlement lane. Supporting brush marks remain low contrast so actors win.
-  addPaperWash(scene, 790, top + 610, 760, 1230, SETTLEMENT.soil, 0.045, 0.02);
-  addOrganicPath(scene, [
-    { x: 765, y: top + 35, width: 240 },
-    { x: 720, y: top + 230, width: 260 },
-    { x: 835, y: top + 440, width: 300 },
-    { x: 755, y: top + 650, width: 245 },
-    { x: 860, y: top + 855, width: 315 },
-    { x: 785, y: top + 1040, width: 270 },
-    { x: 825, y: top + 1200, width: 250 },
-  ], 46, 0.23);
-  addOrganicPath(scene, [
-    { x: 770, y: top + 390, width: 176 },
-    { x: 645, y: top + 410, width: 164 },
-    { x: 525, y: top + 475, width: 145 },
-  ], 18, 0.18);
-  addOrganicPath(scene, [
-    { x: 835, y: top + 485, width: 182 },
-    { x: 975, y: top + 470, width: 166 },
-    { x: 1090, y: top + 505, width: 148 },
-  ], 18, 0.18);
+  // Production-style ground proof: freeform path ribbons replace the visible
+  // ellipse stamps from the previous geometry proof. Edge noise, worn center,
+  // faint ruts and sparse verge patches make the route read as travelled earth.
+  const mainPath: OrganicPathNode[] = [
+    { x: 765, y: top + 30, width: 232 },
+    { x: 720, y: top + 220, width: 250 },
+    { x: 828, y: top + 425, width: 280 },
+    { x: 748, y: top + 630, width: 238 },
+    { x: 850, y: top + 825, width: 290 },
+    { x: 782, y: top + 1020, width: 258 },
+    { x: 820, y: top + 1205, width: 242 },
+  ];
+  addPaintedPathRibbon(scene, mainPath, 54, 7, 0.3, true);
 
-  // Keep the lower half untouched for this proof so the phone test compares one
-  // deliberate environment slice instead of broadening the entire settlement at once.
+  addPaintedPathRibbon(scene, [
+    { x: 770, y: top + 380, width: 156 },
+    { x: 640, y: top + 410, width: 146 },
+    { x: 515, y: top + 442, width: 132 },
+    { x: 430, y: top + 458, width: 116 },
+  ], 24, 17, 0.24, false);
+
+  addPaintedPathRibbon(scene, [
+    { x: 840, y: top + 470, width: 160 },
+    { x: 970, y: top + 460, width: 148 },
+    { x: 1080, y: top + 482, width: 132 },
+    { x: 1160, y: top + 510, width: 116 },
+  ], 24, 29, 0.24, false);
+
+  // Small authored forecourts make the house approaches feel inhabited rather
+  // than stopping abruptly at a sprite boundary.
+  addRoughPatch(scene, 435, top + 462, 92, 44, SETTLEMENT.path, 0.16, 61, -7, 20);
+  addRoughPatch(scene, 1160, top + 510, 98, 46, SETTLEMENT.path, 0.16, 67, -7, 20);
+  addRoughPatch(scene, 540, top + 645, 82, 31, SETTLEMENT.dryGrass, 0.06, 71, -6, 16);
+  addRoughPatch(scene, 1080, top + 690, 90, 34, SETTLEMENT.moss, 0.055, 73, -6, 16);
+
+  // Keep the lower slice unchanged for one more phone comparison.
   for (let i = 5; i < 8; i += 1) {
     const y = top + 110 + i * 225;
     const wobble = i % 3 === 0 ? -18 : i % 3 === 1 ? 14 : 0;
@@ -254,8 +387,6 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     }
   }
 
-  // Glue the two proof houses into the terrain with contact shadow, worn earth,
-  // and sparse moss/stone marks. The house sprites themselves remain unchanged.
   addHouseGrounding(scene, 365, top + 390, 325, false);
   addHouseGrounding(scene, 1240, top + 455, 347, true);
 
