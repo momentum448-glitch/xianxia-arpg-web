@@ -1,0 +1,25 @@
+name: Trigger settlement house CI
+
+on:
+  push:
+    branches: [c4/settlement-house-assets]
+    paths:
+      - '.github/workflows/trigger-ci-settlement-house.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c4/settlement-house-assets
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -f .github/workflows/trigger-ci-settlement-house.yml
+          git add -A
+          git commit -m 'chore: remove temporary CI trigger'
+          git push origin HEAD:c4/settlement-house-assets
