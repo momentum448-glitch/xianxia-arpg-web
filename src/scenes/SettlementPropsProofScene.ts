@@ -30,7 +30,7 @@ export class SettlementPropsProofScene extends GameScene {
   create(): void {
     super.create();
     this.prepareTreeRuntimeTexture();
-    this.createSettlementPropsProof();
+    this.createSettlementPropsExpansion();
   }
 
   private prepareTreeRuntimeTexture(): void {
@@ -49,10 +49,8 @@ export class SettlementPropsProofScene extends GameScene {
     context.clearRect(0, 0, width, height);
     context.drawImage(source, 0, 0, width, height);
 
-    // TECH_REWORK only: normalize the indexed PNG through an RGBA canvas and
-    // clear any dark background component connected to the image border. This
-    // preserves the accepted tree art while preventing the black texture block
-    // seen on mobile WebGL.
+    // TECH_REWORK only: normalize the accepted tree art through an RGBA canvas
+    // and clear dark background components connected to the image border.
     const imageData = context.getImageData(0, 0, width, height);
     const pixels = imageData.data;
     const visited = new Uint8Array(width * height);
@@ -109,30 +107,114 @@ export class SettlementPropsProofScene extends GameScene {
     target.refresh();
   }
 
-  private createSettlementPropsProof(): void {
+  private createSettlementPropsExpansion(): void {
     const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
     if (!settlement) return;
     const top = settlement.yMin;
 
-    // Remove only the nearby geometric tree placeholder so the proof can be
-    // judged against production art without changing the rest of the village.
-    for (const child of [...this.children.list]) {
-      if (
-        child instanceof Phaser.GameObjects.Container
-        && child.depth === -4
-        && Phaser.Math.Distance.Between(child.x, child.y, 1420, top + 270) < 90
-      ) {
-        child.destroy();
-      }
-    }
+    this.removeLegacySettlementProps(top);
 
     const treeTexture = this.textures.exists(PROP_TEXTURES.treeRuntime)
       ? PROP_TEXTURES.treeRuntime
       : PROP_TEXTURES.tree;
-    this.addProp(treeTexture, 1440, top + 400, 190, -4.1, false, 0.96);
-    this.addProp(PROP_TEXTURES.lanternPost, 1085, top + 515, 108, -2.7, false, 0.98);
-    this.addProp(PROP_TEXTURES.rockGrass, 1095, top + 665, 155, -2.8, false, 0.94);
-    this.addProp(PROP_TEXTURES.fence, 1325, top + 680, 225, -2.75, false, 0.96);
+
+    // Trees form the tall rhythm of the village, but stay outside the main
+    // movement corridor and vary in scale/flip to avoid a repeated stamp look.
+    const trees = [
+      { x: 175, y: top + 325, w: 178, flip: false },
+      { x: 1440, y: top + 400, w: 190, flip: false },
+      { x: 175, y: top + 905, w: 168, flip: true },
+      { x: 1435, y: top + 980, w: 176, flip: false },
+      { x: 185, y: top + 1510, w: 160, flip: true },
+      { x: 1420, y: top + 1550, w: 172, flip: false },
+    ] as const;
+    for (const tree of trees) {
+      this.addProp(treeTexture, tree.x, tree.y, tree.w, -4.1, tree.flip, 0.96);
+    }
+
+    // Fences are intentionally sparse and slightly smaller than the proof
+    // piece so they frame homes without closing off traversal space.
+    const fences = [
+      { x: 350, y: top + 650, w: 205, flip: false },
+      { x: 1325, y: top + 680, w: 205, flip: false },
+      { x: 330, y: top + 1260, w: 182, flip: true },
+      { x: 1285, y: top + 1360, w: 194, flip: false },
+      { x: 1265, y: top + 1740, w: 168, flip: true },
+    ] as const;
+    for (const fence of fences) {
+      this.addProp(PROP_TEXTURES.fence, fence.x, fence.y, fence.w, -2.75, fence.flip, 0.96);
+    }
+
+    // Lanterns mark only selected homes and NPC-adjacent areas rather than
+    // appearing beside every building.
+    const lanterns = [
+      { x: 535, y: top + 500, w: 78, flip: false },
+      { x: 1085, y: top + 515, w: 96, flip: false },
+      { x: 555, y: top + 1080, w: 72, flip: true },
+      { x: 1040, y: top + 1170, w: 74, flip: false },
+      { x: 1065, y: top + 1625, w: 70, flip: true },
+    ] as const;
+    for (const lantern of lanterns) {
+      this.addProp(PROP_TEXTURES.lanternPost, lantern.x, lantern.y, lantern.w, -2.7, lantern.flip, 0.98);
+    }
+
+    // Small ground clusters break up empty paper without crowding the road.
+    const rockGrass = [
+      { x: 610, y: top + 350, w: 118, flip: false },
+      { x: 1095, y: top + 665, w: 145, flip: false },
+      { x: 585, y: top + 1160, w: 112, flip: true },
+      { x: 1035, y: top + 1260, w: 124, flip: false },
+      { x: 595, y: top + 1660, w: 104, flip: false },
+      { x: 1015, y: top + 1500, w: 110, flip: true },
+    ] as const;
+    for (const patch of rockGrass) {
+      this.addProp(PROP_TEXTURES.rockGrass, patch.x, patch.y, patch.w, -2.8, patch.flip, 0.94);
+    }
+  }
+
+  private removeLegacySettlementProps(top: number): void {
+    const treeCenters = [
+      { x: 190, y: top + 310 },
+      { x: 1420, y: top + 270 },
+      { x: 210, y: top + 890 },
+      { x: 1410, y: top + 930 },
+      { x: 180, y: top + 1490 },
+      { x: 1430, y: top + 1530 },
+    ];
+    const fenceCenters = [
+      { x: 360, y: top + 650 },
+      { x: 1235, y: top + 720 },
+      { x: 390, y: top + 1290 },
+      { x: 1190, y: top + 1370 },
+    ];
+    const stoneCenters = [
+      { x: 610, y: top + 350 },
+      { x: 1005, y: top + 610 },
+      { x: 590, y: top + 1190 },
+      { x: 1015, y: top + 1470 },
+    ];
+
+    for (const child of [...this.children.list]) {
+      if (child instanceof Phaser.GameObjects.Container && child.depth === -4) {
+        if (treeCenters.some((center) => Phaser.Math.Distance.Between(child.x, child.y, center.x, center.y) < 105)) {
+          child.destroy();
+        }
+        continue;
+      }
+
+      if (child instanceof Phaser.GameObjects.Rectangle && child.depth === -4) {
+        if (fenceCenters.some((center) => Math.abs(child.x - center.x) < 175 && Math.abs(child.y - center.y) < 65)) {
+          child.destroy();
+        }
+        continue;
+      }
+
+      if (child instanceof Phaser.GameObjects.Ellipse && child.depth === -6) {
+        if (stoneCenters.some((center) => Phaser.Math.Distance.Between(child.x, child.y, center.x, center.y) < 85)) {
+          child.destroy();
+        }
+      }
+    }
   }
 
   private addProp(
