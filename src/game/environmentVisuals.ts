@@ -292,7 +292,10 @@ function trimLegacyWorldCorridorForSettlement(scene: Phaser.Scene, zone: WorldZo
   );
 
   if (!(legacyRoad instanceof Phaser.GameObjects.Rectangle)) return;
-  legacyRoad.setPosition(800, zone.yMin / 2).setDisplaySize(170, zone.yMin);
+
+  const transitionLength = 320;
+  const roadEndY = zone.yMin - transitionLength;
+  legacyRoad.setPosition(800, roadEndY / 2).setDisplaySize(170, roadEndY);
 }
 
 function removeSettlementDebugWorldMarks(scene: Phaser.Scene, zone: WorldZone): void {
@@ -355,6 +358,17 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     image.setScale(flipX ? -scale : scale, scale);
     return image;
   };
+
+  const transitionPieces = [
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 800, y: top - 250, w: 185, r: 0.015, flip: false, alpha: 0.42 },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathB, x: 792, y: top - 125, w: 208, r: -0.03, flip: true, alpha: 0.62 },
+    { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 778, y: top - 5, w: 228, r: -0.025, flip: false, alpha: 0.78 },
+  ] as const;
+
+  for (const piece of transitionPieces) {
+    groundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, piece.alpha, -7);
+  }
+  groundImage(SETTLEMENT_GROUND_RUNTIME_TEXTURES.patchA, 790, top - 40, 280, 0.01, false, 0.16, -8.5);
 
   const pathPieces = [
     { texture: SETTLEMENT_GROUND_RUNTIME_TEXTURES.pathA, x: 770, y: top + 85, w: 245, r: -0.03, flip: false },
