@@ -10,10 +10,18 @@ export const SETTLEMENT_HOUSE_TEXTURES = {
 
 type SettlementHouseTexture = typeof SETTLEMENT_HOUSE_TEXTURES[keyof typeof SETTLEMENT_HOUSE_TEXTURES];
 
+type OrganicPathNode = {
+  x: number;
+  y: number;
+  width: number;
+};
+
 const SETTLEMENT = {
   warmPaper: 0xe3d5b5,
   path: 0xd7c59f,
   pathEdge: 0xb9a57e,
+  soil: 0xc8b287,
+  dryGrass: 0x9b956f,
   oldWood: 0x765f43,
   stone: 0x8d8878,
   moss: 0x7b8065,
@@ -34,6 +42,110 @@ function addPaperWash(
   scene.add.ellipse(x, y, width, height, color, alpha)
     .setRotation(rotation)
     .setDepth(-9);
+}
+
+function addOrganicPath(
+  scene: Phaser.Scene,
+  nodes: OrganicPathNode[],
+  samples: number,
+  alpha = 0.23,
+): void {
+  if (nodes.length < 2) return;
+
+  const curve = new Phaser.Curves.Spline(
+    nodes.map(({ x, y }) => new Phaser.Math.Vector2(x, y)),
+  );
+
+  for (let i = 0; i <= samples; i += 1) {
+    const t = i / samples;
+    const point = curve.getPoint(t);
+    const tangent = curve.getTangent(t).normalize();
+    const segmentFloat = t * (nodes.length - 1);
+    const segmentIndex = Math.min(nodes.length - 2, Math.floor(segmentFloat));
+    const localT = segmentFloat - segmentIndex;
+    const width = nodes[segmentIndex].width
+      + (nodes[segmentIndex + 1].width - nodes[segmentIndex].width) * localT;
+    const brushHeight = Math.max(52, width * 0.25);
+    const rotation = Math.atan2(tangent.y, tangent.x) - Math.PI / 2;
+
+    scene.add.ellipse(point.x, point.y, width, brushHeight, SETTLEMENT.path, alpha)
+      .setRotation(rotation)
+      .setDepth(-7);
+
+    if (i % 4 === 0) {
+      const normalX = -tangent.y;
+      const normalY = tangent.x;
+      const side = i % 8 === 0 ? 1 : -1;
+      const edgeOffset = width * 0.4 * side;
+      scene.add.ellipse(
+        point.x + normalX * edgeOffset,
+        point.y + normalY * edgeOffset,
+        width * 0.22,
+        brushHeight * 0.48,
+        SETTLEMENT.pathEdge,
+        alpha * 0.34,
+      )
+        .setRotation(rotation + side * 0.12)
+        .setDepth(-6);
+    }
+
+    if (i % 5 === 2) {
+      const normalX = -tangent.y;
+      const normalY = tangent.x;
+      const side = i % 10 < 5 ? 1 : -1;
+      scene.add.ellipse(
+        point.x + normalX * width * 0.17 * side,
+        point.y + normalY * width * 0.17 * side,
+        width * 0.14,
+        Math.max(15, brushHeight * 0.24),
+        SETTLEMENT.soil,
+        alpha * 0.28,
+      )
+        .setRotation(rotation - side * 0.08)
+        .setDepth(-6);
+    }
+  }
+}
+
+function addHouseGrounding(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  displayWidth: number,
+  flip = false,
+): void {
+  const direction = flip ? -1 : 1;
+
+  scene.add.ellipse(x, y + 48, displayWidth * 0.78, displayWidth * 0.2, 0x3f392f, 0.07)
+    .setDepth(-4);
+  scene.add.ellipse(
+    x + 14 * direction,
+    y + 54,
+    displayWidth * 0.64,
+    displayWidth * 0.14,
+    SETTLEMENT.soil,
+    0.13,
+  )
+    .setRotation(direction * 0.035)
+    .setDepth(-5);
+
+  const marks = [
+    { dx: -0.34, dy: 0.2, w: 0.14, h: 0.045, color: SETTLEMENT.moss, alpha: 0.13 },
+    { dx: 0.29, dy: 0.24, w: 0.11, h: 0.038, color: SETTLEMENT.dryGrass, alpha: 0.13 },
+    { dx: -0.18, dy: 0.29, w: 0.09, h: 0.032, color: SETTLEMENT.stone, alpha: 0.11 },
+    { dx: 0.4, dy: 0.14, w: 0.07, h: 0.026, color: SETTLEMENT.moss, alpha: 0.1 },
+  ];
+
+  for (const mark of marks) {
+    scene.add.ellipse(
+      x + mark.dx * displayWidth * direction,
+      y + mark.dy * displayWidth,
+      mark.w * displayWidth,
+      mark.h * displayWidth,
+      mark.color,
+      mark.alpha,
+    ).setDepth(-4);
+  }
 }
 
 function addHouse(
@@ -106,7 +218,32 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
     addPaperWash(scene, wash.x, wash.y, wash.w, wash.h, wash.c, wash.a, wash.r);
   }
 
-  for (let i = 0; i < 8; i += 1) {
+  // Environment proof: an organic, authored route replaces the ruler-straight
+  // upper settlement lane. Supporting brush marks remain low contrast so actors win.
+  addPaperWash(scene, 790, top + 610, 760, 1230, SETTLEMENT.soil, 0.045, 0.02);
+  addOrganicPath(scene, [
+    { x: 765, y: top + 35, width: 240 },
+    { x: 720, y: top + 230, width: 260 },
+    { x: 835, y: top + 440, width: 300 },
+    { x: 755, y: top + 650, width: 245 },
+    { x: 860, y: top + 855, width: 315 },
+    { x: 785, y: top + 1040, width: 270 },
+    { x: 825, y: top + 1200, width: 250 },
+  ], 46, 0.23);
+  addOrganicPath(scene, [
+    { x: 770, y: top + 390, width: 176 },
+    { x: 645, y: top + 410, width: 164 },
+    { x: 525, y: top + 475, width: 145 },
+  ], 18, 0.18);
+  addOrganicPath(scene, [
+    { x: 835, y: top + 485, width: 182 },
+    { x: 975, y: top + 470, width: 166 },
+    { x: 1090, y: top + 505, width: 148 },
+  ], 18, 0.18);
+
+  // Keep the lower half untouched for this proof so the phone test compares one
+  // deliberate environment slice instead of broadening the entire settlement at once.
+  for (let i = 5; i < 8; i += 1) {
     const y = top + 110 + i * 225;
     const wobble = i % 3 === 0 ? -18 : i % 3 === 1 ? 14 : 0;
     scene.add.ellipse(centerX + wobble, y, 242 + (i % 2) * 24, 176, SETTLEMENT.path, 0.16)
@@ -116,6 +253,11 @@ export function createSettlementEnvironment(scene: Phaser.Scene, zone: WorldZone
         .setDepth(-7);
     }
   }
+
+  // Glue the two proof houses into the terrain with contact shadow, worn earth,
+  // and sparse moss/stone marks. The house sprites themselves remain unchanged.
+  addHouseGrounding(scene, 365, top + 390, 325, false);
+  addHouseGrounding(scene, 1240, top + 455, 347, true);
 
   addHouse(scene, 365, top + 390, SETTLEMENT_HOUSE_TEXTURES.thatchA, 325);
   addHouse(scene, 1240, top + 455, SETTLEMENT_HOUSE_TEXTURES.tileA, 347, true);
