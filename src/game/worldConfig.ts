@@ -19,7 +19,10 @@ export const WORLD = {
     { id: 'danger', name: 'U Minh Cốc', yMin: 0, yMax: 2200, fill: 0xb8b29d },
     { id: 'forest', name: 'Linh Lâm', yMin: 2200, yMax: 4600, fill: 0xc3ccb0 },
     { id: 'plains', name: 'Thanh Vân Hoang Nguyên', yMin: 4600, yMax: 7200, fill: 0xd6cfad },
-    { id: 'settlement', name: 'Thanh Vân Thôn', yMin: 7200, yMax: 9000, fill: 0xe3d5b5 },
+    // Plains and settlement intentionally share the same world-shell paper base.
+    // Settlement identity comes from authored painterly ground/wash layers, so
+    // the gameplay boundary does not show up as a hard horizontal color seam.
+    { id: 'settlement', name: 'Thanh Vân Thôn', yMin: 7200, yMax: 9000, fill: 0xd6cfad },
   ] satisfies WorldZone[],
 };
 
