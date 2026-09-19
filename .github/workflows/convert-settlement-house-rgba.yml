@@ -1,4 +1,4 @@
-name: Convert settlement houses to RGBA
+name: Preview salvage settlement houses
 
 on:
   push:
@@ -8,10 +8,10 @@ on:
       - '.github/workflows/convert-settlement-house-rgba.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  convert:
+  salvage-preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,47 +27,38 @@ jobs:
       - name: Install Pillow
         run: python -m pip install --quiet pillow
 
-      - name: Convert and verify RGBA PNGs
+      - name: Salvage into preview folder
         run: |
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image
+          from PIL import Image, ImageFile
 
-          files = [
-              Path('public/assets/c4/environment/settlement/env_house_hall_a.png'),
-              Path('public/assets/c4/environment/settlement/env_house_thatch_a.png'),
-              Path('public/assets/c4/environment/settlement/env_house_thatch_b.png'),
-              Path('public/assets/c4/environment/settlement/env_house_tile_a.png'),
+          ImageFile.LOAD_TRUNCATED_IMAGES = True
+          src_dir = Path('public/assets/c4/environment/settlement')
+          out_dir = Path('salvage_preview')
+          out_dir.mkdir(exist_ok=True)
+          names = [
+              'env_house_hall_a.png',
+              'env_house_thatch_a.png',
+              'env_house_thatch_b.png',
+              'env_house_tile_a.png',
           ]
 
-          for path in files:
-              with Image.open(path) as src:
-                  size = src.size
+          for name in names:
+              src_path = src_dir / name
+              out_path = out_dir / name
+              with Image.open(src_path) as src:
                   rgba = src.convert('RGBA')
-                  rgba.save(path, format='PNG', optimize=True)
-
-              raw = path.read_bytes()
-              assert raw[:8] == b'\x89PNG\r\n\x1a\n', path
-              assert raw[12:16] == b'IHDR', path
-              bit_depth = raw[24]
-              color_type = raw[25]
-              assert bit_depth == 8, (path, bit_depth)
-              assert color_type == 6, (path, color_type)
-
-              with Image.open(path) as check:
-                  assert check.mode == 'RGBA', (path, check.mode)
-                  assert check.size == size, (path, check.size, size)
+                  rgba.save(out_path, format='PNG', optimize=True)
+              with Image.open(out_path) as check:
                   alpha = check.getchannel('A')
                   lo, hi = alpha.getextrema()
-                  assert lo < 255 and hi == 255, (path, lo, hi)
-                  print(f'{path}: PASS size={check.size} mode={check.mode} alpha={lo}-{hi} bytes={len(raw)}')
+                  print(f'{name}: size={check.size} mode={check.mode} alpha={lo}-{hi} bbox={alpha.getbbox()}')
           PY
 
-      - name: Commit converted assets and remove temporary workflow
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/assets/c4/environment/settlement/*.png
-          git rm .github/workflows/convert-settlement-house-rgba.yml
-          git commit -m 'fix(art): convert settlement houses to RGBA truecolor'
-          git push origin HEAD:fix/settlement-house-rgba
+      - name: Upload salvage preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: settlement-house-salvage-preview
+          path: salvage_preview/*.png
+          if-no-files-found: error
