@@ -30,6 +30,7 @@ Rules:
 | 2026-09-18 | Flying-sword VFX should be restrained white-jade, with impact the brightest moment. | Blade silhouette must remain readable. |
 | 2026-09-19 | Settlement house black-render bug should be solved with a one-house true-RGBA proof before converting all four assets. | Minimal proof first; avoid broad binary churn. |
 | 2026-09-19 | For cross-chat work, GitHub-backed handoff docs become mandatory. | New chats read `AGENTS.md` and `HANDOFF_CURRENT.md` before acting. |
+| 2026-09-19 | When a problem is materially unclear, use a structured discovery-and-decision round before committing to a full solution. Limit each round to the 5–7 highest-impact questions/decisions, explicitly separate user decisions from safe assumptions and evidence that must be verified, and summarize facts/decisions/assumptions/open issues/next action after each round. | Does not reopen locked decisions or justify questions whose answers can be verified directly. See `docs/DISCOVERY_DECISION_PROTOCOL.md`. |
 
 ## Current locked values at a glance
 
