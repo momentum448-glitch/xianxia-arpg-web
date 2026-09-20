@@ -5,17 +5,17 @@ Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Current milestone: C4.2 settlement production-art / environment identity
 
-## Live code state at snapshot
+## Verified code / documentation state at snapshot
 
-- `main`: `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`)
-- Latest merged work: PR #63, `Scale merchant area to world size and clear lower house`
-- PR #63 CI: PASS
-- GitHub Pages build/deploy: PASS
-- Phone QC on Android: PASS for the current merchant-area scale/layout shown in build `56b9359`
-- Relevant merged branch: `fix/merchant-world-scale-house-clear`
-- Current live URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`
+- Phone-QC/runtime baseline: `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`), from PR #63 `Scale merchant area to world size and clear lower house`.
+- PR #63 CI: PASS.
+- GitHub Pages build/deploy for that runtime baseline: PASS.
+- Android Phone QC: PASS for the current merchant-area scale/layout shown in build `56b9359`.
+- Continuity docs were then refreshed and merged in PR #64; those changes were documentation-only and did not alter runtime art/gameplay.
+- Relevant merged runtime branch: `fix/merchant-world-scale-house-clear`.
+- Live URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
 
-Always verify live GitHub before the next implementation step because this snapshot can age.
+Do not treat `56b9359` as a permanent current-main pointer. It is the accepted runtime/art baseline. Always query live `main`, PRs and branches before the next implementation step because documentation-only commits can advance `main` afterward.
 
 ## Current user instruction / work mode
 
@@ -183,4 +183,4 @@ The current settlement/merchant snapshot itself is accepted. Do not modify build
 
 ## Resume sentence
 
-Resume from `main` build `56b9359`: settlement ground/houses/base props and the world-scaled Lục Chưởng Quầy merchant vignette are phone-accepted; implementation is paused by user request, so run structured discovery first and do not start NPC production until the next proof is deliberately chosen.
+Resume from accepted runtime/art baseline build `56b9359`: settlement ground/houses/base props and the world-scaled Lục Chưởng Quầy merchant vignette are phone-accepted; implementation is paused by user request, so run structured discovery first and do not start NPC production until the next proof is deliberately chosen.
