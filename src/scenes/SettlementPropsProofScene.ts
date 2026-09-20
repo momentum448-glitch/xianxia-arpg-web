@@ -9,10 +9,10 @@ const PROP_TEXTURES = {
   fence: 'c4-settlement-prop-fence-a',
   rockGrass: 'c4-settlement-prop-rockgrass-a',
   lanternPost: 'c4-settlement-prop-lanternpost-a',
-  merchantCart: 'c4-settlement-merchant-cart-a',
-  merchantGoods: 'c4-settlement-merchant-goods-a',
-  merchantSign: 'c4-settlement-merchant-sign-a',
-  merchantStall: 'c4-settlement-merchant-stall-a',
+  merchantCart: 'c4-settlement-merchant-cart-b',
+  merchantGoods: 'c4-settlement-merchant-goods-b',
+  merchantSign: 'c4-settlement-merchant-sign-b',
+  merchantStall: 'c4-settlement-merchant-stall-b',
 } as const;
 
 export class SettlementPropsProofScene extends GameScene {
@@ -24,10 +24,10 @@ export class SettlementPropsProofScene extends GameScene {
       [PROP_TEXTURES.fence, C4_ASSETS.settlementFenceA],
       [PROP_TEXTURES.rockGrass, C4_ASSETS.settlementRockGrassA],
       [PROP_TEXTURES.lanternPost, C4_ASSETS.settlementLanternPostA],
-      [PROP_TEXTURES.merchantCart, C4_ASSETS.settlementMerchantCartA],
-      [PROP_TEXTURES.merchantGoods, C4_ASSETS.settlementMerchantGoodsA],
-      [PROP_TEXTURES.merchantSign, C4_ASSETS.settlementMerchantSignA],
-      [PROP_TEXTURES.merchantStall, C4_ASSETS.settlementMerchantStallA],
+      [PROP_TEXTURES.merchantCart, C4_ASSETS.settlementMerchantCartB],
+      [PROP_TEXTURES.merchantGoods, C4_ASSETS.settlementMerchantGoodsB],
+      [PROP_TEXTURES.merchantSign, C4_ASSETS.settlementMerchantSignB],
+      [PROP_TEXTURES.merchantStall, C4_ASSETS.settlementMerchantStallB],
     ] as const;
 
     for (const [key, path] of props) {
@@ -127,13 +127,12 @@ export class SettlementPropsProofScene extends GameScene {
       ? PROP_TEXTURES.treeRuntime
       : PROP_TEXTURES.tree;
 
-    // Trees form the tall rhythm of the village, but stay outside the main
-    // movement corridor and vary in scale/flip to avoid a repeated stamp look.
     const trees = [
       { x: 175, y: top + 325, w: 178, flip: false },
       { x: 1440, y: top + 400, w: 190, flip: false },
       { x: 175, y: top + 905, w: 168, flip: true },
-      { x: 1435, y: top + 980, w: 176, flip: false },
+      // Keep the merchant forecourt open; the former east-side tree here made
+      // the cart and stall read as overlapping stamps on phone.
       { x: 185, y: top + 1510, w: 160, flip: true },
       { x: 1420, y: top + 1550, w: 172, flip: false },
     ] as const;
@@ -141,8 +140,6 @@ export class SettlementPropsProofScene extends GameScene {
       this.addProp(treeTexture, tree.x, tree.y, tree.w, -4.1, tree.flip, 0.96);
     }
 
-    // Fences are intentionally sparse and slightly smaller than the proof
-    // piece so they frame homes without closing off traversal space.
     const fences = [
       { x: 350, y: top + 650, w: 205, flip: false },
       { x: 1325, y: top + 680, w: 205, flip: false },
@@ -154,8 +151,6 @@ export class SettlementPropsProofScene extends GameScene {
       this.addProp(PROP_TEXTURES.fence, fence.x, fence.y, fence.w, -2.75, fence.flip, 0.96);
     }
 
-    // Lanterns mark only selected homes and NPC-adjacent areas rather than
-    // appearing beside every building.
     const lanterns = [
       { x: 535, y: top + 500, w: 78, flip: false },
       { x: 1085, y: top + 515, w: 96, flip: false },
@@ -167,7 +162,6 @@ export class SettlementPropsProofScene extends GameScene {
       this.addProp(PROP_TEXTURES.lanternPost, lantern.x, lantern.y, lantern.w, -2.7, lantern.flip, 0.98);
     }
 
-    // Small ground clusters break up empty paper without crowding the road.
     const rockGrass = [
       { x: 610, y: top + 350, w: 118, flip: false },
       { x: 1095, y: top + 665, w: 145, flip: false },
@@ -186,14 +180,13 @@ export class SettlementPropsProofScene extends GameScene {
     if (!settlement) return;
     const top = settlement.yMin;
 
-    // Merchant proof: keep the NPC interaction bubble and the main road open,
-    // while concentrating trade props on the eastern forecourt. The four
-    // silhouettes have different roles so the cluster reads as commerce rather
-    // than another repeated house/tree/fence stamp.
-    this.addProp(PROP_TEXTURES.merchantStall, 1225, top + 845, 205, -2.62, false, 0.99);
-    this.addProp(PROP_TEXTURES.merchantSign, 1095, top + 885, 74, -2.55, false, 0.99);
-    this.addProp(PROP_TEXTURES.merchantGoods, 1245, top + 985, 138, -2.58, false, 0.98);
-    this.addProp(PROP_TEXTURES.merchantCart, 1380, top + 930, 172, -2.64, true, 0.98);
+    // Merchant V2 revision: one compact vignette just east of Lục Chưởng Quầy
+    // (merchant NPC is x=955, y=top+860). The props overlap slightly so they
+    // read as a single trading setup, while the road and interaction bubble stay clear.
+    this.addProp(PROP_TEXTURES.merchantStall, 1135, top + 955, 188, -2.60, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantSign, 1032, top + 930, 48, -2.54, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantGoods, 1210, top + 1010, 92, -2.56, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantCart, 1300, top + 930, 118, -2.63, false, 1, 0);
   }
 
   private removeLegacySettlementProps(top: number): void {
@@ -249,13 +242,22 @@ export class SettlementPropsProofScene extends GameScene {
     depth: number,
     flipX = false,
     alpha = 1,
+    shadowAlpha = 0.07,
   ): Phaser.GameObjects.Image {
     const source = this.textures.get(texture).getSourceImage() as { width: number; height: number };
     const scale = displayWidth / source.width;
     const displayHeight = source.height * scale;
 
-    this.add.ellipse(x, groundY + 3, displayWidth * 0.62, Math.max(12, displayHeight * 0.09), 0x3f392f, 0.07)
-      .setDepth(depth - 0.15);
+    if (shadowAlpha > 0) {
+      this.add.ellipse(
+        x,
+        groundY + 3,
+        displayWidth * 0.62,
+        Math.max(12, displayHeight * 0.09),
+        0x3f392f,
+        shadowAlpha,
+      ).setDepth(depth - 0.15);
+    }
 
     const image = this.add.image(x, groundY, texture)
       .setOrigin(0.5, 1)
