@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { c4AssetUrl } from '../game/art/assetManifest';
 import { VillageTopologyQcScene } from './VillageTopologyQcScene';
 
+// Thin QC-only integration layer: preserve the PHONE_PASS village scene and replace water/bridge blockout only.
 const HEALER_WATER_BRIDGE_TEX = 'qc-healer-water-bridge-a4';
 const HEALER_WATER_BRIDGE_PATH = 'assets/c4/environment/settlement/env_healer_water_bridge_a.png';
 
