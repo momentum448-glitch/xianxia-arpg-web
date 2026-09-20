@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-healer-water.mjs",
     "dev": "vite --host 0.0.0.0",
+    "prebuild": "node scripts/prepare-healer-water.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0"
   },
@@ -12,6 +14,7 @@
     "phaser": "3.90.0"
   },
   "devDependencies": {
+    "sharp": "^0.34.3",
     "typescript": "5.9.2",
     "vite": "7.1.5"
   }
