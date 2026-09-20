@@ -1,172 +1,295 @@
 # Xianxia ARPG — Asset Registry
 
-Durable registry for project-critical visual/binary assets. GitHub runtime assets are the production source of truth; Project Sources and Drive are recovery/reference stores; ChatGPT Library is discovery only.
+This is the durable registry for project-critical visual/binary assets. Chat history, image-generation history, and ChatGPT Library are discovery locations, not canonical production storage by themselves.
 
-Status vocabulary: `NOT_STARTED`, `REFERENCE_ONLY`, `DESIGN_PASS`, `ISOLATED_READY`, `ANIM_READY`, `INTEGRATED`, `PHONE_PASS`, `REVISE`, `TECH_REWORK`.
+## 1. Storage / continuity rules
+
+Every important asset needs both:
+
+1. a durable binary/source location outside one chat; and
+2. a registry record naming its Asset ID, role, status, canonical path/source, QC state and next action.
+
+Storage hierarchy:
+
+- GitHub runtime asset = production source of truth for the game.
+- Project Sources = long-lived visual/source references useful across chats.
+- Google Drive asset vault = byte-preserving backup / transfer / recovery source.
+- ChatGPT Library = discovery pool only; never the only home of critical art.
+
+Status vocabulary:
+
+- `NOT_STARTED`
+- `REFERENCE_ONLY`
+- `DESIGN_PASS`
+- `ISOLATED_READY`
+- `ANIM_READY`
+- `INTEGRATED`
+- `PHONE_PASS`
+- `REVISE`
+- `TECH_REWORK`
 
 Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later chat cannot see the original generation. Recover it by Asset ID.
 
-## Core actor / VFX
+## 2. Core actor / VFX assets
 
 ### PLY-M-BASE — Male sword cultivator
+
 - Purpose: production male player visual.
-- Status: `INTEGRATED`; accepted production visual.
-- Runtime: `public/assets/c4/actors/player/male/`.
-- Next: preserve during environment work.
+- Status: `INTEGRATED`; runtime animation proof exists.
+- Runtime storage: `public/assets/c4/actors/player/male/`.
+- Design state: accepted.
+- Runtime state: rendering successfully.
+- Phone state: production player visual has been used throughout phone QC.
+- Next action: preserve during environment/NPC discovery unless explicitly revised.
 
 ### EN-MELEE-BASE — Corrupted beast melee enemy
+
+- Purpose: production melee enemy.
 - Status: `PHONE_PASS`.
-- Runtime: `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`.
-- Next: preserve.
+- Runtime path: `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`.
+- Next action: preserve; do not regenerate without explicit `REVISE`.
 
 ### FX-SWORD — Flying sword
+
+- Purpose: manual basic-attack projectile visual.
 - Status: `PHONE_PASS`.
-- Runtime: `public/assets/c4/vfx/sword/fx_sword_r1.png`.
-- Next: preserve.
+- Runtime path: `public/assets/c4/vfx/sword/fx_sword_r1.png`.
+- Phone QC: blade, launch, trail and impact passed staged validation.
+- Next action: preserve.
 
-## Settlement layout / ground
+## 3. Settlement composition / ground
 
-### ENV-SETTLEMENT-LAYOUT — Thanh Vân Thôn V2-A
-- Status: `PHONE_PASS` for topology + spatial massing + accepted-art context.
-- Footprint: `1600 × 1800`.
-- V2-B `1600 × 3200`: rejected unless explicitly reopened.
-- QC implementation lineage: `src/scenes/VillageTopologyQcScene.ts`.
-- Hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
-- Next: preserve while finishing scoped Healer proof work.
+### ENV-SETTLEMENT-LAYOUT — Thanh Vân Thôn composition
+
+- Purpose: settlement route, density and broad composition.
+- Status: `PHONE_PASS` for V2-A topology + spatial massing + accepted-art context compatibility.
+- Selected footprint: `1600 × 1800` V2-A.
+- Rejected footprint: V2-B `1600 × 3200`, unless explicitly reopened.
+- Primary current QC implementation: `src/scenes/VillageTopologyQcScene.ts`.
+- Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
+- Road rule: organic curved/irregular routes, not ruler-straight lanes.
+- Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
+- Next action: preserve topology/massing/ground-path; continue only with the scoped Healer activity proof.
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
-- Status: `PHONE_PASS` asset + V2-A placement.
-- Runtime:
+
+- Purpose: painterly road/ground continuity.
+- Asset/design status: `PHONE_PASS` as an accepted reusable settlement ground kit.
+- Current V2-A placement status: **`PHONE_PASS`** after final 0.65x + 1.0x Phone QC on 2026-09-20.
+- Runtime files:
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_b.png`
   - `public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_forecourt_a.png`
-- Final Phone QC: 0.65x macro hierarchy PASS; 1.0x Healer-branch readability PASS.
-- Next: preserve; do not reopen without a concrete Phone-QC problem.
+- PR #74 restored the accepted kit onto V2-A topology.
+- First Phone QC of build `392d5a7` found the V2-A road too visually dominant at 0.65x, a faint center-guide/groove impression, and a weak Healer branch.
+- PR #75 reused the same assets and changed placement/display rhythm only:
+  - main path widths reduced roughly 10–15%;
+  - path/patch visual weight reduced;
+  - route-guide line softened;
+  - Healer branch strengthened;
+  - non-Healer forecourt dominance reduced slightly.
+- Final Phone QC:
+  - 0.65x: road no longer dominates or reads as a dark ribbon/groove; Elder → Merchant → Healer rhythm and negative space remain readable;
+  - 1.0x: Healer branch is clear without becoming a second main road; movement corridor remains readable.
+- No new ground PNGs were created for the tune.
+- Next action: preserve. Do not reopen or regenerate without a new concrete Phone-QC problem.
 
-## Settlement houses
+## 4. Settlement houses
 
-### ENV-HOUSE-SET-A — Accepted four-house set
-- Status: `PHONE_PASS`.
+### ENV-HOUSE-SET-A — Accepted four-house visual set
+
+- Purpose: production-painted Thanh Vân Thôn houses.
+- Status: `PHONE_PASS` in current runtime snapshot.
 - Runtime directory: `public/assets/c4/environment/settlement/`.
-- Files:
+- Canonical runtime files:
   - `env_house_thatch_a.png`
   - `env_house_tile_a.png`
   - `env_house_hall_a.png`
   - `env_house_thatch_b.png`
-- Design state: accepted.
-- Historical black/corrupt-file blocker is resolved.
-- Next: preserve; do not regenerate for scale/layout tweaks.
+- Design state: `DESIGN_PASS`.
+- Technical state: clean runtime is functioning; earlier black/corrupt-file blocker is historical.
+- Important: do not regenerate the accepted four-house design just to change scale/layout.
+- Next action: preserve current house art unless future Phone QC identifies a concrete composition issue.
 
 ### ENV-HOUSE-HALL-A-CLEAN
-- Status: `PHONE_PASS` source lineage.
-- Runtime: `public/assets/c4/environment/settlement/env_house_hall_a.png`.
-- Drive backup: `10_QC_PASS`, file ID `1MLnoQAUL1jfuW-mQFMTxXxDb58FBpkDr`.
-- Historical verified metadata: PNG RGBA, 128 × 89, 22,633 bytes, SHA-256 `f047b6d275dbce9c50c6f3a00ae236b9a489f7bd4e2182f0b42cf3f60e45304f`.
-- Next: preserve.
+
+- Purpose: clean technical source that repaired Hall runtime.
+- Relation: same accepted Hall design from `ENV-HOUSE-SET-A`; technical recovery, not redesign.
+- Status: `PHONE_PASS` as runtime source lineage.
+- Drive backup: `10_QC_PASS`.
+- Drive file ID: `1MLnoQAUL1jfuW-mQFMTxXxDb58FBpkDr`.
+- Filename: `env_house_hall_a.png`.
+- Verified historical metadata:
+  - PNG, RGBA
+  - 128 × 89
+  - 22,633 bytes
+  - SHA-256 `f047b6d275dbce9c50c6f3a00ae236b9a489f7bd4e2182f0b42cf3f60e45304f`
+- Runtime target/path: `public/assets/c4/environment/settlement/env_house_hall_a.png`.
+- Next action: preserve.
 
 ### ENV-HOUSE-SET-A-SOURCE-SHEET
+
+- Purpose: accepted four-house source/reference sheet for recovery/continuity.
 - Status: `DESIGN_PASS` source/reference.
-- Drive: `ARPG__SRC__settlement_house_set_design_pass__v001.png`, file ID `1fVnIyNhJ6cLiW0OxVA5rjHDiYcwupmOS`.
-- Next: preserve for recovery/continuity.
+- Drive filename: `ARPG__SRC__settlement_house_set_design_pass__v001.png`.
+- Drive file ID: `1fVnIyNhJ6cLiW0OxVA5rjHDiYcwupmOS`.
+- Note: Drive connector historically reported a JPEG MIME representation despite `.png` filename; treat this as a visual/source reference, not runtime bytes.
+- Next action: preserve for visual continuity/recovery.
 
 ### ENV-HOUSE-THATCH-B-RECOVERED
-- Status: `PHONE_PASS` lineage.
-- Drive: `env_house_thatch_b_recovered_v001.png`, file ID `1hx9JYkwEx3Mf9Ow8lCP0w_XidDxMaScX`.
-- Runtime target: `public/assets/c4/environment/settlement/env_house_thatch_b.png`.
-- Next: preserve.
 
-## Settlement prop kit
+- Purpose: technical recovery of accepted bottom-right Thatch B from the source sheet.
+- Status: `PHONE_PASS` lineage.
+- Drive filename: `env_house_thatch_b_recovered_v001.png`.
+- Drive file ID: `1hx9JYkwEx3Mf9Ow8lCP0w_XidDxMaScX`.
+- Historical normalized source metadata: PNG RGBA, 208 × 172, 69,820 bytes.
+- Runtime target/path: `public/assets/c4/environment/settlement/env_house_thatch_b.png`.
+- Next action: preserve; do not regenerate.
+
+## 5. Settlement base prop kit
 
 ### ENV-SETTLEMENT-PROP-KIT-A
-- Status: `PHONE_PASS`.
-- Runtime:
-  - `env_tree_village_a.png`
-  - `env_fence_village_a.png`
-  - `env_rockgrass_village_a.png`
-  - `env_lanternpost_village_a.png`
-  under `public/assets/c4/environment/settlement/`.
-- Composition rule: do not stamp the same `tree + fence + rock + lantern` formula at every house.
-- Next: preserve.
 
-## Merchant area
+- Purpose: general village environmental props.
+- Status: `PHONE_PASS` as a reusable visual kit.
+- Runtime files:
+  - `public/assets/c4/environment/settlement/env_tree_village_a.png`
+  - `public/assets/c4/environment/settlement/env_fence_village_a.png`
+  - `public/assets/c4/environment/settlement/env_rockgrass_village_a.png`
+  - `public/assets/c4/environment/settlement/env_lanternpost_village_a.png`
+- Phone QC:
+  - tree visual accepted after runtime alpha/background repair path;
+  - fence accepted;
+  - rock/grass accepted;
+  - lantern accepted.
+- Composition rule: do not repeat the same `tree + fence + rock + lantern` formula at every house. Vary density, scale, flip and role.
+- Next action: preserve current deployment during V2-A completion.
 
-### ENV-MERCHANT-KIT-B
-- Status: `PHONE_PASS`.
-- Runtime:
-  - `env_merchant_stall_b.png`
-  - `env_merchant_cart_b.png`
-  - `env_merchant_goods_b.png`
-  - `env_merchant_sign_b.png`
-- Accepted display widths: stall 270, cart 180, goods 135, sign 60.
+## 6. Merchant area / Lục Chưởng Quầy
+
+### ENV-MERCHANT-KIT-B — Merchant production vignette
+
+- Purpose: make Lục Chưởng Quầy's area read as a trading zone before the NPC itself receives production art.
+- Status: `PHONE_PASS` on Android build `56b9359`.
+- Design state: `DESIGN_PASS` / accepted.
+- Runtime state: `PHONE_PASS`.
+- Canonical runtime files:
+  - `public/assets/c4/environment/settlement/env_merchant_stall_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_cart_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_goods_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_sign_b.png`
+- Canonical display widths in current proof scene:
+  - stall: 270
+  - cart: 180
+  - goods: 135
+  - sign: 60
 - Drive backups in `20_RUNTIME_READY/10_QC_PASS`:
-  - stall `1zIpOgs_JTTUJXeaTdDDn2SgO4dZuJdL4`
-  - cart `1xftok68r_D_f_sl1Sjmcx8InHQ9zWB0T`
-  - goods `1okipyi9GsU2BWGlS4XZapuzqPBEFUOqX`
-  - sign `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
-- Next: preserve.
+  - stall `env_merchant_stall_b.png` → `1zIpOgs_JTTUJXeaTdDDn2SgO4dZuJdL4`
+  - cart `env_merchant_cart_b.png` → `1xftok68r_D_f_sl1Sjmcx8InHQ9zWB0T`
+  - goods `env_merchant_goods_b.png` → `1okipyi9GsU2BWGlS4XZapuzqPBEFUOqX`
+  - sign `env_merchant_sign_b.png` → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
+- Phone QC result:
+  - scale matches settlement world;
+  - no black background / halo blocker;
+  - vignette reads clearly as merchant area;
+  - path/player readability preserved;
+  - user explicitly accepted current result.
+- Composition companion decision: the lower tile-roof house at `x=1210, settlement top+1090` is removed in the accepted earlier proof composition to reduce clutter; grounding wash remains.
+- Next action: preserve. Do not generate a new merchant kit unless explicitly revised.
 
-## Healer pocket
+## 7. Current healer / agriculture asset gaps
 
 ### ENV-HEALER-WATER-BRIDGE-A
-- Purpose: modest pond/stream + humble footbridge for Dược Sư pocket.
-- **Status: `PHONE_PASS`.**
+
+- Purpose: first production landmark for the Dược Sư pocket after V2-A ground/path PASS.
+- Status: `PHONE_PASS`.
 - Canonical runtime asset: `public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp`.
-- Integration: `src/scenes/VillageTopologyQcA4Scene.ts`.
-- Accepted runtime presentation on build `6fd3477`:
-  - center around existing Healer water footprint;
-  - display size about `440 × 247`;
-  - subtle warm tint and alpha `0.96` to keep hierarchy restrained.
-- Phone QC:
-  - 1.0x PASS for scale/readability and bridge logic;
-  - 0.65x PASS for macro hierarchy and main-spine readability.
-- Bridge rule: crosses the narrow water gap bank-to-bank; not aligned along the gap.
-- Runtime/transport note: validated WebP is the accepted path; earlier PNG/alpha workarounds caused black-rectangle or missing-art failures on Android/WebGL.
-- Next: preserve. Do not regenerate or retune without a new concrete regression.
+- Runtime presentation accepted on build `6fd3477`:
+  - display size `440 × 247`;
+  - subtle warm tint and alpha `0.96`;
+  - bridge orientation/logic accepted;
+  - water/bridge no longer dominates village hierarchy at 0.65x;
+  - 1.0x readability and scale accepted.
+- Phone QC: final 0.65x screenshot on 2026-09-20 passed hierarchy/clarity gate.
+- Next action: preserve. Do not regenerate or retune without a new concrete Phone-QC issue.
 
 ### ENV-HEALER-ACTIVITY-KIT-A
-- Purpose: healer/herbal activity language around the Dược Sư pocket.
-- Status: `NOT_STARTED` → **active isolated proof**.
-- Active branch: `proof/healer-activity-kit-a`.
-- First proof scope:
-  - 1–2 modest herb-bed forms;
-  - one small medicine-drying rack / drying mat / frame;
-  - restrained healer-work props such as baskets, trays, jars, bundled herbs;
-  - painterly poor-frontier xianxia treatment;
-  - isolation-friendly/transparent output.
-- Constraints:
-  - must not overpower Healer house or Phone-PASS water/bridge;
-  - avoid dense decorative clutter;
-  - no topology/path/gameplay change.
-- Next: produce one isolated visual candidate; integrate only after isolated visual gate passes.
+
+- Purpose: herb-bed / medicine-drying / healer work-language proof.
+- Status: `INTEGRATED` proof candidate on branch `proof/healer-activity-kit-a`; Phone QC pending.
+- Runtime proof files:
+  - `public/assets/c4/environment/settlement/env_healer_herb_bed_a.webp`
+  - `public/assets/c4/environment/settlement/env_healer_drying_props_a.webp`
+- Runtime proof scene: `src/scenes/VillageTopologyQcHealerActivityScene.ts`.
+- Scope:
+  - one compact herb garden replacing the three green blockout strips;
+  - one small drying/work cluster beside the healer pocket;
+  - no field-edge expansion;
+  - no topology/path/house/gameplay changes.
+- Pass gate:
+  - 1.0x: herb garden and drying/work cluster read clearly without sticker/halo artifacts;
+  - 0.65x: healer pocket does not become cluttered or over-dominant;
+  - main spine and player readability remain clean;
+  - Phone QC says PASS.
+- Next action: CI/deploy proof branch, then Phone QC at 1.0x and 0.65x.
 
 ### ENV-FIELD-EDGE-KIT-A
-- Purpose: field/agriculture edge language implying a larger village beyond the playable slice.
-- Status: `NOT_STARTED`.
-- Next: defer until `ENV-HEALER-ACTIVITY-KIT-A` passes.
 
-## Non-art architecture / QC
+- Purpose: field/agriculture edge language that implies a larger village beyond the authored slice.
+- Status: `NOT_STARTED`.
+- Next action: defer until Healer activity proof passes.
+
+## 8. Current critical non-art architecture note
 
 ### SETTLEMENT-PROOF-SCENE
-- Current V2-A QC lineage: `src/scenes/VillageTopologyQcScene.ts` and `src/scenes/VillageTopologyQcA4Scene.ts`.
-- Risk: accepted proof work eventually needs promotion into normal production environment/GameScene rather than remaining permanently QC-only.
-- Next: finish scoped C4.2 environment proof gates first; promotion is a later VERIFY task.
+
+- Purpose: historical/current integration path for settlement production props/merchant proof.
+- Status: active implementation lineage, not a visual asset.
+- Earlier file: `src/scenes/SettlementPropsProofScene.ts`.
+- Current V2-A environment QC file: `src/scenes/VillageTopologyQcScene.ts`.
+- Current Healer proof layers: `VillageTopologyQcA4Scene.ts` then `VillageTopologyQcHealerActivityScene.ts`.
+- Risk: accepted proof work eventually needs promotion back into the normal `GameScene`/environment path rather than remaining a permanent QC scene.
+- Next action: finish the scoped V2-A environment proof gates first; promotion is a later VERIFY task.
+
+## 9. QC camera utility
 
 ### TOOL-QC-CAMERA-ZOOM
+
+- Purpose: let Phone QC inspect micro, zone and macro composition without changing production camera intent.
 - Status: `PHONE_PASS` as a QC utility.
 - Presets: `1.0x`, `0.8x`, `0.65x`.
-- World camera only; HUD stays screen-space.
-- Next: preserve during environment proof work.
+- Scope: world camera only; HUD remains fixed screen-space; camera follows player.
+- Important: test/QC tool, not gameplay feature.
+- Next action: preserve while environment production continues.
 
-## Drive vault
+## 10. Drive vault
 
-`20_RUNTIME_READY` folder ID: `1pwArqr68G-3o9iXdffpDb8bMUyuR9-2f`
+Verified folder structure:
 
-Subfolders:
+```text
+20_RUNTIME_READY
+├── 00_INBOX
+├── 10_QC_PASS
+└── 90_ARCHIVE_REJECT
+```
+
+IDs:
+
+- `20_RUNTIME_READY`: `1pwArqr68G-3o9iXdffpDb8bMUyuR9-2f`
 - `00_INBOX`: `1XM05mGrxcjcwCTJXEC-rkE-z4GK2v8wY`
 - `10_QC_PASS`: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
 - `90_ARCHIVE_REJECT`: `1EEO5QVs2F6YkBC7p266X82S4HgzOnsXW`
 
-## Current exact next action
+## 11. Handoff gate
 
-Produce one isolated `ENV-HEALER-ACTIVITY-KIT-A` candidate on branch `proof/healer-activity-kit-a`. Do not expand into field/agriculture or change the accepted water/bridge/topology/gameplay before that isolated proof is credible and approved for runtime integration.
+Before changing chat or starting another production branch, verify:
+
+- exact current `main`;
+- relevant PR/branch state;
+- all important runtime assets are in GitHub;
+- all critical source/recovery assets have a durable Drive/Project Sources location;
+- this registry matches current PHONE PASS / REVISE state;
+- `HANDOFF_CURRENT.md` names the exact next action and pass gate.
+
+Current exact next action is **deploy the integrated `ENV-HEALER-ACTIVITY-KIT-A` proof on branch `proof/healer-activity-kit-a`, then Phone QC at 1.0x + 0.65x**. Do not broaden into field-edge assets until this proof passes.
