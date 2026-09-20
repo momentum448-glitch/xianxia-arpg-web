@@ -31,12 +31,12 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
     this.refreshActivityQcCopy();
   }
 
-  private qcLayers(): VillageQcLayers {
+  private activityLayers(): VillageQcLayers {
     return this as unknown as VillageQcLayers;
   }
 
   private replaceHealerActivityBlockout(): void {
-    const { contextLayer } = this.qcLayers();
+    const { contextLayer } = this.activityLayers();
 
     const herbBlockouts = [
       { x: 535, y: 1370 },
@@ -68,7 +68,7 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
   }
 
   private refreshActivityQcCopy(): void {
-    const { hudLayer, guideLayer } = this.qcLayers();
+    const { hudLayer, guideLayer } = this.activityLayers();
 
     const replacements = new Map<string, string>([
       ['V2-A · HEALER WATER + BRIDGE A4 TUNE', 'V2-A · HEALER ACTIVITY KIT A'],
