@@ -16,7 +16,20 @@ const PROP_TEXTURES = {
   merchantStall: 'c4-settlement-merchant-stall-b',
 } as const;
 
+type QcVisibleObject =
+  | Phaser.GameObjects.Image
+  | Phaser.GameObjects.Rectangle
+  | Phaser.GameObjects.Ellipse
+  | Phaser.GameObjects.Text;
+
 export class SettlementPropsProofScene extends GameScene {
+  private contextArtObjects: Phaser.GameObjects.Image[] = [];
+  private macroBlockoutObjects: QcVisibleObject[] = [];
+  private macroGuideObjects: QcVisibleObject[] = [];
+  private macroQcClean = true;
+  private macroQcButton!: Phaser.GameObjects.Rectangle;
+  private macroQcLabel!: Phaser.GameObjects.Text;
+
   preload(): void {
     super.preload();
 
@@ -42,7 +55,96 @@ export class SettlementPropsProofScene extends GameScene {
     this.prepareTreeRuntimeTexture();
     this.createSettlementPropsExpansion();
     this.createMerchantAreaProof();
+
+    // The accepted production art remains intact for CONTEXT mode, but CLEAN
+    // mode hides it so macro layout can be judged without visual interference.
+    this.captureContextArt();
     this.createVillageMacroBlockoutProof();
+    this.createMacroQcToggle();
+    this.setMacroQcMode(true);
+  }
+
+  private captureContextArt(): void {
+    const contextTextureKeys = new Set<string>([
+      ...Object.values(SETTLEMENT_HOUSE_TEXTURES),
+      ...Object.values(PROP_TEXTURES),
+    ]);
+
+    this.contextArtObjects = this.children.list.filter((child): child is Phaser.GameObjects.Image => (
+      child instanceof Phaser.GameObjects.Image
+      && contextTextureKeys.has(child.texture.key)
+    ));
+  }
+
+  private createMacroQcToggle(): void {
+    const { width } = this.scale;
+    this.macroQcButton = this.add.rectangle(width - 150, 212, 272, 62, 0x39463f, 0.94)
+      .setStrokeStyle(2, 0xe7d7b7, 0.9)
+      .setScrollFactor(0)
+      .setDepth(150)
+      .setInteractive({ useHandCursor: true });
+
+    this.macroQcLabel = this.add.text(width - 150, 212, '', {
+      fontFamily: 'sans-serif',
+      fontSize: '14px',
+      color: '#fff2d6',
+      fontStyle: 'bold',
+      align: 'center',
+      lineSpacing: 2,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(151);
+
+    this.macroQcButton.on('pointerdown', () => {
+      this.setMacroQcMode(!this.macroQcClean);
+    });
+  }
+
+  private setMacroQcMode(clean: boolean): void {
+    this.macroQcClean = clean;
+
+    for (const object of this.contextArtObjects) object.setVisible(!clean);
+    for (const object of this.macroGuideObjects) object.setVisible(clean);
+
+    this.macroQcButton.setFillStyle(clean ? 0x39463f : 0x574838, 0.94);
+    this.macroQcLabel.setText(
+      clean
+        ? 'QC: MACRO CLEAN\nCHẠM → CONTEXT'
+        : 'QC: CONTEXT\nCHẠM → CLEAN',
+    );
+  }
+
+  private trackMacro<T extends QcVisibleObject>(object: T, guide = false): T {
+    if (guide) this.macroGuideObjects.push(object);
+    else this.macroBlockoutObjects.push(object);
+    return object;
+  }
+
+  private addZoneGuide(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    label: string,
+    fill: number,
+  ): void {
+    this.trackMacro(
+      this.add.ellipse(x, y, width, height, fill, 0.1)
+        .setStrokeStyle(4, fill, 0.72)
+        .setDepth(-1.8),
+      true,
+    );
+
+    this.trackMacro(
+      this.add.text(x, y - height * 0.36, label, {
+        fontFamily: 'sans-serif',
+        fontSize: '19px',
+        color: '#3d382f',
+        fontStyle: 'bold',
+        align: 'center',
+        backgroundColor: '#f0e6cfdd',
+        padding: { x: 8, y: 4 },
+      }).setOrigin(0.5).setDepth(4),
+      true,
+    );
   }
 
   private removeMerchantLowerHouse(): void {
@@ -152,8 +254,6 @@ export class SettlementPropsProofScene extends GameScene {
       { x: 175, y: top + 325, w: 178, flip: false },
       { x: 1440, y: top + 400, w: 190, flip: false },
       { x: 175, y: top + 905, w: 168, flip: true },
-      // Keep the merchant forecourt open; the former east-side tree here made
-      // the cart and stall read as overlapping stamps on phone.
       { x: 185, y: top + 1510, w: 160, flip: true },
       { x: 1420, y: top + 1550, w: 172, flip: false },
     ] as const;
@@ -201,9 +301,6 @@ export class SettlementPropsProofScene extends GameScene {
     if (!settlement) return;
     const top = settlement.yMin;
 
-    // Scale against the accepted settlement houses rather than treating the
-    // merchant kit as small decorative props. The cleared lower-house footprint
-    // gives the vignette room to read as a real trading area on phone.
     this.addProp(PROP_TEXTURES.merchantStall, 1140, top + 965, 270, -2.60, false, 1, 0);
     this.addProp(PROP_TEXTURES.merchantSign, 1018, top + 930, 60, -2.54, false, 1, 0);
     this.addProp(PROP_TEXTURES.merchantGoods, 1235, top + 1080, 135, -2.56, false, 1, 0);
@@ -215,53 +312,60 @@ export class SettlementPropsProofScene extends GameScene {
     if (!settlement) return;
     const top = settlement.yMin;
 
-    // Diagnostic-only macro blockout for Thanh Vân Thôn V1.
-    // Keep these cheap shapes behind gameplay/production sprites so Phone QC can
-    // judge village structure before any new production PNG is commissioned.
     const wood = 0x76634c;
     const stone = 0x827c6c;
     const water = 0x6f8d8c;
     const field = 0x9b9469;
     const soil = 0xb79a72;
 
-    // Z0 frontier threshold: two rough side fences + one modest marker. This is
-    // intentionally not a grand gate because the village is poor/frontier.
-    this.add.rectangle(560, top + 145, 285, 24, wood, 0.22)
-      .setRotation(-0.08)
-      .setDepth(-5.7);
-    this.add.rectangle(1060, top + 155, 300, 24, wood, 0.22)
-      .setRotation(0.07)
-      .setDepth(-5.7);
-    this.add.rectangle(940, top + 185, 22, 86, stone, 0.24)
-      .setRotation(0.06)
-      .setDepth(-5.6);
+    // Rebuild the macro read from simple shapes rather than from existing art.
+    // These are the things under QC. Production sprites are only a comparison
+    // layer available through the CONTEXT toggle.
+    this.trackMacro(
+      this.add.rectangle(560, top + 145, 285, 24, wood, 0.3)
+        .setRotation(-0.08)
+        .setDepth(-5.7),
+    );
+    this.trackMacro(
+      this.add.rectangle(1060, top + 155, 300, 24, wood, 0.3)
+        .setRotation(0.07)
+        .setDepth(-5.7),
+    );
+    this.trackMacro(
+      this.add.rectangle(940, top + 185, 22, 86, stone, 0.32)
+        .setRotation(0.06)
+        .setDepth(-5.6),
+    );
 
-    // Z3 healer branch: a small pond/irrigation pocket sits off the main spine.
-    // The water remains local to the lower-west village rather than cutting the
-    // critical north-south route.
-    this.add.ellipse(405, top + 1435, 310, 185, water, 0.16)
-      .setRotation(-0.08)
-      .setDepth(-6.2);
-    this.add.ellipse(520, top + 1510, 250, 82, water, 0.13)
-      .setRotation(0.14)
-      .setDepth(-6.15);
-    this.add.ellipse(620, top + 1545, 190, 58, water, 0.11)
-      .setRotation(0.18)
-      .setDepth(-6.1);
-
-    // A tiny branch footbridge tests whether rural water helps the healer pocket
-    // without becoming a route puzzle. It is not on the critical spine.
-    this.add.rectangle(535, top + 1488, 142, 46, wood, 0.48)
-      .setRotation(0.14)
-      .setDepth(-5.4);
-    for (let i = -3; i <= 3; i += 1) {
-      this.add.rectangle(535 + i * 19, top + 1488 + i * 2.5, 4, 44, 0x4f4233, 0.34)
+    this.trackMacro(
+      this.add.ellipse(405, top + 1435, 310, 185, water, 0.3)
+        .setRotation(-0.08)
+        .setDepth(-6.2),
+    );
+    this.trackMacro(
+      this.add.ellipse(520, top + 1510, 250, 82, water, 0.25)
         .setRotation(0.14)
-        .setDepth(-5.3);
+        .setDepth(-6.15),
+    );
+    this.trackMacro(
+      this.add.ellipse(620, top + 1545, 190, 58, water, 0.21)
+        .setRotation(0.18)
+        .setDepth(-6.1),
+    );
+
+    this.trackMacro(
+      this.add.rectangle(535, top + 1488, 142, 46, wood, 0.64)
+        .setRotation(0.14)
+        .setDepth(-5.4),
+    );
+    for (let i = -3; i <= 3; i += 1) {
+      this.trackMacro(
+        this.add.rectangle(535 + i * 19, top + 1488 + i * 2.5, 4, 44, 0x4f4233, 0.5)
+          .setRotation(0.14)
+          .setDepth(-5.3),
+      );
     }
 
-    // Z4 field/residential fringe: quiet edge rows imply more households and
-    // working land beyond the few authored hero clusters.
     const fieldRows = [
       { x: 210, y: top + 1690, w: 300, r: -0.08 },
       { x: 235, y: top + 1750, w: 330, r: -0.05 },
@@ -269,28 +373,51 @@ export class SettlementPropsProofScene extends GameScene {
       { x: 1365, y: top + 1730, w: 320, r: 0.05 },
     ] as const;
     for (const row of fieldRows) {
-      this.add.ellipse(row.x, row.y, row.w, 44, field, 0.13)
-        .setRotation(row.r)
-        .setDepth(-7.1);
-      this.add.ellipse(row.x, row.y + 18, row.w * 0.88, 18, soil, 0.11)
-        .setRotation(row.r)
-        .setDepth(-7);
+      this.trackMacro(
+        this.add.ellipse(row.x, row.y, row.w, 44, field, 0.28)
+          .setRotation(row.r)
+          .setDepth(-7.1),
+      );
+      this.trackMacro(
+        this.add.ellipse(row.x, row.y + 18, row.w * 0.88, 18, soil, 0.22)
+          .setRotation(row.r)
+          .setDepth(-7),
+      );
     }
 
-    // Partial low-contrast edge masses are intentionally clipped by the world
-    // edge. They test perceived village scale without adding more hero houses.
-    this.add.rectangle(85, top + 720, 170, 150, wood, 0.07)
-      .setRotation(-0.05)
-      .setDepth(-8);
-    this.add.rectangle(1515, top + 520, 170, 160, wood, 0.07)
-      .setRotation(0.06)
-      .setDepth(-8);
-    this.add.rectangle(70, top + 1640, 210, 130, wood, 0.06)
-      .setRotation(0.03)
-      .setDepth(-8);
-    this.add.rectangle(1530, top + 1570, 220, 145, wood, 0.06)
-      .setRotation(-0.04)
-      .setDepth(-8);
+    const fringeMasses = [
+      { x: 85, y: top + 720, w: 170, h: 150, r: -0.05 },
+      { x: 1515, y: top + 520, w: 170, h: 160, r: 0.06 },
+      { x: 70, y: top + 1640, w: 210, h: 130, r: 0.03 },
+      { x: 1530, y: top + 1570, w: 220, h: 145, r: -0.04 },
+    ] as const;
+    for (const mass of fringeMasses) {
+      this.trackMacro(
+        this.add.rectangle(mass.x, mass.y, mass.w, mass.h, wood, 0.16)
+          .setRotation(mass.r)
+          .setDepth(-8),
+      );
+    }
+
+    // CLEAN-only zone language. These guides are intentionally explicit so the
+    // user can judge topology and hierarchy rather than guess what each blotch is.
+    this.addZoneGuide(805, top + 175, 360, 210, 'LỐI VÀO / FRONTIER', 0x796b54);
+    this.addZoneGuide(555, top + 440, 500, 330, 'Z1 · TRƯỞNG LÃO', 0x6d657a);
+    this.addZoneGuide(1110, top + 940, 560, 360, 'Z2 · THƯƠNG NHÂN', 0x92714f);
+    this.addZoneGuide(500, top + 1370, 560, 390, 'Z3 · DƯỢC SƯ + NƯỚC', 0x5f7f70);
+    this.addZoneGuide(800, top + 1660, 1120, 250, 'Z4 · RUỘNG / DÂN CƯ MỞ RỘNG', 0x88875f);
+
+    this.trackMacro(
+      this.add.text(800, top + 760, 'TRỤC CHÍNH GIỮ THOÁNG', {
+        fontFamily: 'sans-serif',
+        fontSize: '17px',
+        color: '#4c463c',
+        fontStyle: 'bold',
+        backgroundColor: '#efe5cecc',
+        padding: { x: 8, y: 4 },
+      }).setOrigin(0.5).setDepth(4),
+      true,
+    );
   }
 
   private removeLegacySettlementProps(top: number): void {
