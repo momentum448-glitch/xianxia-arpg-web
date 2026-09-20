@@ -3,256 +3,188 @@
 Snapshot: 2026-09-20
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current milestone: C4.2 settlement production-art / environment design system
+Current milestone: C4.2 settlement environment design / Thanh Vân Thôn macro blockout
 
-## Verified code / documentation state at snapshot
+## Verified repo/runtime state
 
-- Phone-QC/runtime baseline: `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`), from PR #63 `Scale merchant area to world size and clear lower house`.
-- PR #63 CI: PASS.
-- GitHub Pages build/deploy for that runtime baseline: PASS.
-- Android Phone QC: PASS for the current merchant-area scale/layout shown in build `56b9359`.
-- PR #64 refreshed continuity docs only; later documentation commits can advance `main` without changing the accepted runtime/art baseline.
-- Relevant merged runtime branch: `fix/merchant-world-scale-house-clear`.
-- Live URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
+- Accepted runtime/art baseline: `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`), from PR #63.
+- Merchant-area scale/layout on that build: Android Phone QC PASS.
+- Environment/level-design knowledge base merged later in PR #65; documentation-only.
+- Main before this design-doc branch: `ccda05053014b2c64e58ad402c7c434992d31acf`.
+- Current design branch: `docs/thanh-van-thon-design-v1`.
+- Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
 
-Always query live `main`, open PRs and relevant branches before acting. Do not treat the accepted runtime build SHA as a permanent current-main pointer.
+## Current user direction
 
-## Current user instruction / work mode
+The user approved a structured redesign of Thanh Vân Thôn at map level before more broad art production.
 
-The user explicitly paused further scene/NPC production to improve the project's environment-design method first.
+Locked V1 choices:
 
-A reusable Environment & Level Design Knowledge Base has now been authored under `docs/environment/`. The next substantial environment task must use this design system instead of returning to ad-hoc prop-by-prop construction.
+- village identity: **poor, humble frontier village near wilderness**;
+- role: **light hub**, important early and less dominant later;
+- navigation: **clear main spine + a few small side lanes/optional branches**;
+- perceived scale: **compact playable slice that implies a larger village through edge composition**;
+- terrain: **modest stream/pond + simple bridge + field/garden language**, without turning the village into a traversal puzzle.
 
-Do **not** automatically begin NPC production, enemy expansion, or another broad settlement art pass. The user wants structured exploration/design of the environment/map first.
+Do not reopen these choices unless the user asks.
 
-Do not use Remote Desktop Commander. Continue with GitHub + Drive connectors and Phone QC.
+## New Thanh Vân Thôn design documents
 
-## New environment / level design knowledge base
+Read before implementing village layout changes:
 
-Start with:
+```text
+docs/environment/maps/THANH_VAN_THON_ENVIRONMENT_DESIGN_V1.md
+docs/environment/maps/THANH_VAN_THON_MACRO_SCHEMATIC_V1.md
+```
+
+They use the project environment system:
 
 ```text
 docs/environment/README.md
 docs/environment/XIANXIA_ARPG_ENVIRONMENT_PLAYBOOK.md
 ```
 
-Supporting guides:
+## Verified settlement metrics used by V1
+
+- World: `1600 × 9000`.
+- Settlement: world `y=7200..9000` → local `1600 × 1800`.
+- Portrait viewport: `720 × 1280`; one viewport covers about 71% of village height.
+- Player spawn: world `(800,8150)` → local `(800,950)`.
+- Player visual height: `112`.
+- Player collision rectangle: `58 × 78`.
+- NPC interaction radius: `155`.
+- Mặc Trưởng Lão: local `(650,400)`.
+- Lục Chưởng Quầy: local `(955,860)`.
+- Thanh Dược Sư: local `(650,1310)`.
+- Existing house display widths: roughly `275..347`.
+- Merchant Phone-PASS widths: stall `270`, cart `180`, goods `135`, sign `60`.
+- Current environment art does not provide navigation collision; player is clamped only by world edges.
+
+Important design consequence: because the portrait camera is tall relative to the 1800-high settlement, zones must be separated through **lateral offset, framing, activity and density**, not only vertical distance.
+
+## Thanh Vân Thôn V1 topology
+
+Chosen topology: **spine + branches**.
+
+Macro sequence north to south:
+
+1. frontier threshold;
+2. Elder court, west-center;
+3. Merchant crossroads, east-center;
+4. Healer garden / water branch, west-center;
+5. quiet residential / field fringe with edge dressing.
+
+The merchant area remains the accepted visual anchor. Do not regenerate or rescale its accepted V2 assets.
+
+Water belongs near the healer/agricultural branch and should not cross the critical north-south route in the first proof.
+
+## Current art/runtime state that must not regress
+
+- Mobile browser portrait 9:16.
+- Manual `ATK + SKILL + NÉ` combat.
+- One flying sword per attack press.
+- Base attack range 205 + future bonus.
+- Base attack cooldown 800ms through `basicAttackSpeedPct`.
+- Settlement safe zone and NPC interaction remain intact.
+- Third-Kiếp-Ảnh projectile cleanup freeze fix must not regress.
+- Production art direction: restrained ink-wash, moderate anime, muted earth/ink/jade, phone readability first.
+- Art integration must not alter gameplay hitboxes/timing unless explicitly requested.
+
+## Existing settlement assets that remain accepted
+
+Houses:
 
 ```text
-docs/environment/ENVIRONMENT_DESIGN_FOUNDATIONS.md
-docs/environment/LEVEL_BLOCKOUT_AND_PLAYER_FLOW.md
-docs/environment/WAYFINDING_AND_COMPOSITION.md
-docs/environment/SCALE_DENSITY_AND_SPATIAL_GRAMMAR.md
-docs/environment/MODULAR_ENVIRONMENT_AND_ASSET_KITS.md
-docs/environment/ENVIRONMENTAL_STORYTELLING.md
-docs/environment/MOBILE_PORTRAIT_LEVEL_DESIGN.md
-docs/environment/ENVIRONMENT_QC_PLAYBOOK.md
-docs/environment/SOURCE_REFERENCES.md
+public/assets/c4/environment/settlement/env_house_thatch_a.png
+public/assets/c4/environment/settlement/env_house_tile_a.png
+public/assets/c4/environment/settlement/env_house_hall_a.png
+public/assets/c4/environment/settlement/env_house_thatch_b.png
 ```
 
-Reusable templates:
+General props:
 
 ```text
-docs/environment/templates/ENVIRONMENT_DESIGN_TEMPLATE.md
-docs/environment/templates/ZONE_COMPOSITION_TEMPLATE.md
-docs/environment/templates/ASSET_KIT_PLANNING_TEMPLATE.md
+env_tree_village_a.png
+env_fence_village_a.png
+env_rockgrass_village_a.png
+env_lanternpost_village_a.png
 ```
 
-The design-system workflow is:
-
-`purpose → topology → zones → critical path → landmarks → scale metrics → blockout → phone flow test → composition → asset kit → one production proof → runtime/Phone QC → expansion`
-
-External references are treated as general design principles, not locked game rules. Project-specific decisions still require `DECISION_LOG`, code/runtime evidence or Phone QC.
-
-## Product/gameplay state that must not regress
-
-- Browser-first, mobile-first portrait 9:16.
-- World: authored continuous open-map-lite, 1600 × 9000.
-- Right-thumb combat cluster: `ATK + SKILL + NÉ`.
-- Basic attack is manual, one visible flying sword per press.
-- Base attack range: 205 + build/profile bonus.
-- Base attack cooldown: 800 ms through `basicAttackSpeedPct`.
-- No-target ATK launches a straight range-capped sword.
-- Active skill: Trảm Kích / Cleave.
-- Dodge has cooldown + i-frames.
-- No Skill II/III for MVP.
-- Luyện Khí → Trúc Cơ progression remains current.
-- Breakthrough requirement: 50 Linh Khí + 3 Tinh Hoa + defeat 3 Kiếp Ảnh.
-- Settlement safety, NPC interaction, continuous world, and third-Kiếp-Ảnh projectile cleanup fix must not regress.
-
-## Current art direction / production rules
-
-- Original xianxia, restrained ink-wash influence, moderate anime influence.
-- Muted earth / ink / jade palette.
-- Broad readable silhouettes; phone readability first.
-- Production pipeline: accepted design → isolated production asset → normalized runtime asset → integration → Phone QC → expand.
-- Do not regenerate `DESIGN_PASS` assets merely because a later chat cannot see them.
-- Art changes must not alter gameplay hitboxes/timing unless explicitly requested.
-- Phone QC is final authority for scale, readability, VFX and runtime composition.
-
-## Environment design rules now added
-
-- Function before decoration.
-- Design topology/flow/scale before broad asset production.
-- Judge composition in actual portrait viewports, not only full-map overview.
-- Protect negative space for movement, interaction, UI and focal hierarchy.
-- Treat source resolution separately from world display scale.
-- Use controlled modular reuse instead of visible stamping.
-- Props should communicate activities and zone function, not fill quotas.
-- New large map/zone work should begin from `ENVIRONMENT_DESIGN_TEMPLATE.md`.
-- High-value zones should use `ZONE_COMPOSITION_TEMPLATE.md`.
-- New prop families should use `ASSET_KIT_PLANNING_TEMPLATE.md` only after a real map/zone gap is identified.
-
-## C4.2 settlement state
-
-### Houses
-
-The accepted four-house set is functioning in runtime. Earlier black/corrupt-binary issues were repaired through exact-source recovery rather than redesign.
-
-Important continuity facts:
-
-- Hall clean source was installed and phone-validated.
-- Thatch B was recovered from the accepted four-house source sheet, normalized, installed, and phone-validated.
-- Current settlement screenshots show production houses rendering correctly.
-- House placement/scale has been refined in context with ground/path/props.
-- Do not reopen the old black-house blocker without current runtime evidence of regression.
-
-### Ground/path
-
-- Settlement uses painterly ground/path segments rather than a ruler-straight lane.
-- Roads are organic, irregular, curved, with branch/courtyard behavior.
-- Ground/path is a modular-hybrid composition, not one flattened background.
-- Current route remains readable on phone.
-
-### Base production props
-
-Production props integrated and phone-accepted as a visual kit:
-
-- tree;
-- wooden fence;
-- rock/grass patch;
-- lantern post.
-
-These are intentionally varied and must not become a mechanical `house + tree + fence + rock + lamp` formula.
-
-### Merchant area / Lục Chưởng Quầy
-
-Merchant identity proof is PHONE PASS on build `56b9359`.
-
-Canonical V2 runtime files:
+Merchant V2:
 
 ```text
-public/assets/c4/environment/settlement/env_merchant_stall_b.png
-public/assets/c4/environment/settlement/env_merchant_cart_b.png
-public/assets/c4/environment/settlement/env_merchant_goods_b.png
-public/assets/c4/environment/settlement/env_merchant_sign_b.png
+env_merchant_stall_b.png
+env_merchant_cart_b.png
+env_merchant_goods_b.png
+env_merchant_sign_b.png
 ```
 
-Accepted world display widths:
+Merchant V2 Drive backups remain recorded in `PROJECT_SOURCES.md` / `ASSET_REGISTRY.md`.
 
-- stall: 270;
-- cart: 180;
-- goods: 135;
-- sign: 60.
+## Important proof-scene architecture
 
-Phone QC result:
-
-- no halo/black-background blocker;
-- stall/cart/goods no longer read as mini props;
-- merchant zone reads clearly as trading space;
-- path/player readability preserved;
-- user explicitly accepted the result.
-
-Locked simplification:
-
-- lower tile-roof house at `x=1210, settlement top+1090` was removed in the active proof composition to reduce clutter;
-- existing grounding wash remains;
-- this was a composition choice, not a gameplay-space change.
-
-## Important runtime architecture note
-
-`src/main.ts` currently registers:
+`src/main.ts` currently runs:
 
 ```text
 CharacterSelectScene
 SettlementPropsProofScene
 ```
 
-`SettlementPropsProofScene` extends `GameScene` and layers accepted settlement production-prop/merchant proof work over normal gameplay.
+`SettlementPropsProofScene` extends `GameScene` and overlays the accepted settlement prop/merchant proof.
 
-Before broad future environment production, VERIFY whether accepted proof work should be promoted into the normal runtime scene or whether the proof layer remains intentionally useful. A temporary proof architecture must not become permanent by accident.
+Before broad production expansion, VERIFY whether accepted proof work should eventually graduate into the normal runtime scene. For the next macro blockout, using the proof scene is acceptable if it keeps the experiment isolated and reversible.
 
-## Asset continuity
+## Failed / forbidden paths
 
-See `docs/ASSET_REGISTRY.md` and `docs/PROJECT_SOURCES.md`.
-
-Merchant V2 Drive backups in `20_RUNTIME_READY/10_QC_PASS`:
-
-- `env_merchant_stall_b.png` → `1zIpOgs_JTTUJXeaTdDDn2SgO4dZuJdL4`
-- `env_merchant_cart_b.png` → `1xftok68r_D_f_sl1Sjmcx8InHQ9zWB0T`
-- `env_merchant_goods_b.png` → `1okipyi9GsU2BWGlS4XZapuzqPBEFUOqX`
-- `env_merchant_sign_b.png` → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
-
-Older accepted/recovered settlement sources remain registered in Drive/GitHub.
-
-## Failed / obsolete paths not to repeat blindly
-
-- Do not regenerate accepted house or merchant assets merely to change runtime scale.
-- Do not treat generated concept/composition images as runtime assets.
-- Do not repeat chunked/base64 staging for PNG transport when a direct verified Drive→GitHub path exists.
-- Do not use salvage output from corrupt PNGs as production art.
-- Do not use workflow-only validation as proof that runtime uses intended bytes.
-- Do not reintroduce uniform `house + tree + fence + rock + lamp` repetition.
-- Do not return to broad prop generation before map/zone purpose and composition are designed.
+- Do not regenerate DESIGN_PASS houses/merchant assets for layout or scale issues.
+- Do not return to `house + tree + fence + rock + lamp` stamping.
+- Do not generate a broad prop kit before the macro blockout proves a real need.
+- Do not use corrupt-PNG salvage output.
+- Do not repeat opaque chunked/base64 PNG staging when verified source transport exists.
+- Do not treat concept/mockup images as runtime assets.
+- Do not change gameplay hitboxes/timing during environment art proof.
 - Do not use Remote Desktop Commander.
 
-## Current quality assessment
+## Current ASSUME / VERIFY
 
-The settlement has moved from placeholder/procedural composition to a coherent painterly production direction. The largest remaining strategic problem is no longer “how do we add another prop?” but “what should the finished starting village be as a complete designed environment?”
+### ASSUME
 
-The new knowledge base exists specifically to answer that at map level before more expensive art work.
+Keep current player spawn `(800,8150)` for the first macro blockout. Moving spawn is a separate gameplay/pacing decision and should only be raised if Phone QC shows the opening read is weak.
 
-## Discovery topics for Thanh Vân Thôn environment v1
+### VERIFY in next proof
 
-When the user chooses to resume village design, prioritize at most 5–7 high-impact decisions. Current likely ASK topics include:
-
-- settlement fantasy/social character: poor ordinary village, prosperous cultivation-adjacent village, or another identity;
-- whether the village is a recurring home hub or mainly an opening settlement;
-- desired exploration complexity versus very clear navigation;
-- perceived village population/scale versus the playable footprint;
-- how strongly natural terrain such as stream, pond, field, hill, bridge or cliff should shape the layout.
-
-VERIFY rather than ask:
-
-- current runtime/player/house scale metrics;
-- actual viewport world coverage under phone camera/UI;
-- current house/NPC coordinates and settlement bounds;
-- route/interaction clearances;
-- existing proof-scene architecture and promotion path.
+- whether west/east staggering is enough to make Elder/Merchant/Healer read as separate zones;
+- whether existing house/prop assets are sufficient to imply residential scale;
+- whether one small healer-side water feature improves logic without hurting route readability;
+- whether world-edge dressing looks believable despite no environment collision;
+- whether accepted proof architecture is still the best temporary place for this test.
 
 ## Exact next action
 
-When the user is ready to resume map design:
+Create a **runtime macro blockout proof** from the accepted settlement baseline:
 
-1. Copy `docs/environment/templates/ENVIRONMENT_DESIGN_TEMPLATE.md` into a Thanh Vân Thôn-specific design document.
-2. Run one structured discovery round for the 5–7 highest-impact product/aesthetic choices.
-3. VERIFY runtime metrics from code and accepted build evidence.
-4. Produce a macro schematic: topology, zones, landmarks, route, open spaces and transitions before new production art.
-5. Do not generate a broad asset kit until the macro design identifies real gaps.
+- preserve the current merchant Phone-PASS cluster;
+- add only cheap/reversible diagnostic composition for the V1 topology;
+- prove north threshold, Elder quiet pocket, healer water/agriculture branch, and residential edge massing;
+- use placeholders/existing assets only;
+- create no new production PNGs yet;
+- deploy and require Phone QC.
 
-## Current PASS gate
+### Blockout validation question
 
-The current settlement/merchant runtime snapshot itself is accepted. Do not modify build `56b9359` merely to polish more.
+**Does Thanh Vân Thôn read on phone as a humble frontier village with a clear main spine, three distinct functional pockets, modest natural terrain, and the suggestion of a larger settlement without becoming cluttered?**
 
-The environment-design knowledge base v1 is considered useful when it can answer:
+## PASS gate before new village asset production
 
-- where map design begins;
-- how zones/routes are structured;
-- how scale and density are judged;
-- how modular repetition is controlled;
-- how environment communicates function/history;
-- how the design moves from blockout to runtime and Phone QC.
+Do not create new water/bridge/herb/residential production art until the blockout proves:
+
+- critical route is immediately readable;
+- Merchant remains clear and unchanged in quality;
+- Elder and Healer have distinct spatial identity;
+- water is useful and non-obstructive;
+- edge dressing creates scale without demanding many full houses;
+- Phone QC says the macro composition works.
 
 ## Resume sentence
 
-Resume from accepted runtime/art baseline build `56b9359`: settlement ground/houses/base props and the world-scaled Lục Chưởng Quầy merchant vignette are phone-accepted; use the new `docs/environment/` knowledge base and structured discovery to design the complete Thanh Vân Thôn environment before further broad art production.
+Resume from accepted runtime/art build `56b9359` plus Thanh Vân Thôn V1 design docs: poor frontier village, light hub, spine + small branches, compact playable slice with larger-village illusion, healer-side modest water/agriculture; next action is a reversible runtime macro blockout before any new village production asset.

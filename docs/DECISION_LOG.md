@@ -42,6 +42,11 @@ Rules:
 | 2026-09-20 | Pause implementation after the merchant PASS and run another structured discovery round before choosing the next production proof. | Do not assume NPC production is automatically next simply because placeholders remain. |
 | 2026-09-20 | Establish `docs/environment/` as the reusable Environment & Level Design Knowledge Base for future map/environment work. | General principles are separated from project adaptations and locked rules; source provenance lives in `SOURCE_REFERENCES.md`. |
 | 2026-09-20 | Substantial new environment/map work should proceed from purpose/topology/zones/scale/blockout/composition before broad production-asset generation. | Use the new environment templates and proof-first Phone-QC workflow; do not return to ad-hoc prop-by-prop map construction. |
+| 2026-09-20 | Thanh Vân Thôn V1 should read as a poor, humble frontier village close to wilderness. | Reject a prosperous sect-town tone for the starting village. |
+| 2026-09-20 | Thanh Vân Thôn is a light hub: important early, revisited when useful, but its dominance should decline as the journey expands. | Avoid building a heavy permanent-home-hub feature set for MVP. |
+| 2026-09-20 | Thanh Vân Thôn navigation uses a clear main spine plus a few small side lanes/optional branches. | Avoid both a single corridor and maze-like village routing. |
+| 2026-09-20 | The playable village slice should stay compact while edge composition implies a larger settlement beyond the authored gameplay footprint. | Do not represent population primarily by adding many full hero houses. |
+| 2026-09-20 | Modest natural terrain should shape the village: small stream/pond, simple bridge, and field/garden language are desirable, but must not turn the settlement into a traversal puzzle. | First water proof belongs off the critical spine, near the healer/agricultural pocket. |
 
 ## Current locked values at a glance
 
@@ -57,6 +62,7 @@ Rules:
 - MVP realms: Luyện Khí → Trúc Cơ.
 - Settlement art: modular-hybrid painterly environment with organic paths.
 - Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
+- Thanh Vân Thôn V1: poor frontier village, light hub, clear spine + branches, compact playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next action at this snapshot: structured discovery before further implementation.
+- Next action at this snapshot: runtime macro blockout of the Thanh Vân Thôn V1 design before producing new village art.
