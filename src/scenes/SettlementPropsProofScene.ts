@@ -42,6 +42,7 @@ export class SettlementPropsProofScene extends GameScene {
     this.prepareTreeRuntimeTexture();
     this.createSettlementPropsExpansion();
     this.createMerchantAreaProof();
+    this.createVillageMacroBlockoutProof();
   }
 
   private removeMerchantLowerHouse(): void {
@@ -207,6 +208,89 @@ export class SettlementPropsProofScene extends GameScene {
     this.addProp(PROP_TEXTURES.merchantSign, 1018, top + 930, 60, -2.54, false, 1, 0);
     this.addProp(PROP_TEXTURES.merchantGoods, 1235, top + 1080, 135, -2.56, false, 1, 0);
     this.addProp(PROP_TEXTURES.merchantCart, 1370, top + 970, 180, -2.63, false, 1, 0);
+  }
+
+  private createVillageMacroBlockoutProof(): void {
+    const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
+    if (!settlement) return;
+    const top = settlement.yMin;
+
+    // Diagnostic-only macro blockout for Thanh Vân Thôn V1.
+    // Keep these cheap shapes behind gameplay/production sprites so Phone QC can
+    // judge village structure before any new production PNG is commissioned.
+    const wood = 0x76634c;
+    const stone = 0x827c6c;
+    const water = 0x6f8d8c;
+    const field = 0x9b9469;
+    const soil = 0xb79a72;
+
+    // Z0 frontier threshold: two rough side fences + one modest marker. This is
+    // intentionally not a grand gate because the village is poor/frontier.
+    this.add.rectangle(560, top + 145, 285, 24, wood, 0.22)
+      .setRotation(-0.08)
+      .setDepth(-5.7);
+    this.add.rectangle(1060, top + 155, 300, 24, wood, 0.22)
+      .setRotation(0.07)
+      .setDepth(-5.7);
+    this.add.rectangle(940, top + 185, 22, 86, stone, 0.24)
+      .setRotation(0.06)
+      .setDepth(-5.6);
+
+    // Z3 healer branch: a small pond/irrigation pocket sits off the main spine.
+    // The water remains local to the lower-west village rather than cutting the
+    // critical north-south route.
+    this.add.ellipse(405, top + 1435, 310, 185, water, 0.16)
+      .setRotation(-0.08)
+      .setDepth(-6.2);
+    this.add.ellipse(520, top + 1510, 250, 82, water, 0.13)
+      .setRotation(0.14)
+      .setDepth(-6.15);
+    this.add.ellipse(620, top + 1545, 190, 58, water, 0.11)
+      .setRotation(0.18)
+      .setDepth(-6.1);
+
+    // A tiny branch footbridge tests whether rural water helps the healer pocket
+    // without becoming a route puzzle. It is not on the critical spine.
+    this.add.rectangle(535, top + 1488, 142, 46, wood, 0.48)
+      .setRotation(0.14)
+      .setDepth(-5.4);
+    for (let i = -3; i <= 3; i += 1) {
+      this.add.rectangle(535 + i * 19, top + 1488 + i * 2.5, 4, 44, 0x4f4233, 0.34)
+        .setRotation(0.14)
+        .setDepth(-5.3);
+    }
+
+    // Z4 field/residential fringe: quiet edge rows imply more households and
+    // working land beyond the few authored hero clusters.
+    const fieldRows = [
+      { x: 210, y: top + 1690, w: 300, r: -0.08 },
+      { x: 235, y: top + 1750, w: 330, r: -0.05 },
+      { x: 1390, y: top + 1665, w: 285, r: 0.08 },
+      { x: 1365, y: top + 1730, w: 320, r: 0.05 },
+    ] as const;
+    for (const row of fieldRows) {
+      this.add.ellipse(row.x, row.y, row.w, 44, field, 0.13)
+        .setRotation(row.r)
+        .setDepth(-7.1);
+      this.add.ellipse(row.x, row.y + 18, row.w * 0.88, 18, soil, 0.11)
+        .setRotation(row.r)
+        .setDepth(-7);
+    }
+
+    // Partial low-contrast edge masses are intentionally clipped by the world
+    // edge. They test perceived village scale without adding more hero houses.
+    this.add.rectangle(85, top + 720, 170, 150, wood, 0.07)
+      .setRotation(-0.05)
+      .setDepth(-8);
+    this.add.rectangle(1515, top + 520, 170, 160, wood, 0.07)
+      .setRotation(0.06)
+      .setDepth(-8);
+    this.add.rectangle(70, top + 1640, 210, 130, wood, 0.06)
+      .setRotation(0.03)
+      .setDepth(-8);
+    this.add.rectangle(1530, top + 1570, 220, 145, wood, 0.06)
+      .setRotation(-0.04)
+      .setDepth(-8);
   }
 
   private removeLegacySettlementProps(top: number): void {
