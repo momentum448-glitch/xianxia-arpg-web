@@ -55,6 +55,8 @@ Rules:
 | 2026-09-20 | Ground/path P0 must be judged at both 0.65x macro and 1.0x movement scale. Build `392d5a7` was REVISE because the road was too visually dominant, the center guide could read as a groove, and the Healer branch was too weak. | User approved a small reversible rhythm pass rather than new art or topology changes. |
 | 2026-09-20 | PR #75 path-rhythm tune is the current ground/path candidate: main path slimmer/lighter, route guide softer, Healer branch stronger, non-Healer forecourts slightly quieter. | Runtime build `3ecba62`; no new assets or gameplay changes. Await Phone QC before marking ground/path P0 PASS. |
 | 2026-09-20 | V2-A Ground/Path P0 is `PHONE_PASS` after final Phone QC at both 0.65x and 1.0x. | Supersedes the pending status above. At 0.65x the road no longer dominates or reads as a dark ribbon/groove; at 1.0x the Healer branch is clear without becoming a second main road. Preserve this layer unless a new concrete Phone-QC problem appears. Next production proof is `ENV-HEALER-WATER-BRIDGE-A` only. |
+| 2026-09-20 | `ENV-HEALER-WATER-BRIDGE-A` is `PHONE_PASS` on final build `6fd3477`. | 1.0x passed scale/readability and bank-to-bank bridge logic; 0.65x passed macro hierarchy. Validated WebP transport is the accepted runtime path. Preserve the accepted art/presentation unless a new concrete regression appears. |
+| 2026-09-20 | The next environment production proof is `ENV-HEALER-ACTIVITY-KIT-A`, isolated first before runtime integration. | Scope is 1–2 modest herb beds, one small medicine-drying element, and a restrained healer-work prop cluster. No field-kit expansion, topology/path change, or gameplay change before the isolated proof passes. |
 
 ## Current locked values at a glance
 
@@ -74,5 +76,6 @@ Rules:
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Macro QC: V2-A topology PASS, spatial massing PASS, accepted-art CONTEXT PASS, QC zoom PASS.
 - Ground/path P0: `PHONE_PASS` from 0.65x + 1.0x Phone QC.
+- `ENV-HEALER-WATER-BRIDGE-A`: `PHONE_PASS` on build `6fd3477`.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next production proof: `ENV-HEALER-WATER-BRIDGE-A`, water + simple bridge only; no full healer kit until runtime + Phone QC PASS.
+- Current production proof: isolated `ENV-HEALER-ACTIVITY-KIT-A`; no field-kit expansion until it passes.
