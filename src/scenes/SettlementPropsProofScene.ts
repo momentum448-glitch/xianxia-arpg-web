@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
+import { SETTLEMENT_HOUSE_TEXTURES } from '../game/environmentVisuals';
 import { WORLD } from '../game/worldConfig';
 import { GameScene } from './GameScene';
 
@@ -37,9 +38,28 @@ export class SettlementPropsProofScene extends GameScene {
 
   create(): void {
     super.create();
+    this.removeMerchantLowerHouse();
     this.prepareTreeRuntimeTexture();
     this.createSettlementPropsExpansion();
     this.createMerchantAreaProof();
+  }
+
+  private removeMerchantLowerHouse(): void {
+    const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
+    if (!settlement) return;
+
+    const targetX = 1210;
+    const targetY = settlement.yMin + 1090;
+    for (const child of [...this.children.list]) {
+      if (
+        child instanceof Phaser.GameObjects.Image
+        && child.texture.key === SETTLEMENT_HOUSE_TEXTURES.tileA
+        && Phaser.Math.Distance.Between(child.x, child.y, targetX, targetY) < 4
+      ) {
+        child.destroy();
+        break;
+      }
+    }
   }
 
   private prepareTreeRuntimeTexture(): void {
@@ -180,13 +200,13 @@ export class SettlementPropsProofScene extends GameScene {
     if (!settlement) return;
     const top = settlement.yMin;
 
-    // Merchant V2 revision: one compact vignette just east of Lục Chưởng Quầy
-    // (merchant NPC is x=955, y=top+860). The props overlap slightly so they
-    // read as a single trading setup, while the road and interaction bubble stay clear.
-    this.addProp(PROP_TEXTURES.merchantStall, 1135, top + 955, 188, -2.60, false, 1, 0);
-    this.addProp(PROP_TEXTURES.merchantSign, 1032, top + 930, 48, -2.54, false, 1, 0);
-    this.addProp(PROP_TEXTURES.merchantGoods, 1210, top + 1010, 92, -2.56, false, 1, 0);
-    this.addProp(PROP_TEXTURES.merchantCart, 1300, top + 930, 118, -2.63, false, 1, 0);
+    // Scale against the accepted settlement houses rather than treating the
+    // merchant kit as small decorative props. The cleared lower-house footprint
+    // gives the vignette room to read as a real trading area on phone.
+    this.addProp(PROP_TEXTURES.merchantStall, 1140, top + 965, 270, -2.60, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantSign, 1018, top + 930, 60, -2.54, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantGoods, 1235, top + 1080, 135, -2.56, false, 1, 0);
+    this.addProp(PROP_TEXTURES.merchantCart, 1370, top + 970, 180, -2.63, false, 1, 0);
   }
 
   private removeLegacySettlementProps(top: number): void {
