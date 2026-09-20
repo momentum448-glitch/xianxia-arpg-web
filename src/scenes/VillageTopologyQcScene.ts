@@ -1,9 +1,26 @@
 import Phaser from 'phaser';
+import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
 
 const WORLD_WIDTH = 1600;
 const WORLD_HEIGHT = 1800;
 const VIEW_WIDTH = 720;
 const VIEW_HEIGHT = 1280;
+
+const TEX = {
+  houseThatchA: 'qc-house-thatch-a',
+  houseTileA: 'qc-house-tile-a',
+  houseHallA: 'qc-house-hall-a',
+  houseThatchB: 'qc-house-thatch-b',
+  tree: 'qc-tree-a',
+  treeRuntime: 'qc-tree-a-runtime',
+  fence: 'qc-fence-a',
+  rockGrass: 'qc-rockgrass-a',
+  lantern: 'qc-lantern-a',
+  merchantStall: 'qc-merchant-stall-b',
+  merchantCart: 'qc-merchant-cart-b',
+  merchantGoods: 'qc-merchant-goods-b',
+  merchantSign: 'qc-merchant-sign-b',
+} as const;
 
 interface Point {
   x: number;
@@ -11,7 +28,7 @@ interface Point {
 }
 
 export class VillageTopologyQcScene extends Phaser.Scene {
-  private worldLayer!: Phaser.GameObjects.Container;
+  private contextLayer!: Phaser.GameObjects.Container;
   private guideLayer!: Phaser.GameObjects.Container;
   private player!: Phaser.GameObjects.Container;
   private guideButtonLabel!: Phaser.GameObjects.Text;
@@ -27,14 +44,36 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     super('VillageTopologyQc');
   }
 
+  preload(): void {
+    const assets = [
+      [TEX.houseThatchA, C4_ASSETS.settlementHouseThatchA],
+      [TEX.houseTileA, C4_ASSETS.settlementHouseTileA],
+      [TEX.houseHallA, C4_ASSETS.settlementHouseHallA],
+      [TEX.houseThatchB, C4_ASSETS.settlementHouseThatchB],
+      [TEX.tree, C4_ASSETS.settlementTreeA],
+      [TEX.fence, C4_ASSETS.settlementFenceA],
+      [TEX.rockGrass, C4_ASSETS.settlementRockGrassA],
+      [TEX.lantern, C4_ASSETS.settlementLanternPostA],
+      [TEX.merchantStall, C4_ASSETS.settlementMerchantStallB],
+      [TEX.merchantCart, C4_ASSETS.settlementMerchantCartB],
+      [TEX.merchantGoods, C4_ASSETS.settlementMerchantGoodsB],
+      [TEX.merchantSign, C4_ASSETS.settlementMerchantSignB],
+    ] as const;
+
+    for (const [key, path] of assets) {
+      if (!this.textures.exists(key)) this.load.image(key, c4AssetUrl(path));
+    }
+  }
+
   create(): void {
     this.cameras.main.setBackgroundColor('#ded4ba');
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-    this.worldLayer = this.add.container(0, 0);
+    this.contextLayer = this.add.container(0, 0);
     this.guideLayer = this.add.container(0, 0);
 
-    this.buildMassing();
+    this.prepareTreeRuntimeTexture();
+    this.buildContext();
     this.createPlayerMarker();
     this.createHud();
     this.createJoystick();
@@ -58,7 +97,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     );
   }
 
-  private buildMassing(): void {
+  private buildContext(): void {
     const base = this.add.rectangle(
       WORLD_WIDTH / 2,
       WORLD_HEIGHT / 2,
@@ -67,16 +106,15 @@ export class VillageTopologyQcScene extends Phaser.Scene {
       0xe7dcc2,
       1,
     ).setDepth(-30);
-    this.worldLayer.add(base);
+    this.contextLayer.add(base);
 
-    this.addEdgeMassing();
     this.addMainSpine();
-    this.addEntryMassing();
-    this.addElderMassing();
-    this.addMerchantMassing();
-    this.addHealerMassing();
-    this.addResidentialFieldMassing();
-    this.addZoneGuides();
+    this.addEntryContext();
+    this.addElderContext();
+    this.addMerchantContext();
+    this.addHealerContext();
+    this.addResidentialContext();
+    this.addContextGuides();
   }
 
   private addMainSpine(): void {
@@ -94,7 +132,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     ];
 
     const road = this.add.graphics().setDepth(-20);
-    road.lineStyle(132, 0xc9b487, 0.24);
+    road.lineStyle(145, 0xc9b487, 0.18);
     road.beginPath();
     spine.forEach((point, index) => {
       if (index === 0) road.moveTo(point.x, point.y);
@@ -102,191 +140,232 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     });
     road.strokePath();
 
-    road.lineStyle(3, 0x8a7556, 0.42);
+    road.lineStyle(3, 0x8a7556, 0.25);
     road.beginPath();
     spine.forEach((point, index) => {
       if (index === 0) road.moveTo(point.x, point.y);
       else road.lineTo(point.x, point.y);
     });
     road.strokePath();
-    this.worldLayer.add(road);
+    this.contextLayer.add(road);
+  }
 
-    const transitionHints = [
-      { x: 790, y: 645, w: 210, r: -0.05 },
-      { x: 835, y: 1055, w: 205, r: 0.07 },
-      { x: 785, y: 1435, w: 195, r: -0.04 },
+  private addEntryContext(): void {
+    this.addAsset(TEX.fence, 505, 255, 205, false, 0.94);
+    this.addAsset(TEX.fence, 1090, 250, 205, true, 0.92);
+    this.addAsset(TEX.lantern, 835, 260, 76, false, 0.96);
+    this.addAsset(this.treeTexture(), 150, 330, 178, false, 0.88);
+    this.addAsset(this.treeTexture(), 1460, 355, 184, true, 0.86);
+  }
+
+  private addElderContext(): void {
+    this.addAsset(TEX.houseHallA, 350, 555, 315, false, 1);
+    this.addAsset(this.treeTexture(), 150, 575, 185, false, 0.96);
+    this.addAsset(TEX.fence, 540, 595, 195, false, 0.94);
+    this.addAsset(TEX.rockGrass, 535, 510, 120, false, 0.92);
+    this.addAsset(TEX.lantern, 615, 570, 74, false, 0.96);
+    this.addAsset(TEX.rockGrass, 235, 650, 105, true, 0.82);
+  }
+
+  private addMerchantContext(): void {
+    this.addAsset(TEX.merchantStall, 1210, 925, 270, false, 1);
+    this.addAsset(TEX.merchantSign, 1040, 900, 60, false, 1);
+    this.addAsset(TEX.merchantGoods, 1325, 975, 135, false, 1);
+    this.addAsset(TEX.merchantCart, 1460, 935, 180, false, 1);
+    this.addAsset(this.treeTexture(), 1490, 735, 165, false, 0.86);
+    this.addAsset(TEX.rockGrass, 990, 965, 118, true, 0.84);
+    this.addAsset(TEX.lantern, 990, 845, 72, false, 0.94);
+  }
+
+  private addHealerContext(): void {
+    this.addAsset(TEX.houseThatchB, 350, 1295, 292, false, 1);
+    this.addAsset(this.treeTexture(), 135, 1310, 168, true, 0.92);
+    this.addAsset(TEX.fence, 565, 1315, 182, true, 0.91);
+    this.addAsset(TEX.rockGrass, 540, 1225, 112, true, 0.9);
+    this.addAsset(TEX.lantern, 615, 1265, 72, false, 0.94);
+
+    const pond = this.add.ellipse(235, 1430, 285, 170, 0x66888a, 0.22)
+      .setRotation(-0.08)
+      .setStrokeStyle(3, 0x55797a, 0.38)
+      .setDepth(-12);
+    const stream = this.add.ellipse(365, 1490, 250, 80, 0x66888a, 0.14)
+      .setRotation(0.10)
+      .setDepth(-13);
+    const bridge = this.add.rectangle(350, 1448, 140, 36, 0x715b45, 0.55)
+      .setRotation(0.12)
+      .setDepth(1448);
+    this.contextLayer.add([pond, stream, bridge]);
+
+    const herbBeds = [
+      { x: 535, y: 1370, w: 175, r: 0.05 },
+      { x: 555, y: 1420, w: 190, r: -0.03 },
+      { x: 520, y: 1470, w: 160, r: 0.04 },
     ];
-    for (const hint of transitionHints) {
-      this.worldLayer.add(
-        this.add.ellipse(hint.x, hint.y, hint.w, 44, 0x9b896b, 0.10)
-          .setRotation(hint.r)
-          .setDepth(-19),
+    for (const bed of herbBeds) {
+      this.contextLayer.add(
+        this.add.rectangle(bed.x, bed.y, bed.w, 30, 0x788066, 0.22)
+          .setRotation(bed.r)
+          .setDepth(-11),
       );
     }
   }
 
-  private addEntryMassing(): void {
-    const wood = 0x765f48;
-    const stone = 0x746f64;
+  private addResidentialContext(): void {
+    // Partial edge houses imply the village continues beyond the authored slice.
+    this.addAsset(TEX.houseThatchA, 75, 1750, 292, false, 0.84);
+    this.addAsset(TEX.houseTileA, 1535, 1665, 310, true, 0.82);
+    this.addAsset(this.treeTexture(), 120, 1540, 155, false, 0.74);
+    this.addAsset(this.treeTexture(), 1490, 1505, 168, true, 0.76);
+    this.addAsset(TEX.fence, 430, 1695, 175, false, 0.82);
+    this.addAsset(TEX.fence, 1190, 1690, 175, true, 0.82);
 
-    this.worldLayer.add([
-      this.add.rectangle(520, 165, 290, 30, wood, 0.38).setRotation(-0.08).setDepth(-12),
-      this.add.rectangle(1085, 170, 305, 30, wood, 0.38).setRotation(0.07).setDepth(-12),
-      this.add.rectangle(955, 185, 28, 105, stone, 0.42).setRotation(0.05).setDepth(-11),
-      this.add.rectangle(475, 235, 145, 95, 0x77775f, 0.16).setRotation(-0.10).setDepth(-16),
-      this.add.rectangle(1130, 245, 170, 105, 0x77775f, 0.16).setRotation(0.08).setDepth(-16),
-    ]);
-  }
-
-  private addElderMassing(): void {
-    const building = 0x6c625a;
-    const wall = 0x756d61;
-    const foliage = 0x6d755e;
-
-    this.worldLayer.add([
-      this.add.rectangle(350, 430, 290, 150, building, 0.42).setRotation(-0.02).setDepth(-10),
-      this.add.rectangle(335, 535, 250, 32, wall, 0.30).setRotation(0.03).setDepth(-11),
-      this.add.rectangle(560, 580, 190, 28, wall, 0.26).setRotation(-0.08).setDepth(-11),
-      this.add.ellipse(190, 420, 250, 210, foliage, 0.18).setDepth(-15),
-      this.add.ellipse(270, 345, 180, 150, foliage, 0.13).setDepth(-15),
-      this.add.ellipse(505, 505, 245, 145, 0xb49d76, 0.12).setDepth(-17),
-    ]);
-
-    this.addPrimitiveTree(185, 440, 72, 0.30);
-    this.addPrimitiveTree(285, 365, 58, 0.24);
-    this.addPrimitiveTree(600, 390, 50, 0.19);
-  }
-
-  private addMerchantMassing(): void {
-    const building = 0x7d664f;
-    const commerce = 0x8b7054;
-    const stock = 0x7d735d;
-
-    this.worldLayer.add([
-      this.add.rectangle(1215, 790, 315, 175, building, 0.46).setRotation(0.02).setDepth(-10),
-      this.add.rectangle(1080, 870, 210, 58, commerce, 0.36).setRotation(-0.04).setDepth(-9),
-      this.add.rectangle(1370, 900, 150, 86, stock, 0.34).setRotation(0.06).setDepth(-9),
-      this.add.rectangle(1005, 800, 34, 140, 0x6e5a43, 0.44).setRotation(-0.03).setDepth(-8),
-      this.add.ellipse(1110, 930, 500, 210, 0xb89d72, 0.10).setDepth(-18),
-    ]);
-
-    this.addPrimitiveTree(1450, 760, 65, 0.18);
-    this.addPrimitiveTree(1330, 690, 48, 0.14);
-  }
-
-  private addHealerMassing(): void {
-    const building = 0x65746c;
-    const garden = 0x788066;
-    const water = 0x66888a;
-
-    this.worldLayer.add([
-      this.add.rectangle(350, 1195, 255, 145, building, 0.40).setRotation(-0.03).setDepth(-10),
-      this.add.ellipse(230, 1350, 275, 165, water, 0.25).setRotation(-0.08).setDepth(-16),
-      this.add.ellipse(350, 1420, 250, 82, water, 0.17).setRotation(0.10).setDepth(-16),
-      this.add.rectangle(350, 1370, 135, 34, 0x715b45, 0.46).setRotation(0.12).setDepth(-9),
-      this.add.rectangle(520, 1200, 170, 34, garden, 0.28).setRotation(0.06).setDepth(-12),
-      this.add.rectangle(550, 1255, 195, 34, garden, 0.25).setRotation(-0.03).setDepth(-12),
-      this.add.rectangle(510, 1310, 155, 34, garden, 0.22).setRotation(0.05).setDepth(-12),
-    ]);
-
-    this.addPrimitiveTree(160, 1180, 58, 0.20);
-    this.addPrimitiveTree(610, 1155, 48, 0.17);
-  }
-
-  private addResidentialFieldMassing(): void {
-    const building = 0x756852;
-    const field = 0x8d8d61;
-
-    // Edge houses imply a larger settlement without becoming a hero focal point.
-    this.worldLayer.add([
-      this.add.rectangle(80, 1560, 230, 150, building, 0.18).setRotation(-0.03).setDepth(-14),
-      this.add.rectangle(1530, 1510, 250, 165, building, 0.18).setRotation(0.05).setDepth(-14),
-      this.add.rectangle(1430, 1695, 220, 145, building, 0.15).setRotation(-0.04).setDepth(-14),
-      this.add.rectangle(180, 1730, 250, 140, building, 0.14).setRotation(0.04).setDepth(-14),
-    ]);
-
-    const rows = [
-      { x: 355, y: 1600, w: 330, r: -0.08 },
-      { x: 390, y: 1665, w: 365, r: -0.04 },
-      { x: 1215, y: 1590, w: 320, r: 0.07 },
-      { x: 1190, y: 1658, w: 360, r: 0.04 },
+    const fieldRows = [
+      { x: 380, y: 1595, w: 330, r: -0.08 },
+      { x: 400, y: 1650, w: 365, r: -0.04 },
+      { x: 1210, y: 1585, w: 325, r: 0.07 },
+      { x: 1190, y: 1640, w: 360, r: 0.04 },
     ];
-    for (const row of rows) {
-      this.worldLayer.add(
-        this.add.ellipse(row.x, row.y, row.w, 46, field, 0.18)
+    for (const row of fieldRows) {
+      this.contextLayer.add(
+        this.add.ellipse(row.x, row.y, row.w, 44, 0x8d8d61, 0.16)
           .setRotation(row.r)
           .setDepth(-15),
       );
     }
-
-    this.addPrimitiveTree(120, 1445, 58, 0.16);
-    this.addPrimitiveTree(1490, 1385, 64, 0.16);
   }
 
-  private addEdgeMassing(): void {
-    const foliage = 0x7b8067;
-    const masses = [
-      { x: 75, y: 260, w: 190, h: 310, r: -0.04 },
-      { x: 1515, y: 360, w: 210, h: 340, r: 0.05 },
-      { x: 80, y: 830, w: 210, h: 400, r: 0.02 },
-      { x: 1525, y: 1080, w: 220, h: 420, r: -0.03 },
-    ];
-    for (const mass of masses) {
-      this.worldLayer.add(
-        this.add.ellipse(mass.x, mass.y, mass.w, mass.h, foliage, 0.08)
-          .setRotation(mass.r)
-          .setDepth(-25),
-      );
-    }
-  }
-
-  private addPrimitiveTree(x: number, y: number, radius: number, alpha: number): void {
-    const crown = this.add.circle(x, y - radius * 0.45, radius, 0x63705c, alpha).setDepth(-9);
-    const trunk = this.add.rectangle(x, y + radius * 0.35, radius * 0.28, radius * 0.95, 0x6f5b47, alpha * 0.8)
-      .setDepth(-10);
-    this.worldLayer.add([trunk, crown]);
-  }
-
-  private addZoneGuides(): void {
+  private addContextGuides(): void {
     const zones = [
-      { label: 'Z0 · LỐI VÀO', x: 800, y: 95, tint: 0x68645b },
-      { label: 'Z1 · TRƯỞNG LÃO', x: 430, y: 280, tint: 0x665a78 },
-      { label: 'Z2 · THƯƠNG NHÂN', x: 1180, y: 610, tint: 0x8a6a4a },
-      { label: 'Z3 · DƯỢC SƯ + NƯỚC', x: 415, y: 1010, tint: 0x4f7771 },
-      { label: 'Z4 · RUỘNG / DÂN CƯ', x: 1160, y: 1465, tint: 0x73784f },
+      { label: 'LỐI VÀO', x: 800, y: 115 },
+      { label: 'TRƯỞNG LÃO', x: 350, y: 330 },
+      { label: 'THƯƠNG NHÂN', x: 1210, y: 650 },
+      { label: 'DƯỢC SƯ + NƯỚC', x: 350, y: 1080 },
+      { label: 'MÉP DÂN CƯ / RUỘNG', x: 1120, y: 1490 },
     ];
 
     for (const zone of zones) {
       const tag = this.add.text(zone.x, zone.y, zone.label, {
         fontFamily: 'sans-serif',
-        fontSize: '20px',
+        fontSize: '19px',
         color: '#403b34',
         fontStyle: 'bold',
-        backgroundColor: '#f0e7d3e8',
+        backgroundColor: '#f0e7d3dc',
         padding: { x: 9, y: 5 },
-      }).setOrigin(0.5).setDepth(5);
-      const dot = this.add.circle(zone.x, zone.y + 34, 10, zone.tint, 0.72)
-        .setStrokeStyle(2, 0xf0e3c7, 0.7)
-        .setDepth(5);
-      this.guideLayer.add([tag, dot]);
+      }).setOrigin(0.5).setDepth(18000);
+      this.guideLayer.add(tag);
     }
 
-    const openSpaceNotes = [
-      { x: 760, y: 705, text: 'KHOẢNG THỞ' },
-      { x: 810, y: 1070, text: 'KHOẢNG THỞ' },
-      { x: 790, y: 1450, text: 'KHOẢNG THỞ' },
+    const notes = [
+      { x: 770, y: 700, text: 'KHOẢNG THỞ GIỮA Z1 / Z2' },
+      { x: 820, y: 1080, text: 'KHOẢNG THỞ GIỮA Z2 / Z3' },
+      { x: 250, y: 1515, text: 'NƯỚC + RUỘNG: BLOCKOUT' },
     ];
-    for (const note of openSpaceNotes) {
+    for (const note of notes) {
       const label = this.add.text(note.x, note.y, note.text, {
         fontFamily: 'sans-serif',
-        fontSize: '15px',
+        fontSize: '14px',
         color: '#716654',
         fontStyle: 'bold',
-        backgroundColor: '#eee5d0b8',
+        backgroundColor: '#eee5d0bd',
         padding: { x: 6, y: 3 },
-      }).setOrigin(0.5).setDepth(4);
+      }).setOrigin(0.5).setDepth(18000);
       this.guideLayer.add(label);
     }
+  }
+
+  private addAsset(
+    texture: string,
+    x: number,
+    groundY: number,
+    width: number,
+    flipX = false,
+    alpha = 1,
+  ): Phaser.GameObjects.Image {
+    const image = this.add.image(x, groundY, texture)
+      .setOrigin(0.5, 1)
+      .setFlipX(flipX)
+      .setAlpha(alpha)
+      .setDepth(groundY);
+    const ratio = image.height > 0 && image.width > 0 ? image.height / image.width : 1;
+    image.setDisplaySize(width, width * ratio);
+    this.contextLayer.add(image);
+    return image;
+  }
+
+  private treeTexture(): string {
+    return this.textures.exists(TEX.treeRuntime) ? TEX.treeRuntime : TEX.tree;
+  }
+
+  private prepareTreeRuntimeTexture(): void {
+    if (this.textures.exists(TEX.treeRuntime) || !this.textures.exists(TEX.tree)) return;
+
+    const source = this.textures.get(TEX.tree).getSourceImage() as CanvasImageSource & {
+      width: number;
+      height: number;
+    };
+    const width = source.width;
+    const height = source.height;
+    const target = this.textures.createCanvas(TEX.treeRuntime, width, height);
+    if (!target) return;
+
+    const context = target.getContext();
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    const visited = new Uint8Array(width * height);
+    const queue = new Int32Array(width * height);
+    let head = 0;
+    let tail = 0;
+
+    const isBackgroundCandidate = (index: number): boolean => {
+      const offset = index * 4;
+      const alpha = pixels[offset + 3];
+      return alpha <= 8 || (
+        pixels[offset] <= 12
+        && pixels[offset + 1] <= 12
+        && pixels[offset + 2] <= 12
+      );
+    };
+
+    const enqueue = (x: number, y: number): void => {
+      if (x < 0 || x >= width || y < 0 || y >= height) return;
+      const index = y * width + x;
+      if (visited[index] || !isBackgroundCandidate(index)) return;
+      visited[index] = 1;
+      queue[tail] = index;
+      tail += 1;
+    };
+
+    for (let x = 0; x < width; x += 1) {
+      enqueue(x, 0);
+      enqueue(x, height - 1);
+    }
+    for (let y = 0; y < height; y += 1) {
+      enqueue(0, y);
+      enqueue(width - 1, y);
+    }
+
+    while (head < tail) {
+      const index = queue[head];
+      head += 1;
+      const offset = index * 4;
+      pixels[offset] = 0;
+      pixels[offset + 1] = 0;
+      pixels[offset + 2] = 0;
+      pixels[offset + 3] = 0;
+
+      const x = index % width;
+      const y = Math.floor(index / width);
+      enqueue(x - 1, y);
+      enqueue(x + 1, y);
+      enqueue(x, y - 1);
+      enqueue(x, y + 1);
+    }
+
+    context.putImageData(imageData, 0, 0);
+    target.refresh();
   }
 
   private createPlayerMarker(): void {
@@ -294,39 +373,39 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     const body = this.add.circle(0, 0, 24, 0x334b55, 0.96)
       .setStrokeStyle(4, 0xf0e3c7, 0.9);
     const facing = this.add.triangle(0, -34, -9, 8, 9, 8, 0, -9, 0xe9d4a6, 0.95);
-    this.player = this.add.container(800, 285, [shadow, body, facing]).setDepth(20);
+    this.player = this.add.container(800, 285, [shadow, body, facing]).setDepth(20000);
   }
 
   private createHud(): void {
     this.add.rectangle(VIEW_WIDTH / 2, 88, VIEW_WIDTH - 24, 152, 0xeee5cf, 0.95)
       .setStrokeStyle(2, 0x6b675b, 0.38)
       .setScrollFactor(0)
-      .setDepth(100);
+      .setDepth(30000);
 
-    this.add.text(24, 20, 'V2-A · SPATIAL MASSING', {
+    this.add.text(24, 20, 'V2-A · CONTEXT RESTORE', {
       fontFamily: 'serif',
       fontSize: '25px',
       color: '#2b2b27',
       fontStyle: 'bold',
-    }).setScrollFactor(0).setDepth(101);
+    }).setScrollFactor(0).setDepth(30001);
 
-    this.add.text(24, 56, '1600 × 1800 · primitive only · không production art', {
+    this.add.text(24, 56, 'accepted art · 1600 × 1800 · không asset mới', {
       fontFamily: 'sans-serif',
       fontSize: '16px',
       color: '#5a554b',
-    }).setScrollFactor(0).setDepth(101);
+    }).setScrollFactor(0).setDepth(30001);
 
-    const instruction = this.add.text(24, 89, 'QC: khối công trình · framing · khoảng trống · đường chính · UI occlusion', {
+    const instruction = this.add.text(24, 89, 'QC: massing có còn đọc tốt khi art thật quay lại không?', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
       color: '#625a4e',
       wordWrap: { width: 430 },
-    }).setScrollFactor(0).setDepth(101);
+    }).setScrollFactor(0).setDepth(30001);
 
     const button = this.add.rectangle(VIEW_WIDTH - 112, 90, 188, 70, 0x46554c, 0.96)
       .setStrokeStyle(2, 0xe7d6b7, 0.72)
       .setScrollFactor(0)
-      .setDepth(102)
+      .setDepth(30002)
       .setInteractive({ useHandCursor: true });
 
     this.guideButtonLabel = this.add.text(VIEW_WIDTH - 112, 90, 'ẨN NHÃN', {
@@ -335,7 +414,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
       color: '#fff4d8',
       fontStyle: 'bold',
       align: 'center',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(103);
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(30003);
 
     button.on('pointerdown', () => {
       this.guidesVisible = !this.guidesVisible;
@@ -350,10 +429,10 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     this.add.circle(this.joystickX, this.joystickY, 86, 0x4f5a51, 0.08)
       .setStrokeStyle(3, 0x4f5a51, 0.48)
       .setScrollFactor(0)
-      .setDepth(105);
+      .setDepth(30005);
     this.joystickNub = this.add.circle(this.joystickX, this.joystickY, 38, 0x4f5a51, 0.42)
       .setScrollFactor(0)
-      .setDepth(106);
+      .setDepth(30006);
     this.add.text(this.joystickX, this.joystickY + 108, 'DI CHUYỂN', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
@@ -361,7 +440,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
       fontStyle: 'bold',
       backgroundColor: '#eee5cfcc',
       padding: { x: 5, y: 3 },
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(106);
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(30006);
   }
 
   private bindInput(): void {
