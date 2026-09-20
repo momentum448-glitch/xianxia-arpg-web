@@ -69,28 +69,31 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
 - Road rule: organic curved/irregular routes, not ruler-straight lanes.
 - Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
-- Next action: preserve topology/massing; finish ground/path Phone QC before producing new art.
+- Next action: preserve topology/massing/ground-path; continue only with the scoped Healer water + bridge proof.
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
 
 - Purpose: painterly road/ground continuity.
-- Asset/design status: `PHONE_PASS` as an accepted reusable settlement ground kit from earlier settlement work.
-- Current V2-A placement status: `REVISE` → revised candidate integrated on runtime build `3ecba62`; awaiting Phone QC.
+- Asset/design status: `PHONE_PASS` as an accepted reusable settlement ground kit.
+- Current V2-A placement status: **`PHONE_PASS`** after final 0.65x + 1.0x Phone QC on 2026-09-20.
 - Runtime files:
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_b.png`
   - `public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_forecourt_a.png`
 - PR #74 restored the accepted kit onto V2-A topology.
-- Phone QC of build `392d5a7` found the V2-A road too visually dominant at 0.65x, a faint center-guide/groove impression, and a weak Healer branch.
+- First Phone QC of build `392d5a7` found the V2-A road too visually dominant at 0.65x, a faint center-guide/groove impression, and a weak Healer branch.
 - PR #75 reused the same assets and changed placement/display rhythm only:
   - main path widths reduced roughly 10–15%;
   - path/patch visual weight reduced;
   - route-guide line softened;
   - Healer branch strengthened;
   - non-Healer forecourt dominance reduced slightly.
-- No new ground PNGs were created.
-- Next action: Phone QC build `3ecba62` at 0.65x and 1.0x. Mark V2-A ground/path placement `PHONE_PASS` only after user acceptance.
+- Final Phone QC:
+  - 0.65x: road no longer dominates or reads as a dark ribbon/groove; Elder → Merchant → Healer rhythm and negative space remain readable;
+  - 1.0x: Healer branch is clear without becoming a second main road; movement corridor remains readable.
+- No new ground PNGs were created for the tune.
+- Next action: preserve. Do not reopen or regenerate without a new concrete Phone-QC problem.
 
 ## 4. Settlement houses
 
@@ -199,17 +202,28 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 ### ENV-HEALER-WATER-BRIDGE-A
 
-- Purpose: first new production proof for the Dược Sư pocket after V2-A ground/path passes.
-- Status: `NOT_STARTED`.
-- Intended scope: small pond/stream language + simple wooden bridge only.
-- Constraint: off the critical spine; should support healer/garden identity without turning settlement into a traversal puzzle.
-- Next action: do not start until build `3ecba62` ground/path receives Phone QC PASS.
+- Purpose: first new production proof for the Dược Sư pocket after V2-A ground/path PASS.
+- Status: `NOT_STARTED` as a production asset; an explicit runtime blockout already exists.
+- Active proof branch: `proof/healer-water-bridge-a`.
+- Existing blockout in `src/scenes/VillageTopologyQcScene.ts`:
+  - pond around `(235, 1430)`, roughly `285 × 170`;
+  - stream extension around `(365, 1490)`, roughly `250 × 80`;
+  - simple bridge around `(350, 1448)`, roughly `140 × 36`, slight rotation.
+- Intended production scope: small irregular pond/stream language + one simple wooden footbridge only.
+- Visual constraints:
+  - humble poor-frontier construction;
+  - restrained painterly xianxia treatment;
+  - muted settlement-compatible earth/jade values;
+  - readable at phone scale;
+  - should clarify the Healer pocket without becoming a hero landmark.
+- Gameplay constraint: off the critical spine; support healer/garden identity without turning settlement into a traversal puzzle; no collision/timing change in this art proof.
+- Next action: create the smallest isolated production candidate, integrate it into the existing blockout footprint, then Phone QC before any Healer expansion.
 
 ### ENV-HEALER-ACTIVITY-KIT-A
 
 - Purpose: herb beds / medicine-drying / healer activity language.
 - Status: `NOT_STARTED`.
-- Next action: defer until water/bridge proof passes.
+- Next action: defer until `ENV-HEALER-WATER-BRIDGE-A` passes runtime + Phone QC.
 
 ### ENV-FIELD-EDGE-KIT-A
 
@@ -226,7 +240,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Earlier file: `src/scenes/SettlementPropsProofScene.ts`.
 - Current V2-A environment QC file: `src/scenes/VillageTopologyQcScene.ts`.
 - Risk: accepted proof work eventually needs promotion back into the normal `GameScene`/environment path rather than remaining a permanent QC scene.
-- Next action: finish V2-A environment proof gates first; promotion is a later VERIFY task.
+- Next action: finish the scoped V2-A environment proof gates first; promotion is a later VERIFY task.
 
 ## 9. QC camera utility
 
@@ -259,7 +273,7 @@ IDs:
 
 ## 11. Handoff gate
 
-Before changing chat or starting a new production branch, verify:
+Before changing chat or starting another production branch, verify:
 
 - exact current `main`;
 - relevant PR/branch state;
@@ -268,4 +282,4 @@ Before changing chat or starting a new production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action is **Phone QC runtime build `3ecba62` for the V2-A path-rhythm tune**. Do not create new healer/water/field production art until that gate passes.
+Current exact next action is **one isolated `ENV-HEALER-WATER-BRIDGE-A` production candidate on branch `proof/healer-water-bridge-a`, followed by runtime integration and Phone QC**. Do not broaden into healer activity or field assets until this proof passes.
