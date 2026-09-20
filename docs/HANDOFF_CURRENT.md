@@ -1,6 +1,6 @@
 # Current Project Handoff
 
-Snapshot: 2026-09-20 21:48 (+07)
+Snapshot: 2026-09-20 22:48 (+07)
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Current milestone: C4.2 / Thanh Vân Thôn V2-A Healer activity production proof
@@ -8,66 +8,75 @@ Active branch: `proof/healer-activity-kit-a`
 
 ## Verified repo/runtime state
 
-- `main`: `6fd3477f43c390418b0254abb75bee38fc791570`.
-- Visible Phone-QC build accepted for Healer water/bridge: `BUILD 6fd3477`.
-- PR #82 `Tune Healer A4 scale and hierarchy` merged.
-- CI on `main` for `6fd3477`: PASS.
-- GitHub Pages deploy for `6fd3477`: PASS.
-- Live QC: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
-- Do not use Remote Desktop Commander. Use GitHub / approved connectors + Phone QC.
+- Current `main`: `6fd3477f43c390418b0254abb75bee38fc791570`.
+- PR #82 `Tune Healer A4 scale and hierarchy` is merged.
+- CI and GitHub Pages deployment for `6fd3477` passed.
+- Ground/path P0 is `PHONE_PASS`.
+- `ENV-HEALER-WATER-BRIDGE-A` is now `PHONE_PASS` after 1.0x + 0.65x Phone QC.
+- Active proof branch: `proof/healer-activity-kit-a`.
+- Live QC URL remains `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
+- Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
 
 ## Locked Thanh Vân Thôn direction
 
 - Poor, humble frontier village near wilderness.
 - Light hub: important early, less dominant later.
 - Clear main spine + a few small branches.
-- Compact authored slice that implies a larger settlement at the edges.
+- Compact authored slice that implies a larger village at the edges.
 - Modest stream/pond + simple bridge + field/garden language, not a traversal puzzle.
+
+## Locked topology / composition
+
 - Selected footprint: **V2-A, 1600 × 1800**.
-- V2-B, 1600 × 3200, remains rejected unless explicitly reopened.
+- V2-B, 1600 × 3200, is rejected unless the user explicitly reopens it.
+- North → south hierarchy:
+  1. frontier threshold;
+  2. Elder pocket, west-biased;
+  3. Merchant pocket, east-biased;
+  4. Healer garden / water pocket, west-biased;
+  5. residential / field fringe and route out.
+- V2-A topology: Phone QC PASS.
+- V2-A spatial massing build `b6b47ee`: Phone QC PASS.
+- Accepted-art CONTEXT compatibility: PASS.
+- QC camera zoom `1.0x → 0.8x → 0.65x`: PASS as a test utility.
 
-## Locked environment gates
+## Ground/path P0 — PHONE PASS
 
-- V2-A topology: `PHONE_PASS`.
-- Spatial massing: `PHONE_PASS`.
-- Accepted-art CONTEXT compatibility: `PASS`.
-- QC zoom `1.0x → 0.8x → 0.65x`: `PASS` as a test utility.
-- Ground/path P0: `PHONE_PASS`.
-- Houses / settlement prop kit / Merchant Kit B: accepted; do not regenerate without a new concrete REVISE.
+Accepted ground kit reused without regeneration:
 
-## ENV-HEALER-WATER-BRIDGE-A — PHONE PASS
+```text
+public/assets/c4/environment/settlement/env_settlement_path_seg_a.png
+public/assets/c4/environment/settlement/env_settlement_path_seg_b.png
+public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png
+public/assets/c4/environment/settlement/env_settlement_forecourt_a.png
+```
 
-Canonical runtime asset:
+Final Phone QC:
 
-`public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp`
+- **0.65x PASS**: main road no longer dominates the village; Elder-left → Merchant-right → Healer-left rhythm and negative space remain readable; no dark-ribbon or central-groove impression is blocking composition.
+- **1.0x PASS**: Healer branch reads clearly into the Dược Sư pocket without becoming a second dominant road; movement corridor remains readable.
 
-Runtime integration:
+Decision: **Ground/path P0 = PHONE_PASS. Do not reopen or regenerate this layer without a new concrete Phone-QC problem.**
 
-`src/scenes/VillageTopologyQcA4Scene.ts`
+## Healer water + bridge — PHONE PASS
 
-Accepted presentation on build `6fd3477`:
+Asset ID: `ENV-HEALER-WATER-BRIDGE-A`
 
-- display size about `440 × 247`;
-- subtle warm tint + alpha `0.96` to keep hierarchy restrained;
-- bridge crosses the narrow water gap and connects the two banks;
-- water + bridge remain off the critical spine;
-- no gameplay collision, hitbox or timing change.
+Accepted runtime asset:
 
-Phone QC on 2026-09-20:
+```text
+public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp
+```
 
-- 1.0x: PASS for scale/readability; bridge remains legible and Healer house stays the anchor.
-- 0.65x: PASS for macro hierarchy; water/bridge no longer dominates the village or steals hierarchy from the Healer house / main spine.
+Accepted runtime presentation on build `6fd3477`:
 
-Decision: **`ENV-HEALER-WATER-BRIDGE-A = PHONE_PASS`**. Preserve the accepted art and runtime presentation unless a new concrete Phone-QC regression appears.
+- display size `440 × 247`;
+- warm tint + alpha `0.96`;
+- bridge correctly crosses the narrow water gap and connects both banks;
+- 1.0x Phone QC: scale/readability PASS;
+- 0.65x Phone QC: water/bridge no longer steals hierarchy from Healer house / village spine.
 
-Historical failed paths for this asset that must not be repeated blindly:
-
-- early SVG/vector-looking proof was too prototype-like;
-- initial bridge orientation ran along the water gap instead of crossing bank-to-bank;
-- PNG transport produced an opaque black rectangle on Android/WebGL;
-- alpha-cleanup workaround removed too much / did not solve the actual transport problem;
-- validated WebP transport solved the runtime rendering issue;
-- final runtime scale/hierarchy tune was preferred over regenerating accepted art.
+Decision: **`ENV-HEALER-WATER-BRIDGE-A = PHONE_PASS`. Preserve it and do not regenerate/retune without a new concrete Phone-QC issue.**
 
 ## Current production proof
 
@@ -75,74 +84,114 @@ Asset ID: `ENV-HEALER-ACTIVITY-KIT-A`
 
 Purpose:
 
-- make the Dược Sư pocket read as an actively used healer / herb-processing area;
-- add functional activity language without cluttering the compact V2-A composition;
-- complement the already Phone-PASS water + bridge rather than competing with it.
+- make the Dược Sư pocket read as a working healer/herbalist space;
+- add activity language without turning the pocket into a dense prop pile;
+- preserve water/bridge, house, path, topology and gameplay.
 
-### Proof-first scope
+Current proof assets:
 
-First isolated candidate should stay small and reversible:
+```text
+public/assets/c4/environment/settlement/env_healer_herb_bed_a.webp
+public/assets/c4/environment/settlement/env_healer_drying_props_a.webp
+```
 
-- 1–2 modest herb-bed forms;
-- 1 small medicine drying rack / drying mat / drying frame;
-- a restrained cluster of healer-work props such as baskets, trays, jars, bundled herbs;
-- painterly xianxia style consistent with accepted Thanh Vân Thôn assets;
-- poor-frontier construction, practical rather than ornate;
-- transparent/isolation-friendly output suitable for runtime normalization.
+Current proof scene:
 
-### Explicitly out of scope
+```text
+src/scenes/VillageTopologyQcHealerActivityScene.ts
+```
 
-- broad field/agriculture kit;
-- full residential prop expansion;
-- topology/path changes;
-- changing the accepted water/bridge asset;
-- gameplay collision, hitbox or combat timing changes;
-- dense decorative clutter.
+Proof scope:
 
-## Pass gate for ENV-HEALER-ACTIVITY-KIT-A
+- one compact herb garden replacing the three green herb-bed blockout strips;
+- one small drying/work cluster with hanging herbs, jars/baskets/table language;
+- no broad field-edge kit;
+- no topology/path/house/gameplay/hitbox/timing change.
 
-The isolated proof should proceed to runtime only if:
+Working placement:
 
-- it immediately reads as healer/herbal activity at phone scale;
-- it belongs to the same painterly settlement family as the accepted house/water/prop art;
-- construction/materials feel poor-frontier rather than prosperous or sect-like;
-- silhouette remains readable without relying on text labels;
-- color/value do not overpower the Healer house or water/bridge;
-- props can be placed with negative space rather than requiring a dense vignette.
+- herb garden around `(575, 1450)`, display `205 × 126`;
+- drying/work cluster around `(548, 1340)`, display `112 × 124`.
 
-After isolated approval:
+## Current proof pass gate
 
-1. normalize into runtime-ready asset(s);
-2. integrate only around the existing Healer pocket;
-3. deploy;
-4. Phone QC at 1.0x, then 0.65x;
-5. only after PASS consider `ENV-FIELD-EDGE-KIT-A`.
+`ENV-HEALER-ACTIVITY-KIT-A` passes only if:
+
+- 1.0x: herb garden and drying/work cluster read immediately as healer activity;
+- no obvious rectangular background/halo/sticker artifact;
+- props remain subordinate to the Healer house and water/bridge;
+- 0.65x: pocket remains legible and not cluttered;
+- main spine and player movement readability remain clean;
+- Phone QC says PASS.
 
 ## Accepted assets that must not be regenerated
 
-- `PLY-M-BASE`
-- `EN-MELEE-BASE`
-- `FX-SWORD`
-- `ENV-HOUSE-SET-A`
-- `ENV-SETTLEMENT-PROP-KIT-A`
-- `ENV-MERCHANT-KIT-B`
-- `ENV-SETTLEMENT-GROUND-KIT-A`
-- `ENV-HEALER-WATER-BRIDGE-A`
+Houses:
+
+```text
+env_house_thatch_a.png
+env_house_tile_a.png
+env_house_hall_a.png
+env_house_thatch_b.png
+```
+
+General props:
+
+```text
+env_tree_village_a.png
+env_fence_village_a.png
+env_rockgrass_village_a.png
+env_lanternpost_village_a.png
+```
+
+Merchant Kit B:
+
+```text
+env_merchant_stall_b.png
+env_merchant_cart_b.png
+env_merchant_goods_b.png
+env_merchant_sign_b.png
+```
+
+Accepted Merchant display widths: stall 270, cart 180, goods 135, sign 60.
+
+Healer water/bridge:
+
+```text
+env_healer_water_bridge_a.webp
+```
 
 ## Runtime/gameplay constraints that must not regress
 
 - Mobile browser portrait 9:16.
-- Manual `ATK + SKILL + NÉ` combat.
+- Manual `ATK + SKILL + NÉ` combat in production runtime.
 - One flying sword per attack press.
 - Base attack range 205 + future bonus.
 - Base cooldown 800 ms through `basicAttackSpeedPct`.
+- Settlement safe zone and NPC interaction remain intact in production runtime.
 - Third-Kiếp-Ảnh projectile cleanup freeze fix must not regress.
-- Environment/art work does not alter gameplay hitboxes or timing unless explicitly requested.
+- Environment proof must not alter gameplay hitboxes or timing.
 
-## Exact next action
+## Failed / rejected paths
 
-Produce **one isolated `ENV-HEALER-ACTIVITY-KIT-A` proof** on branch `proof/healer-activity-kit-a`. Do not integrate or expand scope until the isolated candidate is visually credible enough for the next gate.
+- V2-B 3200-height village: rejected by Phone QC.
+- Mixed old-art macro proof: too noisy to judge topology.
+- Giant zone ellipses: diagnostic only.
+- Ad-hoc `house + tree + fence + rock + lamp` stamping: rejected workflow.
+- Asset-by-asset environment production before topology: rejected workflow.
+- Regenerating DESIGN_PASS / PHONE_PASS assets for scale/layout problems: prohibited.
+- Repeated SVG/prototype patching for water/bridge: rejected in favor of painterly raster proof.
+- Healer water/bridge PNG transport caused black rectangle / missing runtime art; validated WebP path fixed this.
+- Remote Desktop Commander: explicitly prohibited by user.
+
+## Exact next actions
+
+1. Finish wiring the current Healer activity proof assets into the proof branch.
+2. CI/build the branch and merge only if clean.
+3. Deploy Pages.
+4. Phone QC at **1.0x first**, then **0.65x**.
+5. If PASS, lock `ENV-HEALER-ACTIVITY-KIT-A = PHONE_PASS` before opening `ENV-FIELD-EDGE-KIT-A`.
 
 ## Resume sentence
 
-Resume from `main 6fd3477`: V2-A topology, massing, context, QC zoom, ground/path P0, houses/props/merchant, and `ENV-HEALER-WATER-BRIDGE-A` are all accepted/Phone-PASS. Active work is one isolated `ENV-HEALER-ACTIVITY-KIT-A` proof only; no field-kit expansion or topology/gameplay change before that proof passes.
+Resume on `proof/healer-activity-kit-a`: V2-A topology, massing, accepted-art context, QC zoom, ground/path P0, and `ENV-HEALER-WATER-BRIDGE-A` are all Phone PASS. Preserve accepted assets. The current proof is one compact herb garden + one drying/work cluster only; finish runtime integration, CI/deploy, then Phone QC at 1.0x and 0.65x before any field-edge expansion.
