@@ -52,11 +52,54 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
     }
 
     // One compact herb garden plus one drying/work cluster. Keep both off the main spine and below hero-house hierarchy.
-    const herbBed = this.add.image(575, 1450, HEALER_HERB_TEX)
+    const herbBedX = 575;
+    const herbBedY = 1450;
+    const herbBedWidth = 205;
+    const herbBedHeight = 126;
+    const herbBed = this.add.image(herbBedX, herbBedY, HEALER_HERB_TEX)
       .setOrigin(0.5)
-      .setDisplaySize(205, 126)
+      .setDisplaySize(herbBedWidth, herbBedHeight)
       .setDepth(1450)
       .setAlpha(0.95);
+
+    // The source proof contains a pale rectangular matte plus two detached edge fragments.
+    // Keep the accepted artwork and crop only those transport artifacts at runtime.
+    // Normalized polygon follows the actual herb-bed footprint, so scale/placement stay locked.
+    const footprint = [
+      [0.20, 0.10],
+      [0.35, 0.02],
+      [0.53, 0.00],
+      [0.68, 0.07],
+      [0.81, 0.17],
+      [0.91, 0.31],
+      [0.95, 0.49],
+      [0.92, 0.66],
+      [0.85, 0.79],
+      [0.74, 0.90],
+      [0.60, 0.98],
+      [0.43, 1.00],
+      [0.29, 0.95],
+      [0.16, 0.87],
+      [0.07, 0.74],
+      [0.04, 0.58],
+      [0.06, 0.42],
+      [0.11, 0.29],
+      [0.17, 0.21],
+    ] as const;
+    const maskGraphics = this.make.graphics({ add: false });
+    const left = herbBedX - herbBedWidth / 2;
+    const top = herbBedY - herbBedHeight / 2;
+    maskGraphics.fillStyle(0xffffff, 1);
+    maskGraphics.beginPath();
+    footprint.forEach(([nx, ny], index) => {
+      const x = left + nx * herbBedWidth;
+      const y = top + ny * herbBedHeight;
+      if (index === 0) maskGraphics.moveTo(x, y);
+      else maskGraphics.lineTo(x, y);
+    });
+    maskGraphics.closePath();
+    maskGraphics.fillPath();
+    herbBed.setMask(maskGraphics.createGeometryMask());
 
     const dryingProps = this.add.image(548, 1340, HEALER_DRYING_TEX)
       .setOrigin(0.5)
