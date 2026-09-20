@@ -62,22 +62,35 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ENV-SETTLEMENT-LAYOUT — Thanh Vân Thôn composition
 
 - Purpose: settlement route, density and broad composition.
-- Status: `PHONE_PASS` for current composition direction.
-- Implementation: `src/game/environmentVisuals.ts`, `SettlementPropsProofScene`, world config/runtime placement.
+- Status: `PHONE_PASS` for V2-A topology + spatial massing + accepted-art context compatibility.
+- Selected footprint: `1600 × 1800` V2-A.
+- Rejected footprint: V2-B `1600 × 3200`, unless explicitly reopened.
+- Primary current QC implementation: `src/scenes/VillageTopologyQcScene.ts`.
 - Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
 - Road rule: organic curved/irregular routes, not ruler-straight lanes.
-- Next action: preserve current accepted snapshot during discovery; only revise against a concrete problem.
+- Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
+- Next action: preserve topology/massing; finish ground/path Phone QC before producing new art.
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
 
 - Purpose: painterly road/ground continuity.
-- Status: `INTEGRATED`, phone-accepted in the settlement composition.
+- Asset/design status: `PHONE_PASS` as an accepted reusable settlement ground kit from earlier settlement work.
+- Current V2-A placement status: `REVISE` → revised candidate integrated on runtime build `3ecba62`; awaiting Phone QC.
 - Runtime files:
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_path_seg_b.png`
   - `public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png`
   - `public/assets/c4/environment/settlement/env_settlement_forecourt_a.png`
-- Next action: preserve while discovery decides whether more ground variation is needed.
+- PR #74 restored the accepted kit onto V2-A topology.
+- Phone QC of build `392d5a7` found the V2-A road too visually dominant at 0.65x, a faint center-guide/groove impression, and a weak Healer branch.
+- PR #75 reused the same assets and changed placement/display rhythm only:
+  - main path widths reduced roughly 10–15%;
+  - path/patch visual weight reduced;
+  - route-guide line softened;
+  - Healer branch strengthened;
+  - non-Healer forecourt dominance reduced slightly.
+- No new ground PNGs were created.
+- Next action: Phone QC build `3ecba62` at 0.65x and 1.0x. Mark V2-A ground/path placement `PHONE_PASS` only after user acceptance.
 
 ## 4. Settlement houses
 
@@ -94,7 +107,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Design state: `DESIGN_PASS`.
 - Technical state: clean runtime is functioning; earlier black/corrupt-file blocker is historical.
 - Important: do not regenerate the accepted four-house design just to change scale/layout.
-- Next action: preserve current house art unless future Phone QC or discovery identifies a concrete composition issue.
+- Next action: preserve current house art unless future Phone QC identifies a concrete composition issue.
 
 ### ENV-HOUSE-HALL-A-CLEAN
 
@@ -148,7 +161,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - rock/grass accepted;
   - lantern accepted.
 - Composition rule: do not repeat the same `tree + fence + rock + lantern` formula at every house. Vary density, scale, flip and role.
-- Next action: preserve current deployment during discovery.
+- Next action: preserve current deployment during V2-A completion.
 
 ## 6. Merchant area / Lục Chưởng Quầy
 
@@ -174,26 +187,59 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - goods `env_merchant_goods_b.png` → `1okipyi9GsU2BWGlS4XZapuzqPBEFUOqX`
   - sign `env_merchant_sign_b.png` → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
 - Phone QC result:
-  - scale now matches settlement world better;
+  - scale matches settlement world;
   - no black background / halo blocker;
   - vignette reads clearly as merchant area;
   - path/player readability preserved;
   - user explicitly accepted current result.
-- Composition companion decision: the lower tile-roof house at `x=1210, settlement top+1090` is removed in the active proof scene to reduce clutter; grounding wash remains.
-- Next action: preserve while discovery decides the next proof. Do not generate a new merchant kit unless explicitly revised.
+- Composition companion decision: the lower tile-roof house at `x=1210, settlement top+1090` is removed in the accepted earlier proof composition to reduce clutter; grounding wash remains.
+- Next action: preserve. Do not generate a new merchant kit unless explicitly revised.
 
-## 7. Current critical non-art architecture note
+## 7. Current healer / agriculture asset gaps
+
+### ENV-HEALER-WATER-BRIDGE-A
+
+- Purpose: first new production proof for the Dược Sư pocket after V2-A ground/path passes.
+- Status: `NOT_STARTED`.
+- Intended scope: small pond/stream language + simple wooden bridge only.
+- Constraint: off the critical spine; should support healer/garden identity without turning settlement into a traversal puzzle.
+- Next action: do not start until build `3ecba62` ground/path receives Phone QC PASS.
+
+### ENV-HEALER-ACTIVITY-KIT-A
+
+- Purpose: herb beds / medicine-drying / healer activity language.
+- Status: `NOT_STARTED`.
+- Next action: defer until water/bridge proof passes.
+
+### ENV-FIELD-EDGE-KIT-A
+
+- Purpose: field/agriculture edge language that implies a larger village beyond the authored slice.
+- Status: `NOT_STARTED`.
+- Next action: defer; avoid creating a broad residential prop kit before higher-priority proofs pass.
+
+## 8. Current critical non-art architecture note
 
 ### SETTLEMENT-PROOF-SCENE
 
-- Purpose: current integration layer for settlement production props/merchant proof.
-- Status: active implementation path, not a visual asset.
-- File: `src/scenes/SettlementPropsProofScene.ts`.
-- Current app scene list in `src/main.ts`: `CharacterSelectScene`, `SettlementPropsProofScene`.
-- Risk: accepted proof work may eventually need promotion back into the normal `GameScene`/environment path rather than remaining a permanent proof overlay.
-- Next action: treat this as a discovery/VERIFY topic before broad expansion.
+- Purpose: historical/current integration path for settlement production props/merchant proof.
+- Status: active implementation lineage, not a visual asset.
+- Earlier file: `src/scenes/SettlementPropsProofScene.ts`.
+- Current V2-A environment QC file: `src/scenes/VillageTopologyQcScene.ts`.
+- Risk: accepted proof work eventually needs promotion back into the normal `GameScene`/environment path rather than remaining a permanent QC scene.
+- Next action: finish V2-A environment proof gates first; promotion is a later VERIFY task.
 
-## 8. Drive vault
+## 9. QC camera utility
+
+### TOOL-QC-CAMERA-ZOOM
+
+- Purpose: let Phone QC inspect micro, zone and macro composition without changing production camera intent.
+- Status: `PHONE_PASS` as a QC utility.
+- Presets: `1.0x`, `0.8x`, `0.65x`.
+- Scope: world camera only; HUD remains fixed screen-space; camera follows player.
+- Important: test/QC tool, not gameplay feature.
+- Next action: preserve while environment production continues.
+
+## 10. Drive vault
 
 Verified folder structure:
 
@@ -211,7 +257,7 @@ IDs:
 - `10_QC_PASS`: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
 - `90_ARCHIVE_REJECT`: `1EEO5QVs2F6YkBC7p266X82S4HgzOnsXW`
 
-## 9. Handoff gate
+## 11. Handoff gate
 
 Before changing chat or starting a new production branch, verify:
 
@@ -222,4 +268,4 @@ Before changing chat or starting a new production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action is **structured discovery**, not automatic NPC production.
+Current exact next action is **Phone QC runtime build `3ecba62` for the V2-A path-rhythm tune**. Do not create new healer/water/field production art until that gate passes.
