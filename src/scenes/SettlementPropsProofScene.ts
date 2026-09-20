@@ -9,6 +9,10 @@ const PROP_TEXTURES = {
   fence: 'c4-settlement-prop-fence-a',
   rockGrass: 'c4-settlement-prop-rockgrass-a',
   lanternPost: 'c4-settlement-prop-lanternpost-a',
+  merchantCart: 'c4-settlement-merchant-cart-a',
+  merchantGoods: 'c4-settlement-merchant-goods-a',
+  merchantSign: 'c4-settlement-merchant-sign-a',
+  merchantStall: 'c4-settlement-merchant-stall-a',
 } as const;
 
 export class SettlementPropsProofScene extends GameScene {
@@ -20,6 +24,10 @@ export class SettlementPropsProofScene extends GameScene {
       [PROP_TEXTURES.fence, C4_ASSETS.settlementFenceA],
       [PROP_TEXTURES.rockGrass, C4_ASSETS.settlementRockGrassA],
       [PROP_TEXTURES.lanternPost, C4_ASSETS.settlementLanternPostA],
+      [PROP_TEXTURES.merchantCart, C4_ASSETS.settlementMerchantCartA],
+      [PROP_TEXTURES.merchantGoods, C4_ASSETS.settlementMerchantGoodsA],
+      [PROP_TEXTURES.merchantSign, C4_ASSETS.settlementMerchantSignA],
+      [PROP_TEXTURES.merchantStall, C4_ASSETS.settlementMerchantStallA],
     ] as const;
 
     for (const [key, path] of props) {
@@ -31,6 +39,7 @@ export class SettlementPropsProofScene extends GameScene {
     super.create();
     this.prepareTreeRuntimeTexture();
     this.createSettlementPropsExpansion();
+    this.createMerchantAreaProof();
   }
 
   private prepareTreeRuntimeTexture(): void {
@@ -170,6 +179,21 @@ export class SettlementPropsProofScene extends GameScene {
     for (const patch of rockGrass) {
       this.addProp(PROP_TEXTURES.rockGrass, patch.x, patch.y, patch.w, -2.8, patch.flip, 0.94);
     }
+  }
+
+  private createMerchantAreaProof(): void {
+    const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
+    if (!settlement) return;
+    const top = settlement.yMin;
+
+    // Merchant proof: keep the NPC interaction bubble and the main road open,
+    // while concentrating trade props on the eastern forecourt. The four
+    // silhouettes have different roles so the cluster reads as commerce rather
+    // than another repeated house/tree/fence stamp.
+    this.addProp(PROP_TEXTURES.merchantStall, 1225, top + 845, 205, -2.62, false, 0.99);
+    this.addProp(PROP_TEXTURES.merchantSign, 1095, top + 885, 74, -2.55, false, 0.99);
+    this.addProp(PROP_TEXTURES.merchantGoods, 1245, top + 985, 138, -2.58, false, 0.98);
+    this.addProp(PROP_TEXTURES.merchantCart, 1380, top + 930, 172, -2.64, true, 0.98);
   }
 
   private removeLegacySettlementProps(top: number): void {
