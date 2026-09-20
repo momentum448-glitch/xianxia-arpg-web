@@ -2,62 +2,21 @@
 
 This is the durable registry for project-critical visual/binary assets. Chat history, image-generation history, and ChatGPT Library are discovery locations, not canonical production storage by themselves.
 
-## 1. Two-leg rule
+## 1. Storage / continuity rules
 
-Every important asset must have two independent legs before it can be considered handoff-safe:
+Every important asset needs both:
 
-1. **Binary leg** — the actual file exists in a durable location that a future chat can access: preferably the GitHub repo for runtime assets; otherwise ChatGPT Project Sources or the verified Google Drive asset vault while the file is still pre-runtime/reference material.
-2. **Registry leg** — this file records the stable Asset ID, purpose, status, canonical filename/path, source/backup location, technical identity, QC state, and next action.
+1. a durable binary/source location outside one chat; and
+2. a registry record naming its Asset ID, role, status, canonical path/source, QC state and next action.
 
-An asset mentioned only in chat, or visible only in Images/Library without a registry entry, is **NOT handoff-safe**.
+Storage hierarchy:
 
-## 2. Storage hierarchy
+- GitHub runtime asset = production source of truth for the game.
+- Project Sources = long-lived visual/source references useful across chats.
+- Google Drive asset vault = byte-preserving backup / transfer / recovery source.
+- ChatGPT Library = discovery pool only; never the only home of critical art.
 
-Use this order.
-
-### A. Runtime/production assets
-
-Canonical storage: GitHub repository under `public/assets/...`.
-
-A production asset is not complete until the exact bytes used by the runtime are in GitHub and validated in-game.
-
-### B. Accepted source/reference assets not yet production-ready
-
-Preferred durable storage:
-
-- ChatGPT Project Sources, when the exact image/file is useful for future visual reference; and/or
-- Google Drive project asset vault for byte-preserving backup/transfer.
-
-These files remain non-production until normalized and integrated into the repo.
-
-### C. ChatGPT Library / Images
-
-Treat Library/Images as a **discovery pool**, not the only source of truth. When an asset becomes important, promote it into Project Sources and/or Drive and add it here.
-
-## 3. Required registry fields
-
-For each important asset record:
-
-- Asset ID
-- human description / purpose
-- current status
-- canonical runtime filename/path, if any
-- Project Source filename, if promoted there
-- Drive file/folder ID or URL, if used as backup/source
-- expected byte size when known
-- SHA-256 when known
-- dimensions / format / alpha requirements when relevant
-- design QC state
-- technical QC state
-- runtime/phone QC state
-- supersedes / derived-from relationship
-- exact next action
-
-If a value is unknown, write `UNKNOWN`; do not invent it.
-
-## 4. Status vocabulary
-
-Use the C4 production vocabulary:
+Status vocabulary:
 
 - `NOT_STARTED`
 - `REFERENCE_ONLY`
@@ -69,114 +28,198 @@ Use the C4 production vocabulary:
 - `REVISE`
 - `TECH_REWORK`
 
-A Library image can be `DESIGN_PASS` but cannot be `INTEGRATED` merely because it looks correct.
+Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later chat cannot see the original generation. Recover it by Asset ID.
 
-## 5. Current critical assets
+## 2. Core actor / VFX assets
 
 ### PLY-M-BASE — Male sword cultivator
 
 - Purpose: production male player visual.
 - Status: `INTEGRATED`; runtime animation proof exists.
 - Runtime storage: `public/assets/c4/actors/player/male/`.
-- Canonical exact file(s): verify current repo before editing registry details.
 - Design state: accepted.
 - Runtime state: rendering successfully.
-- Phone state: production player visual has been used in phone QC; final animation quality has not been separately declared final.
-- Next action: preserve during current settlement-house repair.
+- Phone state: production player visual has been used throughout phone QC.
+- Next action: preserve during environment/NPC discovery unless explicitly revised.
 
 ### EN-MELEE-BASE — Corrupted beast melee enemy
 
 - Purpose: production melee enemy.
 - Status: `PHONE_PASS`.
 - Runtime path: `public/assets/c4/actors/enemies/melee/en_melee_idle_s.png`.
-- Runtime/phone state: passed after preload/path/binary fixes and removal of the non-trial readability ellipse.
-- Next action: preserve; do not regenerate without explicit `REVISE` decision.
+- Next action: preserve; do not regenerate without explicit `REVISE`.
 
 ### FX-SWORD — Flying sword
 
 - Purpose: manual basic-attack projectile visual.
 - Status: `PHONE_PASS`.
 - Runtime path: `public/assets/c4/vfx/sword/fx_sword_r1.png`.
-- Phone QC: raw sword, launch, trail, impact all passed in staged validation.
+- Phone QC: blade, launch, trail and impact passed staged validation.
 - Next action: preserve.
+
+## 3. Settlement composition / ground
 
 ### ENV-SETTLEMENT-LAYOUT — Thanh Vân Thôn composition
 
-- Purpose: settlement placement/density/layout.
-- Status: `PHONE_PASS` for layout/composition proof.
-- Implementation: `src/game/environmentVisuals.ts` plus world config/runtime placement.
-- Important: layout PASS is independent of house binary failure.
-- Next action: do not redesign during house texture repair.
+- Purpose: settlement route, density and broad composition.
+- Status: `PHONE_PASS` for current composition direction.
+- Implementation: `src/game/environmentVisuals.ts`, `SettlementPropsProofScene`, world config/runtime placement.
+- Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
+- Road rule: organic curved/irregular routes, not ruler-straight lanes.
+- Next action: preserve current accepted snapshot during discovery; only revise against a concrete problem.
+
+### ENV-SETTLEMENT-GROUND-KIT-A
+
+- Purpose: painterly road/ground continuity.
+- Status: `INTEGRATED`, phone-accepted in the settlement composition.
+- Runtime files:
+  - `public/assets/c4/environment/settlement/env_settlement_path_seg_a.png`
+  - `public/assets/c4/environment/settlement/env_settlement_path_seg_b.png`
+  - `public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png`
+  - `public/assets/c4/environment/settlement/env_settlement_forecourt_a.png`
+- Next action: preserve while discovery decides whether more ground variation is needed.
+
+## 4. Settlement houses
 
 ### ENV-HOUSE-SET-A — Accepted four-house visual set
 
-- Purpose: replace procedural house shapes with real production-painted village houses.
-- Design status: `DESIGN_PASS`.
-- Runtime set:
+- Purpose: production-painted Thanh Vân Thôn houses.
+- Status: `PHONE_PASS` in current runtime snapshot.
+- Runtime directory: `public/assets/c4/environment/settlement/`.
+- Canonical runtime files:
   - `env_house_thatch_a.png`
   - `env_house_tile_a.png`
   - `env_house_hall_a.png`
   - `env_house_thatch_b.png`
-- Runtime directory: `public/assets/c4/environment/settlement/`.
-- Current technical state of integrated runtime files: `TECH_REWORK` / REJECT. Existing GitHub binaries render as black rectangles and were later shown to be broken/truncated, not merely a missing-path error.
-- Do not regenerate the accepted visual design unless explicitly marked `REVISE`.
-- Next action: prove one clean Hall binary end-to-end first.
+- Design state: `DESIGN_PASS`.
+- Technical state: clean runtime is functioning; earlier black/corrupt-file blocker is historical.
+- Important: do not regenerate the accepted four-house design just to change scale/layout.
+- Next action: preserve current house art unless future Phone QC or discovery identifies a concrete composition issue.
 
-### ENV-HOUSE-HALL-A-CLEAN — clean Hall source candidate
+### ENV-HOUSE-HALL-A-CLEAN
 
-- Purpose: technical repair proof for `env_house_hall_a.png`.
-- Design relation: same accepted Hall design from `ENV-HOUSE-SET-A`; this is technical rework, not redesign.
-- Current status: `ISOLATED_READY` as a clean source/backup candidate; not yet the runtime file in GitHub.
-- Filename: `env_house_hall_a.png`.
-- Durable backup/source: Google Drive `10_QC_PASS`.
+- Purpose: clean technical source that repaired Hall runtime.
+- Relation: same accepted Hall design from `ENV-HOUSE-SET-A`; technical recovery, not redesign.
+- Status: `PHONE_PASS` as runtime source lineage.
+- Drive backup: `10_QC_PASS`.
 - Drive file ID: `1MLnoQAUL1jfuW-mQFMTxXxDb58FBpkDr`.
-- Verified Drive metadata on 2026-09-19:
-  - MIME: `image/png`
-  - size: `22,633` bytes
-  - parent folder ID: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
-- Prior handoff states the clean candidate is RGBA and Drive round-trip byte count passed; re-verify decode/hash before installing into GitHub.
-- Runtime target: `public/assets/c4/environment/settlement/env_house_hall_a.png`.
-- Required technical gate: full PNG decode, 8-bit true RGBA where intended, valid transparency/alpha, expected dimensions, sane byte size/hash, no truncation.
-- Runtime gate: deploy one-Hall proof, verify new Build ID, Android phone confirms no black rectangle/matte/corruption.
-- Next action: replace only Hall on a clean proof branch, then phone-QC before touching the remaining houses.
+- Filename: `env_house_hall_a.png`.
+- Verified historical metadata:
+  - PNG, RGBA
+  - 128 × 89
+  - 22,633 bytes
+  - SHA-256 `f047b6d275dbce9c50c6f3a00ae236b9a489f7bd4e2182f0b42cf3f60e45304f`
+- Runtime target/path: `public/assets/c4/environment/settlement/env_house_hall_a.png`.
+- Next action: preserve.
 
-## 6. Project Sources promotion rule
+### ENV-HOUSE-SET-A-SOURCE-SHEET
 
-Whenever an image/file reaches any of these states, it should be promoted from Library/Images into ChatGPT Project Sources if it is useful for visual continuity in future chats:
+- Purpose: accepted four-house source/reference sheet for recovery/continuity.
+- Status: `DESIGN_PASS` source/reference.
+- Drive filename: `ARPG__SRC__settlement_house_set_design_pass__v001.png`.
+- Drive file ID: `1fVnIyNhJ6cLiW0OxVA5rjHDiYcwupmOS`.
+- Note: Drive connector historically reported a JPEG MIME representation despite `.png` filename; treat this as a visual/source reference, not runtime bytes.
+- Next action: preserve for visual continuity/recovery.
 
-- `DESIGN_PASS`
-- `ISOLATED_READY`
-- approved style/reference anchor
-- accepted concept that must not be regenerated
-- a source file needed to reconstruct a runtime asset
+### ENV-HOUSE-THATCH-B-RECOVERED
 
-Do not fill Project Sources with every rejected generation. Keep only current anchors and deliberately archived alternatives that matter to a future decision.
+- Purpose: technical recovery of accepted bottom-right Thatch B from the source sheet.
+- Status: `PHONE_PASS` lineage.
+- Drive filename: `env_house_thatch_b_recovered_v001.png`.
+- Drive file ID: `1hx9JYkwEx3Mf9Ow8lCP0w_XidDxMaScX`.
+- Historical normalized source metadata: PNG RGBA, 208 × 172, 69,820 bytes.
+- Runtime target/path: `public/assets/c4/environment/settlement/env_house_thatch_b.png`.
+- Next action: preserve; do not regenerate.
 
-Recommended Project Sources naming:
+## 5. Settlement base prop kit
+
+### ENV-SETTLEMENT-PROP-KIT-A
+
+- Purpose: general village environmental props.
+- Status: `PHONE_PASS` as a reusable visual kit.
+- Runtime files:
+  - `public/assets/c4/environment/settlement/env_tree_village_a.png`
+  - `public/assets/c4/environment/settlement/env_fence_village_a.png`
+  - `public/assets/c4/environment/settlement/env_rockgrass_village_a.png`
+  - `public/assets/c4/environment/settlement/env_lanternpost_village_a.png`
+- Phone QC:
+  - tree visual accepted after runtime alpha/background repair path;
+  - fence accepted;
+  - rock/grass accepted;
+  - lantern accepted.
+- Composition rule: do not repeat the same `tree + fence + rock + lantern` formula at every house. Vary density, scale, flip and role.
+- Next action: preserve current deployment during discovery.
+
+## 6. Merchant area / Lục Chưởng Quầy
+
+### ENV-MERCHANT-KIT-B — Merchant production vignette
+
+- Purpose: make Lục Chưởng Quầy's area read as a trading zone before the NPC itself receives production art.
+- Status: `PHONE_PASS` on Android build `56b9359`.
+- Design state: `DESIGN_PASS` / accepted.
+- Runtime state: `PHONE_PASS`.
+- Canonical runtime files:
+  - `public/assets/c4/environment/settlement/env_merchant_stall_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_cart_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_goods_b.png`
+  - `public/assets/c4/environment/settlement/env_merchant_sign_b.png`
+- Canonical display widths in current proof scene:
+  - stall: 270
+  - cart: 180
+  - goods: 135
+  - sign: 60
+- Drive backups in `20_RUNTIME_READY/10_QC_PASS`:
+  - stall `env_merchant_stall_b.png` → `1zIpOgs_JTTUJXeaTdDDn2SgO4dZuJdL4`
+  - cart `env_merchant_cart_b.png` → `1xftok68r_D_f_sl1Sjmcx8InHQ9zWB0T`
+  - goods `env_merchant_goods_b.png` → `1okipyi9GsU2BWGlS4XZapuzqPBEFUOqX`
+  - sign `env_merchant_sign_b.png` → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
+- Phone QC result:
+  - scale now matches settlement world better;
+  - no black background / halo blocker;
+  - vignette reads clearly as merchant area;
+  - path/player readability preserved;
+  - user explicitly accepted current result.
+- Composition companion decision: the lower tile-roof house at `x=1210, settlement top+1090` is removed in the active proof scene to reduce clutter; grounding wash remains.
+- Next action: preserve while discovery decides the next proof. Do not generate a new merchant kit unless explicitly revised.
+
+## 7. Current critical non-art architecture note
+
+### SETTLEMENT-PROOF-SCENE
+
+- Purpose: current integration layer for settlement production props/merchant proof.
+- Status: active implementation path, not a visual asset.
+- File: `src/scenes/SettlementPropsProofScene.ts`.
+- Current app scene list in `src/main.ts`: `CharacterSelectScene`, `SettlementPropsProofScene`.
+- Risk: accepted proof work may eventually need promotion back into the normal `GameScene`/environment path rather than remaining a permanent proof overlay.
+- Next action: treat this as a discovery/VERIFY topic before broad expansion.
+
+## 8. Drive vault
+
+Verified folder structure:
 
 ```text
-ARPG__REF__style_master__v001.png
-ARPG__REF__player_male_design_pass__v001.png
-ARPG__REF__melee_enemy_design_pass__v001.png
-ARPG__REF__settlement_house_set_design_pass__v001.png
-ARPG__SRC__env_house_hall_a_clean__v001.png
-ARPG__DOC__HANDOFF_CURRENT.md
-ARPG__DOC__PROJECT_CONTEXT.md
-ARPG__DOC__ASSET_REGISTRY.md
+20_RUNTIME_READY
+├── 00_INBOX
+├── 10_QC_PASS
+└── 90_ARCHIVE_REJECT
 ```
 
-Runtime filenames in GitHub remain lowercase snake_case without version numbers; the `ARPG__...` convention is only for Project Sources/reference storage where human disambiguation matters.
+IDs:
 
-## 7. Handoff asset gate
+- `20_RUNTIME_READY`: `1pwArqr68G-3o9iXdffpDb8bMUyuR9-2f`
+- `00_INBOX`: `1XM05mGrxcjcwCTJXEC-rkE-z4GK2v8wY`
+- `10_QC_PASS`: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
+- `90_ARCHIVE_REJECT`: `1EEO5QVs2F6YkBC7p266X82S4HgzOnsXW`
 
-A cross-chat handoff is not complete until the author answers:
+## 9. Handoff gate
 
-- Which assets changed or became important in this chat?
-- Are their exact binaries accessible outside this chat?
-- Are all `DESIGN_PASS`/critical reference assets promoted to Project Sources or durable Drive storage?
-- Are all runtime assets that matter actually in GitHub?
-- Does this registry identify canonical vs rejected/experimental copies?
-- Are byte size/hash/dimensions recorded where binary integrity has been a failure mode?
-- Does `HANDOFF_CURRENT.md` name the exact asset(s) needed for the first next action?
+Before changing chat or starting a new production branch, verify:
 
-If any answer is no, the handoff is incomplete.
+- exact current `main`;
+- relevant PR/branch state;
+- all important runtime assets are in GitHub;
+- all critical source/recovery assets have a durable Drive/Project Sources location;
+- this registry matches current PHONE PASS / REVISE state;
+- `HANDOFF_CURRENT.md` names the exact next action and pass gate.
+
+Current exact next action is **structured discovery**, not automatic NPC production.
