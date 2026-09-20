@@ -48,6 +48,7 @@ Rules:
 | 2026-09-20 | The playable village slice should stay compact while edge composition implies a larger settlement beyond the authored gameplay footprint. | Do not represent population primarily by adding many full hero houses. |
 | 2026-09-20 | Modest natural terrain should shape the village: small stream/pond, simple bridge, and field/garden language are desirable, but must not turn the settlement into a traversal puzzle. | First water proof belongs off the critical spine, near the healer/agricultural pocket. |
 | 2026-09-20 | Macro environment QC uses a two-stage view: `MACRO CLEAN` hides accepted production house/prop art and shows explicit zone/blockout guides; `CONTEXT` restores accepted art for compatibility checking. | Accepted art is not discarded or regenerated. Use CLEAN to judge topology/hierarchy first, then CONTEXT before production expansion. |
+| 2026-09-20 | Thanh Vân Thôn topology V2-A (`1800`-high compact footprint) is the selected Phone-QC direction over V2-B (`3200`-high expanded footprint). | Phone QC said V2-A feels better. Supersedes the temporary preference for expanded V2-B. Keep the compact footprint and solve zone separation through composition, lateral staggering, framing and spatial massing rather than lengthening the village. |
 
 ## Current locked values at a glance
 
@@ -63,8 +64,8 @@ Rules:
 - MVP realms: Luyện Khí → Trúc Cơ.
 - Settlement art: modular-hybrid painterly environment with organic paths.
 - Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
-- Thanh Vân Thôn V1: poor frontier village, light hub, clear spine + branches, compact playable slice with larger-village illusion, modest water/agriculture terrain.
+- Thanh Vân Thôn: poor frontier village, light hub, clear spine + branches, compact 1600 × 1800 playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
-- Macro QC: validate CLEAN blockout first, then CONTEXT with accepted art restored.
+- Macro QC: topology V2-A selected; next stage is spatial massing on the compact footprint before restoring production art.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next action at this snapshot: Phone QC the clean/context Thanh Vân Thôn macro blockout before producing new village art.
+- Next action at this snapshot: build a V2-A spatial-massing proof using primitives only, then Phone QC before restoring accepted production assets.
