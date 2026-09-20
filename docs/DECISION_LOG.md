@@ -54,6 +54,7 @@ Rules:
 | 2026-09-20 | Add a QC-only camera zoom cycle `1.0x → 0.8x → 0.65x`; zoom world only and keep HUD screen-space. | Phone QC says zoom works and makes full-village composition review materially easier. This is a test tool, not a gameplay camera feature. |
 | 2026-09-20 | Ground/path P0 must be judged at both 0.65x macro and 1.0x movement scale. Build `392d5a7` was REVISE because the road was too visually dominant, the center guide could read as a groove, and the Healer branch was too weak. | User approved a small reversible rhythm pass rather than new art or topology changes. |
 | 2026-09-20 | PR #75 path-rhythm tune is the current ground/path candidate: main path slimmer/lighter, route guide softer, Healer branch stronger, non-Healer forecourts slightly quieter. | Runtime build `3ecba62`; no new assets or gameplay changes. Await Phone QC before marking ground/path P0 PASS. |
+| 2026-09-20 | V2-A Ground/Path P0 is `PHONE_PASS` after final Phone QC at both 0.65x and 1.0x. | Supersedes the pending status above. At 0.65x the road no longer dominates or reads as a dark ribbon/groove; at 1.0x the Healer branch is clear without becoming a second main road. Preserve this layer unless a new concrete Phone-QC problem appears. Next production proof is `ENV-HEALER-WATER-BRIDGE-A` only. |
 
 ## Current locked values at a glance
 
@@ -72,6 +73,6 @@ Rules:
 - Thanh Vân Thôn: poor frontier village, light hub, clear spine + branches, compact 1600 × 1800 playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Macro QC: V2-A topology PASS, spatial massing PASS, accepted-art CONTEXT PASS, QC zoom PASS.
-- Ground/path: PR #75 candidate on runtime build `3ecba62` is awaiting Phone QC.
+- Ground/path P0: `PHONE_PASS` from 0.65x + 1.0x Phone QC.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next action at this snapshot: Phone QC `3ecba62` at 0.65x and 1.0x; only after ground/path PASS begin a single Healer water + bridge production proof.
+- Next production proof: `ENV-HEALER-WATER-BRIDGE-A`, water + simple bridge only; no full healer kit until runtime + Phone QC PASS.
