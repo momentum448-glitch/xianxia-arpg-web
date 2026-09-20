@@ -5,6 +5,10 @@ import { VillageTopologyQcScene } from './VillageTopologyQcScene';
 // Thin QC-only integration layer: preserve the PHONE_PASS village scene and replace water/bridge blockout only.
 const HEALER_WATER_BRIDGE_TEX = 'qc-healer-water-bridge-a4-webp';
 const HEALER_WATER_BRIDGE_PATH = 'assets/c4/environment/settlement/env_healer_water_bridge_a.webp';
+const HEALER_A4_DISPLAY_WIDTH = 440;
+const HEALER_A4_DISPLAY_HEIGHT = 247;
+const HEALER_A4_TINT = 0xe8e1d8;
+const HEALER_A4_ALPHA = 0.96;
 
 interface VillageQcLayers {
   contextLayer: Phaser.GameObjects.Container;
@@ -55,9 +59,9 @@ export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
     // Keep the accepted art and topology; only tune runtime presentation (~12% smaller + softer hierarchy).
     const waterBridge = this.add.image(325, 1455, HEALER_WATER_BRIDGE_TEX)
       .setOrigin(0.5)
-      .setDisplaySize(440, 247)
-      .setTint(0xe8e1d8)
-      .setAlpha(0.96);
+      .setDisplaySize(HEALER_A4_DISPLAY_WIDTH, HEALER_A4_DISPLAY_HEIGHT)
+      .setTint(HEALER_A4_TINT)
+      .setAlpha(HEALER_A4_ALPHA);
     contextLayer.add(waterBridge);
   }
 
