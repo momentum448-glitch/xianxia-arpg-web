@@ -51,9 +51,13 @@ export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
       }
     }
 
+    // Phone QC: A4 composition is sound, but the water cluster read too large / saturated.
+    // Keep the accepted art and topology; only tune runtime presentation (~12% smaller + softer hierarchy).
     const waterBridge = this.add.image(325, 1455, HEALER_WATER_BRIDGE_TEX)
       .setOrigin(0.5)
-      .setDisplaySize(500, 281);
+      .setDisplaySize(440, 247)
+      .setTint(0xe8e1d8)
+      .setAlpha(0.96);
     contextLayer.add(waterBridge);
   }
 
@@ -61,10 +65,10 @@ export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
     const { hudLayer, guideLayer } = this.qcLayers();
 
     const replacements = new Map<string, string>([
-      ['V2-A · PATH RHYTHM TUNE', 'V2-A · HEALER WATER + BRIDGE A4'],
-      ['accepted art · slimmer spine · healer branch stronger', 'ground/path locked · painterly water + humble crossing'],
-      ['QC: 0.65x đường bớt chiếm mắt? 1.0x nhánh Dược Sư còn rõ?', 'QC: cầu có nối đúng hai bờ? 1.0x hợp scale? 0.65x có lấn hierarchy?'],
-      ['NƯỚC + RUỘNG: BLOCKOUT', 'NƯỚC + CẦU: A4 · RUỘNG: BLOCKOUT'],
+      ['V2-A · PATH RHYTHM TUNE', 'V2-A · HEALER WATER + BRIDGE A4 TUNE'],
+      ['accepted art · slimmer spine · healer branch stronger', 'ground/path locked · A4 12% smaller · softer hierarchy'],
+      ['QC: 0.65x đường bớt chiếm mắt? 1.0x nhánh Dược Sư còn rõ?', 'QC: 0.65x cụm nước bớt hút mắt? 1.0x cầu/nước vẫn đủ rõ?'],
+      ['NƯỚC + RUỘNG: BLOCKOUT', 'NƯỚC + CẦU: A4 TUNE · RUỘNG: BLOCKOUT'],
     ]);
 
     const visit = (child: Phaser.GameObjects.GameObject): void => {
