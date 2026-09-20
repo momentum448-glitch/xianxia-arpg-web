@@ -1,18 +1,19 @@
 # Current Project Handoff
 
-Snapshot: 2026-09-20 18:00 (+07)
+Snapshot: 2026-09-20 18:18 (+07)
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current milestone: C4.2 / Thanh Vân Thôn V2-A ground-path Phone QC
+Current milestone: C4.2 / Thanh Vân Thôn V2-A Healer water + bridge production proof
+Active branch: `proof/healer-water-bridge-a`
 
 ## Verified repo/runtime state
 
-- Runtime/code baseline before handoff docs: `3ecba627ec8d3b824cd2bb7eeed73f0a6c47cbdc` (`BUILD 3ecba62`).
+- `main` at proof start: `74b34625d90a3480dd503af57bc3469002290f83`.
+- Visible deployed build during final ground/path Phone QC: `BUILD 74b3462`.
+- The runtime path-rhythm candidate itself came from merged PR #75 / merge commit `3ecba627ec8d3b824cd2bb7eeed73f0a6c47cbdc`; commits after it on main were documentation-only.
 - PR #75 `Tune V2-A path rhythm after phone QC` is merged.
-- Main CI for `3ecba62`: PASS.
-- GitHub Pages deploy for `3ecba62`: PASS.
+- Current proof branch was created from `74b34625` after Phone QC acceptance of the tuned ground/path.
 - Live QC URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
-- A documentation-only handoff snapshot was added after that runtime commit. Do not confuse later docs-only main SHA with the runtime build label.
 - Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
 
 ## Locked Thanh Vân Thôn direction
@@ -26,33 +27,21 @@ Current milestone: C4.2 / Thanh Vân Thôn V2-A ground-path Phone QC
 ## Locked topology / composition
 
 - Selected footprint: **V2-A, 1600 × 1800**.
-- Rejected comparison: V2-B, 1600 × 3200, unless user explicitly reopens it.
-- North → south:
+- V2-B, 1600 × 3200, is rejected unless the user explicitly reopens it.
+- North → south hierarchy:
   1. frontier threshold;
   2. Elder pocket, west-biased;
   3. Merchant pocket, east-biased;
   4. Healer garden / water pocket, west-biased;
   5. residential / field fringe and route out.
-- V2-A topology Phone QC: PASS.
+- V2-A topology: Phone QC PASS.
 - V2-A spatial massing build `b6b47ee`: Phone QC PASS.
-- Accepted-art context restore: judged PASS from Phone QC screenshots; Elder / Merchant / Healer remain distinct and negative-space rhythm survives real art.
-- Do not reopen footprint length, giant zone ellipses, or ad-hoc prop stamping unless a later Phone QC exposes a concrete problem.
+- Accepted-art CONTEXT compatibility: PASS.
+- QC camera zoom `1.0x → 0.8x → 0.65x`: PASS as a test utility.
 
-## QC camera tool
+## Ground/path P0 — PHONE PASS
 
-Phone QC requested and accepted a debug zoom tool:
-
-- cycle: `1.0x → 0.8x → 0.65x → 1.0x`;
-- world camera zoom only;
-- HUD / joystick / QC buttons stay screen-space;
-- camera still follows player;
-- test/QC tool only, not a gameplay camera feature.
-
-Phone QC explicitly said zoom is OK and it materially improves full-village composition review.
-
-## Ground/path proof state
-
-Accepted ground kit reused, not regenerated:
+Accepted ground kit reused without regeneration:
 
 ```text
 public/assets/c4/environment/settlement/env_settlement_path_seg_a.png
@@ -61,28 +50,54 @@ public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png
 public/assets/c4/environment/settlement/env_settlement_forecourt_a.png
 ```
 
-PR #74 restored this accepted kit onto locked V2-A topology.
+History:
 
-Phone QC of build `392d5a7` found:
+- PR #74 restored the accepted ground kit onto V2-A.
+- First Phone QC on build `392d5a7` found the road too dominant at 0.65x, a possible center-groove impression, and a weak Healer branch.
+- PR #75 made only a small reversible rhythm tune: slimmer/lighter spine, softer guide, stronger Healer branch, quieter non-Healer forecourts.
+- No new art, topology, gameplay, collision, NPC, hitbox or timing change was made.
 
-- overall village hierarchy still good;
-- path too visually dominant / too thick at 0.65x;
-- faint route-guide/core line could read like a groove;
-- Healer/Dược Sư branch weaker than Elder/Merchant branches.
+Final Phone QC evidence on 2026-09-20:
 
-User approved a small reversible revise pass.
+- **0.65x PASS**: main road no longer dominates the village; Elder-left → Merchant-right → Healer-left rhythm and negative space remain readable; no dark-ribbon or central-groove impression is blocking composition.
+- **1.0x PASS**: Healer branch reads clearly into the Dược Sư pocket without becoming a second dominant road; movement corridor remains readable.
 
-PR #75 implemented exactly that:
+Decision: **Ground/path P0 = PHONE_PASS. Do not reopen or regenerate this layer without a new concrete Phone-QC problem.**
 
-- slim main path pieces roughly 10–15%;
-- lower path and ground-patch visual weight;
-- soften route-guide line;
-- strengthen only the Healer branch;
-- slightly reduce forecourt dominance outside Healer;
-- no new assets;
-- no topology, gameplay, collision, NPC interaction, hitbox, or timing changes.
+## Current production proof
 
-Current runtime build for this gate: **`3ecba62`**.
+Asset ID: `ENV-HEALER-WATER-BRIDGE-A`
+
+Purpose:
+
+- establish the first production-quality natural/functional landmark for the Dược Sư pocket;
+- replace only the current water + simple bridge blockout;
+- support healer/garden identity without turning the settlement into a traversal puzzle.
+
+Current runtime blockout in `src/scenes/VillageTopologyQcScene.ts`:
+
+- pond around `(235, 1430)`, roughly `285 × 170`;
+- shallow stream extension around `(365, 1490)`, roughly `250 × 80`;
+- simple bridge around `(350, 1448)`, roughly `140 × 36`, slight rotation;
+- herb beds remain blockout-only and are explicitly outside this proof.
+
+Proof scope:
+
+- small irregular shallow pond/stream language;
+- one simple humble wooden footbridge;
+- painterly restrained xianxia treatment;
+- muted settlement-compatible values;
+- readable at portrait phone scale;
+- off the critical spine;
+- no gameplay collision or traversal mechanic change.
+
+Out of scope until this proof passes:
+
+- herb beds / drying racks / medicine props;
+- broad Healer activity kit;
+- field/agriculture kit;
+- topology changes;
+- gameplay hitbox/timing changes.
 
 ## Accepted assets that must not be regenerated
 
@@ -113,40 +128,7 @@ env_merchant_goods_b.png
 env_merchant_sign_b.png
 ```
 
-Accepted Merchant display widths:
-
-```text
-stall 270
-cart 180
-goods 135
-sign 60
-```
-
-## Current asset gaps
-
-Still blockout-only / not production-approved:
-
-- Healer pond/stream;
-- simple bridge;
-- herb-bed / medicine activity props;
-- field/agriculture language.
-
-Do not start broad Healer prop production yet.
-
-## Environment workflow gate
-
-Current sequence:
-
-1. purpose/fantasy — PASS;
-2. topology — PASS;
-3. topology Phone QC — PASS, V2-A selected;
-4. spatial massing — PASS;
-5. accepted-art CONTEXT compatibility — PASS;
-6. QC zoom utility — PASS;
-7. ground/path restore — REVISE after first phone pass;
-8. ground/path rhythm tune — **CURRENT PHONE-QC GATE** on build `3ecba62`;
-9. only after PASS: first new production proof = Healer water + simple bridge;
-10. integrate → Phone QC → expand one proof at a time.
+Accepted Merchant display widths: stall 270, cart 180, goods 135, sign 60.
 
 ## Runtime/gameplay constraints that must not regress
 
@@ -163,45 +145,31 @@ Current sequence:
 
 - V2-B 3200-height village: rejected by Phone QC.
 - Mixed old-art macro proof: too noisy to judge topology.
-- Giant zone ellipses: diagnostic only, not a composition solution.
+- Giant zone ellipses: diagnostic only.
 - Ad-hoc `house + tree + fence + rock + lamp` stamping: rejected workflow.
-- Ad-hoc asset-by-asset environment production before topology: rejected workflow.
+- Asset-by-asset environment production before topology: rejected workflow.
 - Regenerating DESIGN_PASS / PHONE_PASS assets for scale/layout problems: prohibited.
 - Remote Desktop Commander: explicitly prohibited by user.
 
-## Exact next action
+## Exact next actions
 
-Phone QC **build `3ecba62`** before creating any new environment asset.
+1. Produce the smallest isolated production candidate for `ENV-HEALER-WATER-BRIDGE-A`: water/shore language + one simple bridge only.
+2. Integrate that candidate into the existing Healer blockout footprint without changing topology/gameplay.
+3. Deploy and Phone QC at 1.0x first, then 0.65x context. Expand only if PASS.
 
-Check two views:
+## PASS gate for ENV-HEALER-WATER-BRIDGE-A
 
-1. `0.65x`: main road no longer dominates the village; Elder-left → Merchant-right → Healer-left rhythm and negative space remain readable.
-2. `1.0x`: Healer branch is clear enough to connect naturally into the Dược Sư pocket without becoming another dominant road.
+The proof passes only if:
 
-If Phone QC PASS:
-
-- lock ground/path P0;
-- update continuity docs;
-- start exactly one new production proof: **Healer water + simple bridge**;
-- do not broaden into full healer kit until that proof passes runtime + phone.
-
-## PASS gate
-
-Ground/path P0 passes only if:
-
-- path reads as natural village ground, not a dark continuous ribbon;
-- no central groove/debug-line impression remains;
-- Healer branch is visible without becoming visually dominant;
-- Elder / Merchant / Healer hierarchy remains readable at 0.65x;
-- movement corridor remains readable at 1.0x;
+- the water reads immediately as modest village pond/stream, not a large scenic lake;
+- the bridge reads as a simple poor-frontier wooden footbridge, not a hero landmark;
+- water/bridge visually belongs to the accepted settlement art;
+- the Dược Sư pocket becomes clearer without stealing hierarchy from Elder/Merchant;
+- the critical path remains visually obvious;
+- player movement/readability remains clean at 1.0x;
+- composition remains balanced at 0.65x;
 - Phone QC says PASS.
-
-## Durable snapshot
-
-A point-in-time handoff copy also exists at:
-
-`docs/HANDOFF_SNAPSHOT_2026-09-20_1800.md`
 
 ## Resume sentence
 
-Resume from runtime build `3ecba62`: V2-A topology, massing, accepted-art context and QC zoom are already accepted; PR #75 has already tuned road rhythm after the user's 0.65x feedback. The immediate gate is Phone QC of the tuned road before producing the first new Healer water/bridge asset proof.
+Resume on branch `proof/healer-water-bridge-a`: V2-A topology, massing, accepted-art context, QC zoom, and ground/path P0 are all Phone PASS. Do not touch accepted road/house/merchant art. The next smallest task is one isolated `ENV-HEALER-WATER-BRIDGE-A` production proof using the existing Healer water/bridge blockout footprint, then runtime integration and Phone QC before any healer/activity expansion.
