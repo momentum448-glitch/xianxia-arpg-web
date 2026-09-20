@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Healer Water + Bridge A — Phone QC</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#141713;font-family:Arial,sans-serif}
+  #frame{position:fixed;inset:0;background:#d9cfb6;overflow:hidden}
+  #world{position:absolute;width:720px;height:1280px;left:50%;top:50%;transform-origin:center center;background:
+    radial-gradient(ellipse at 22% 72%,rgba(132,142,99,.12) 0 18%,transparent 19%),
+    radial-gradient(ellipse at 80% 78%,rgba(132,142,99,.1) 0 14%,transparent 15%),
+    #e7dcc2}
+  .wash{position:absolute;border-radius:50%;filter:blur(9px);background:#888a64;opacity:.1}
+  .road{position:absolute;left:535px;top:0;width:122px;height:1280px;background:
+    radial-gradient(ellipse at center,rgba(142,122,91,.22),rgba(142,122,91,.08) 52%,transparent 72%);
+    transform:rotate(2deg)}
+  .branch{position:absolute;left:305px;top:730px;width:300px;height:100px;background:
+    radial-gradient(ellipse at center,rgba(142,122,91,.22),rgba(142,122,91,.08) 55%,transparent 75%);
+    transform:rotate(-12deg)}
+  .asset{position:absolute;object-fit:contain;pointer-events:none;user-select:none}
+  #house{left:52px;top:505px;width:300px}
+  #fence{left:305px;top:642px;width:184px}
+  #rock{left:330px;top:595px;width:115px;opacity:.92}
+  #lantern{left:370px;top:548px;width:72px}
+  #waterBridge{left:18px;top:710px;width:520px}
+  #tree{left:-52px;top:530px;width:188px;opacity:.88}
+  .field{position:absolute;height:38px;border-radius:50%;background:#8d8d61;opacity:.12}
+  #field1{left:165px;top:1030px;width:340px;transform:rotate(-5deg)}
+  #field2{left:205px;top:1085px;width:360px;transform:rotate(-2deg)}
+  .player{position:absolute;left:472px;top:800px;width:54px;height:54px;border-radius:50%;background:#334b55;border:4px solid #efe3c9;box-shadow:0 16px 0 -8px rgba(60,56,47,.18)}
+  .player:before{content:"";position:absolute;left:17px;top:-23px;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:17px solid #e9d4a6}
+  .tag{position:absolute;padding:5px 9px;background:rgba(240,231,211,.9);color:#403b34;font-weight:700;font-size:17px}
+  #tagHealer{left:74px;top:470px}
+  #tagEdge{left:430px;top:1050px}
+  #header{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));height:162px;background:rgba(238,229,207,.96);border:2px solid rgba(107,103,91,.38);z-index:20;box-sizing:border-box;padding:14px}
+  #title{font:700 28px Georgia,serif;color:#292b27;letter-spacing:.3px}
+  #subtitle{font-size:14px;color:#5d5a50;margin-top:7px}
+  #question{font-size:14px;color:#6d6558;margin-top:12px;max-width:430px}
+  button{position:absolute;right:12px;width:178px;height:58px;border:0;color:#f5efdf;font-weight:700;font-size:17px;background:#5b4a37}
+  #zoomBtn{top:83px}
+  #labelsBtn{top:16px;background:#4e5d55}
+  #status{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:21;padding:8px 12px;border:1px solid #8d8a7d;border-radius:7px;background:#2a2c27;color:#eee7d8;font:16px monospace}
+  #legend{position:fixed;left:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:21;background:rgba(238,229,207,.92);padding:8px 10px;color:#4b463d;font-size:13px;border-radius:4px;max-width:220px}
+  body.hideLabels .tag,body.hideLabels #legend{display:none}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="world">
+    <div class="wash" style="left:20px;top:470px;width:430px;height:460px"></div>
+    <div class="wash" style="left:410px;top:260px;width:250px;height:760px"></div>
+    <div class="road"></div>
+    <div class="branch"></div>
+    <img id="tree" class="asset" src="assets/c4/environment/settlement/env_tree_village_a.png" alt="">
+    <img id="house" class="asset" src="assets/c4/environment/settlement/env_house_thatch_b.png" alt="">
+    <img id="fence" class="asset" src="assets/c4/environment/settlement/env_fence_village_a.png" alt="">
+    <img id="rock" class="asset" src="assets/c4/environment/settlement/env_rockgrass_village_a.png" alt="">
+    <img id="lantern" class="asset" src="assets/c4/environment/settlement/env_lanternpost_village_a.png" alt="">
+    <img id="waterBridge" class="asset" src="assets/c4/environment/settlement/env_healer_water_bridge_a.svg" alt="water bridge proof">
+    <div id="field1" class="field"></div><div id="field2" class="field"></div>
+    <div class="player"></div>
+    <div id="tagHealer" class="tag">DƯỢC SƯ + NƯỚC</div>
+    <div id="tagEdge" class="tag">MÉP DÂN CƯ / RUỘNG</div>
+  </div>
+</div>
+
+<div id="header">
+  <div id="title">HEALER WATER + BRIDGE · PROOF A</div>
+  <div id="subtitle">ground/path P0 locked · one new proof only · no healer prop-kit expansion</div>
+  <div id="question">QC: nước/cầu có đúng chất làng nghèo, hợp scale nhà + player, và giữ đường chính bên phải đủ thoáng?</div>
+  <button id="labelsBtn">ẨN NHÃN</button>
+  <button id="zoomBtn">ZOOM · 1.0x</button>
+</div>
+<div id="legend">Chỉ QC <b>nước + cầu</b>. Luống thuốc/ruộng vẫn là blockout, chưa phải production art.</div>
+<div id="status">PROOF · ENV-HEALER-WATER-BRIDGE-A</div>
+
+<script>
+let mode=1;
+function fit(){
+  const base=Math.min(innerWidth/720,innerHeight/1280);
+  const zoom=mode===1?1:0.65;
+  document.getElementById('world').style.transform=`translate(-50%,-50%) scale(${base*zoom})`;
+}
+document.getElementById('zoomBtn').onclick=()=>{
+  mode=mode===1?0.65:1;
+  document.getElementById('zoomBtn').textContent=`ZOOM · ${mode===1?'1.0x':'0.65x'}`;
+  fit();
+};
+document.getElementById('labelsBtn').onclick=()=>{
+  document.body.classList.toggle('hideLabels');
+  document.getElementById('labelsBtn').textContent=document.body.classList.contains('hideLabels')?'HIỆN NHÃN':'ẨN NHÃN';
+};
+addEventListener('resize',fit); fit();
+</script>
+</body>
+</html>
