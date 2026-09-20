@@ -25,8 +25,47 @@ Keep these available to future chats:
 - `docs/HANDOFF_PROTOCOL.md`
 - `docs/ART_BIBLE.md`
 - `docs/ART_PRODUCTION_QC.md` while C4 work is active
+- `docs/environment/README.md` and `docs/environment/XIANXIA_ARPG_ENVIRONMENT_PLAYBOOK.md` while map/environment work is active
 
-## 3. Promotion rule
+## 3. Environment / level design knowledge base
+
+The durable environment-design guidance now lives in GitHub under `docs/environment/`.
+
+Core documents:
+
+```text
+docs/environment/README.md
+docs/environment/ENVIRONMENT_DESIGN_FOUNDATIONS.md
+docs/environment/LEVEL_BLOCKOUT_AND_PLAYER_FLOW.md
+docs/environment/WAYFINDING_AND_COMPOSITION.md
+docs/environment/SCALE_DENSITY_AND_SPATIAL_GRAMMAR.md
+docs/environment/MODULAR_ENVIRONMENT_AND_ASSET_KITS.md
+docs/environment/ENVIRONMENTAL_STORYTELLING.md
+docs/environment/MOBILE_PORTRAIT_LEVEL_DESIGN.md
+docs/environment/ENVIRONMENT_QC_PLAYBOOK.md
+docs/environment/XIANXIA_ARPG_ENVIRONMENT_PLAYBOOK.md
+docs/environment/SOURCE_REFERENCES.md
+```
+
+Templates:
+
+```text
+docs/environment/templates/ENVIRONMENT_DESIGN_TEMPLATE.md
+docs/environment/templates/ZONE_COMPOSITION_TEMPLATE.md
+docs/environment/templates/ASSET_KIT_PLANNING_TEMPLATE.md
+```
+
+GitHub is the canonical source for these documents. They do not need a Drive binary backup. If ChatGPT Project Sources supports convenient document promotion, the recommended minimum environment pack is:
+
+- `README.md`
+- `XIANXIA_ARPG_ENVIRONMENT_PLAYBOOK.md`
+- `ENVIRONMENT_QC_PLAYBOOK.md`
+- `SOURCE_REFERENCES.md`
+- the three templates
+
+Future environment chats should consult this knowledge base before generating broad map art or prop kits.
+
+## 4. Promotion rule
 
 Promote an asset into Project Sources and/or the Drive vault when any of these is true:
 
@@ -53,7 +92,7 @@ ARPG__SRC__env_house_hall_a_clean__v001.png
 
 `REF` = visual/reference anchor. `SRC` = clean source used for technical/runtime preparation. `DOC` = continuity document.
 
-## 4. Drive asset vault
+## 5. Drive asset vault
 
 Verified ARPG vault:
 
@@ -71,7 +110,7 @@ Folder IDs:
 - `10_QC_PASS`: `1AzY928GT097WptHw7kHy4uuqTozChY7W`
 - `90_ARCHIVE_REJECT`: `1EEO5QVs2F6YkBC7p266X82S4HgzOnsXW`
 
-## 5. Current important settlement source assets
+## 6. Current important settlement source assets
 
 ### Accepted settlement house source sheet
 
@@ -99,7 +138,7 @@ Folder IDs:
 - Historical normalized metadata: PNG RGBA, 208 × 172, 69,820 bytes.
 - Status: source lineage is `PHONE_PASS`; runtime canonical bytes live in GitHub.
 
-## 6. Merchant V2 source backups
+## 7. Merchant V2 source backups
 
 The world-scaled merchant area accepted on Android build `56b9359` uses the following V2 assets. Runtime canonical files live in GitHub under `public/assets/c4/environment/settlement/`; Drive holds byte-preserving backups in `10_QC_PASS`.
 
@@ -112,7 +151,7 @@ The world-scaled merchant area accepted on Android build `56b9359` uses the foll
 
 Do not regenerate these assets to change scene scale. Current accepted scene display widths are stall 270, cart 180, goods 135, sign 60.
 
-## 7. Runtime-only accepted prop kit
+## 8. Runtime-only accepted prop kit
 
 The following general settlement props are already canonical in GitHub and phone-accepted as a reusable kit:
 
@@ -125,7 +164,7 @@ public/assets/c4/environment/settlement/env_lanternpost_village_a.png
 
 If exact original generation/source files later become important for reconstruction or further variants, promote those exact sources into Project Sources/Drive and add their IDs to `ASSET_REGISTRY.md`. Do not regenerate merely because the source is not currently needed.
 
-## 8. Source manifest entry format
+## 9. Source manifest entry format
 
 For each future critical visual/source asset, record:
 
@@ -141,7 +180,7 @@ Supersedes / derived from:
 Next action:
 ```
 
-## 9. Handoff synchronization
+## 10. Handoff synchronization
 
 Before moving to a new chat or pausing major production:
 
@@ -153,4 +192,4 @@ Before moving to a new chat or pausing major production:
 6. Record failed paths so the next chat does not repeat them.
 7. State the exact next action and pass gate.
 
-Current snapshot note: merchant/settlement build `56b9359` is phone-accepted, and implementation is intentionally paused for a structured discovery round before the next proof is chosen.
+Current snapshot note: merchant/settlement build `56b9359` is phone-accepted. The reusable environment-design knowledge base is now part of the project, and substantial next map/environment work should use its templates before broad asset production.

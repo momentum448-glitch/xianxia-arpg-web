@@ -40,6 +40,8 @@ Rules:
 | 2026-09-20 | Remove the lower tile-roof house at `x=1210, settlement top+1090` in the active settlement proof composition to reduce visual clutter; preserve its ground wash. | Composition-only change; no gameplay-space/hitbox intent. |
 | 2026-09-20 | Current merchant/settlement snapshot on build `56b9359` is accepted; do not continue polishing it without a concrete problem. | Phone QC PASS. |
 | 2026-09-20 | Pause implementation after the merchant PASS and run another structured discovery round before choosing the next production proof. | Do not assume NPC production is automatically next simply because placeholders remain. |
+| 2026-09-20 | Establish `docs/environment/` as the reusable Environment & Level Design Knowledge Base for future map/environment work. | General principles are separated from project adaptations and locked rules; source provenance lives in `SOURCE_REFERENCES.md`. |
+| 2026-09-20 | Substantial new environment/map work should proceed from purpose/topology/zones/scale/blockout/composition before broad production-asset generation. | Use the new environment templates and proof-first Phone-QC workflow; do not return to ad-hoc prop-by-prop map construction. |
 
 ## Current locked values at a glance
 
@@ -55,5 +57,6 @@ Rules:
 - MVP realms: Luyện Khí → Trúc Cơ.
 - Settlement art: modular-hybrid painterly environment with organic paths.
 - Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
+- Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Phone QC beats desktop intuition for UX/art readability.
 - Next action at this snapshot: structured discovery before further implementation.
