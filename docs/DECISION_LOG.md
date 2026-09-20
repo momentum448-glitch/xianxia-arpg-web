@@ -33,7 +33,6 @@ Rules:
 | 2026-09-19 | When a problem is materially unclear, use a structured discovery-and-decision round before committing to a full solution. Limit each round to the 5–7 highest-impact questions/decisions, explicitly separate user decisions from safe assumptions and evidence that must be verified, and summarize facts/decisions/assumptions/open issues/next action after each round. | Does not reopen locked decisions or justify questions whose answers can be verified directly. See `docs/DISCOVERY_DECISION_PROTOCOL.md`. |
 | 2026-09-19 | Thanh Vân Thôn environment uses a modular-hybrid composition: shared painterly ground/path/decal layers provide visual continuity while houses, trees, props and NPCs remain modular runtime objects. | Avoid both a single flattened background and isolated “sticker” assets with no ground integration. |
 | 2026-09-19 | Settlement roads should be authored as organic curved routes with variable width, small branches/courtyards and irregular edges rather than a ruler-straight central lane. | Explicitly allows deliberate environment-composition refinement after the earlier “preserve layout during technical repair” rule; gameplay/collision remain unchanged unless separately requested. |
-| 2026-09-19 | Final house scale is deferred until the environment ground/path/blending proof is judged on phone. The current +12% top-pair scale is a working proof, not a locked final value. | Historical intermediate state; later phone-QC settlement composition takes precedence. |
 | 2026-09-20 | General village props should create varied environmental rhythm, not a repeated `house + tree + fence + rock + lamp` formula. Props may vary by density, scale, flip and functional zone while keeping the route readable. | Replaces the earlier uniform-looking expansion attempt; current production prop kit itself remains accepted. |
 | 2026-09-20 | Lục Chưởng Quầy's merchant area is a distinct functional vignette built from the accepted Merchant Kit B (stall, cart, goods, sign). | The area should read as trading space even before NPC production art. |
 | 2026-09-20 | Merchant props must use settlement world scale rather than the smaller initial proof scale. Current accepted display widths are stall 270, cart 180, goods 135, sign 60. | Supersedes the earlier smaller proof widths 188 / 118 / 92 / 48. Phone accepted on build `56b9359`. |
@@ -55,6 +54,8 @@ Rules:
 | 2026-09-20 | Ground/path P0 must be judged at both 0.65x macro and 1.0x movement scale. Build `392d5a7` was REVISE because the road was too visually dominant, the center guide could read as a groove, and the Healer branch was too weak. | User approved a small reversible rhythm pass rather than new art or topology changes. |
 | 2026-09-20 | PR #75 path-rhythm tune is the current ground/path candidate: main path slimmer/lighter, route guide softer, Healer branch stronger, non-Healer forecourts slightly quieter. | Runtime build `3ecba62`; no new assets or gameplay changes. Await Phone QC before marking ground/path P0 PASS. |
 | 2026-09-20 | V2-A Ground/Path P0 is `PHONE_PASS` after final Phone QC at both 0.65x and 1.0x. | Supersedes the pending status above. At 0.65x the road no longer dominates or reads as a dark ribbon/groove; at 1.0x the Healer branch is clear without becoming a second main road. Preserve this layer unless a new concrete Phone-QC problem appears. Next production proof is `ENV-HEALER-WATER-BRIDGE-A` only. |
+| 2026-09-20 | `ENV-HEALER-WATER-BRIDGE-A` is `PHONE_PASS` on tuned runtime build `6fd3477`. | Bridge logic, 1.0x scale/readability, and 0.65x hierarchy all passed. Preserve current WebP + runtime presentation. |
+| 2026-09-20 | Next production proof is `ENV-HEALER-ACTIVITY-KIT-A`: one compact herb garden plus one small drying/work cluster only. | Keep field-edge kit deferred; do not touch topology/path/house/gameplay. |
 
 ## Current locked values at a glance
 
@@ -73,6 +74,7 @@ Rules:
 - Thanh Vân Thôn: poor frontier village, light hub, clear spine + branches, compact 1600 × 1800 playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Macro QC: V2-A topology PASS, spatial massing PASS, accepted-art CONTEXT PASS, QC zoom PASS.
-- Ground/path P0: `PHONE_PASS` from 0.65x + 1.0x Phone QC.
+- Ground/path P0: `PHONE_PASS`.
+- `ENV-HEALER-WATER-BRIDGE-A`: `PHONE_PASS` on build `6fd3477`.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next production proof: `ENV-HEALER-WATER-BRIDGE-A`, water + simple bridge only; no full healer kit until runtime + Phone QC PASS.
+- Current production proof: `ENV-HEALER-ACTIVITY-KIT-A`, compact herb garden + drying/work cluster; field edge remains deferred.

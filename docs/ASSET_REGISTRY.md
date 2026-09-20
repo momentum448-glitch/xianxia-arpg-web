@@ -69,7 +69,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
 - Road rule: organic curved/irregular routes, not ruler-straight lanes.
 - Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
-- Next action: preserve topology/massing/ground-path; continue only with the scoped Healer water + bridge proof.
+- Next action: preserve topology/massing/ground-path; continue only with the scoped Healer activity proof.
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
 
@@ -202,34 +202,43 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 ### ENV-HEALER-WATER-BRIDGE-A
 
-- Purpose: first new production proof for the Dược Sư pocket after V2-A ground/path PASS.
-- Status: `NOT_STARTED` as a production asset; an explicit runtime blockout already exists.
-- Active proof branch: `proof/healer-water-bridge-a`.
-- Existing blockout in `src/scenes/VillageTopologyQcScene.ts`:
-  - pond around `(235, 1430)`, roughly `285 × 170`;
-  - stream extension around `(365, 1490)`, roughly `250 × 80`;
-  - simple bridge around `(350, 1448)`, roughly `140 × 36`, slight rotation.
-- Intended production scope: small irregular pond/stream language + one simple wooden footbridge only.
-- Visual constraints:
-  - humble poor-frontier construction;
-  - restrained painterly xianxia treatment;
-  - muted settlement-compatible earth/jade values;
-  - readable at phone scale;
-  - should clarify the Healer pocket without becoming a hero landmark.
-- Gameplay constraint: off the critical spine; support healer/garden identity without turning settlement into a traversal puzzle; no collision/timing change in this art proof.
-- Next action: create the smallest isolated production candidate, integrate it into the existing blockout footprint, then Phone QC before any Healer expansion.
+- Purpose: first production landmark for the Dược Sư pocket after V2-A ground/path PASS.
+- Status: `PHONE_PASS`.
+- Canonical runtime asset: `public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp`.
+- Runtime presentation accepted on build `6fd3477`:
+  - display size `440 × 247`;
+  - subtle warm tint and alpha `0.96`;
+  - bridge orientation/logic accepted;
+  - water/bridge no longer dominates village hierarchy at 0.65x;
+  - 1.0x readability and scale accepted.
+- Phone QC: final 0.65x screenshot on 2026-09-20 passed hierarchy/clarity gate.
+- Next action: preserve. Do not regenerate or retune without a new concrete Phone-QC issue.
 
 ### ENV-HEALER-ACTIVITY-KIT-A
 
-- Purpose: herb beds / medicine-drying / healer activity language.
-- Status: `NOT_STARTED`.
-- Next action: defer until `ENV-HEALER-WATER-BRIDGE-A` passes runtime + Phone QC.
+- Purpose: herb-bed / medicine-drying / healer work-language proof.
+- Status: `INTEGRATED` proof candidate on branch `proof/healer-activity-kit-a`; Phone QC pending.
+- Runtime proof files:
+  - `public/assets/c4/environment/settlement/env_healer_herb_bed_a.webp`
+  - `public/assets/c4/environment/settlement/env_healer_drying_props_a.webp`
+- Runtime proof scene: `src/scenes/VillageTopologyQcHealerActivityScene.ts`.
+- Scope:
+  - one compact herb garden replacing the three green blockout strips;
+  - one small drying/work cluster beside the healer pocket;
+  - no field-edge expansion;
+  - no topology/path/house/gameplay changes.
+- Pass gate:
+  - 1.0x: herb garden and drying/work cluster read clearly without sticker/halo artifacts;
+  - 0.65x: healer pocket does not become cluttered or over-dominant;
+  - main spine and player readability remain clean;
+  - Phone QC says PASS.
+- Next action: CI/deploy proof branch, then Phone QC at 1.0x and 0.65x.
 
 ### ENV-FIELD-EDGE-KIT-A
 
 - Purpose: field/agriculture edge language that implies a larger village beyond the authored slice.
 - Status: `NOT_STARTED`.
-- Next action: defer; avoid creating a broad residential prop kit before higher-priority proofs pass.
+- Next action: defer until Healer activity proof passes.
 
 ## 8. Current critical non-art architecture note
 
@@ -239,6 +248,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Status: active implementation lineage, not a visual asset.
 - Earlier file: `src/scenes/SettlementPropsProofScene.ts`.
 - Current V2-A environment QC file: `src/scenes/VillageTopologyQcScene.ts`.
+- Current Healer proof layers: `VillageTopologyQcA4Scene.ts` then `VillageTopologyQcHealerActivityScene.ts`.
 - Risk: accepted proof work eventually needs promotion back into the normal `GameScene`/environment path rather than remaining a permanent QC scene.
 - Next action: finish the scoped V2-A environment proof gates first; promotion is a later VERIFY task.
 
@@ -282,4 +292,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action is **one isolated `ENV-HEALER-WATER-BRIDGE-A` production candidate on branch `proof/healer-water-bridge-a`, followed by runtime integration and Phone QC**. Do not broaden into healer activity or field assets until this proof passes.
+Current exact next action is **deploy the integrated `ENV-HEALER-ACTIVITY-KIT-A` proof on branch `proof/healer-activity-kit-a`, then Phone QC at 1.0x + 0.65x**. Do not broaden into field-edge assets until this proof passes.

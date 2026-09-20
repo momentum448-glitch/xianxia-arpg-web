@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import './style.css';
-import { VillageTopologyQcA4Scene } from './scenes/VillageTopologyQcA4Scene';
+import { VillageTopologyQcHealerActivityScene } from './scenes/VillageTopologyQcHealerActivityScene';
 
 const buildBadge = document.createElement('div');
 buildBadge.id = 'build-id';
@@ -13,7 +13,7 @@ const config: Phaser.Types.Core.GameConfig = {
   width: 720,
   height: 1280,
   backgroundColor: '#171914',
-  scene: [VillageTopologyQcA4Scene],
+  scene: [VillageTopologyQcHealerActivityScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
