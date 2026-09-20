@@ -19,6 +19,7 @@ Before proposing or changing anything, read these files in order:
    - `docs/C4_2_EXECUTION_LOG.md`
    - `docs/ART_PRODUCTION_QC.md`
    - `docs/ART_BIBLE.md`
+   - for map/environment work: `docs/environment/README.md`, then `docs/environment/XIANXIA_ARPG_ENVIRONMENT_PLAYBOOK.md` and the specific environment guide/template relevant to the task.
 
 Then verify live GitHub state before acting:
 
@@ -39,10 +40,11 @@ When information conflicts, use this order:
 2. `docs/HANDOFF_CURRENT.md` for the latest cross-chat working state.
 3. `docs/ASSET_REGISTRY.md` for asset identity, canonical location, backup/source location, and QC state.
 4. `docs/DECISION_LOG.md` for durable product/technical decisions.
-5. Milestone execution logs/plans for task-specific details.
+5. Milestone execution logs/plans and map-specific environment design docs for task details.
 6. `docs/PROJECT_CONTEXT.md` and `docs/PLAN.md` for broader project context.
-7. ChatGPT Project Sources for visual/source references identified by the Asset Registry.
-8. Older chat messages, raw Library search results, old README wording, or stale status tables.
+7. `docs/environment/` for reusable map/environment design method; it does not override newer locked project decisions or runtime evidence.
+8. ChatGPT Project Sources for visual/source references identified by the Asset Registry.
+9. Older chat messages, raw Library search results, old README wording, or stale status tables.
 
 Do not let an older document or similarly named image silently override a newer merged/registered decision.
 
@@ -55,12 +57,26 @@ Do not let an older document or similarly named image silently override a newer 
 - Do not regenerate a `DESIGN_PASS` asset because the current chat cannot immediately see it. Recover the registered asset first.
 - Do not re-ask decisions already locked in `DECISION_LOG.md` unless the user explicitly wants to reconsider them.
 - Prefer small, reversible changes with one clear validation question.
-- Phone QC is authoritative for controls, readability, scale, VFX, travel pacing, and combat density.
+- Phone QC is authoritative for controls, readability, scale, VFX, travel pacing, combat density, and environment composition.
 - Keep gameplay hitboxes/timing independent from visual-art integration unless a gameplay change is explicitly requested.
 - Before every write, inspect the relevant repo/branch/file state.
 - Never repeat a failed or stuck operation blindly. Check whether it partially succeeded first.
 - If a tool operation appears stuck for roughly 5–10 minutes with no state change, checkpoint actual repo state and switch method instead of waiting indefinitely.
 - Do not broaden scope while a blocking proof is unresolved. Prove one minimal asset/path/interaction first, then scale the solution.
+
+### Environment/map work
+
+For substantial environment or map design, do not begin with broad production-asset generation. Follow the knowledge base in `docs/environment/`:
+
+`purpose → topology → zones → critical path → landmarks → scale metrics → blockout → phone flow test → composition → asset kit → one production proof → runtime/Phone QC → expansion`.
+
+Use:
+
+- `docs/environment/templates/ENVIRONMENT_DESIGN_TEMPLATE.md` for a major map/area;
+- `docs/environment/templates/ZONE_COMPOSITION_TEMPLATE.md` for high-value functional zones;
+- `docs/environment/templates/ASSET_KIT_PLANNING_TEMPLATE.md` only after the map/zone need is clear.
+
+Treat external design references as principles to adapt, not project rules. Locked rules still belong in `DECISION_LOG.md` and validated runtime evidence.
 
 ## 4. Discovery and decision discipline
 
@@ -80,13 +96,7 @@ For decision questions, present realistic options, consequences/trade-offs, and 
 
 For VERIFY items, use available tools to inspect code, GitHub, assets, logs, runtime evidence, external documentation, or perform a minimal experiment whenever possible.
 
-After each meaningful discovery round, summarize:
-
-- established facts;
-- locked decisions;
-- working assumptions;
-- remaining open issues;
-- the next smallest action.
+After each meaningful discovery round, summarize established facts, locked decisions, working assumptions, remaining open issues, and the next smallest action.
 
 Important guardrails:
 
@@ -109,9 +119,7 @@ Every important asset must have two legs:
 1. the binary/reference is stored somewhere the next chat can actually recover it (GitHub runtime path, ChatGPT Project Sources, or a verified Drive asset-vault file); and
 2. `docs/ASSET_REGISTRY.md` identifies the exact asset, location, status, technical identity, QC result, and next action.
 
-For runtime assets, GitHub is canonical.
-
-For accepted but pre-runtime references, Project Sources and/or verified Drive backup preserve visual/binary continuity.
+For runtime assets, GitHub is canonical. For accepted but pre-runtime references, Project Sources and/or verified Drive backup preserve visual/binary continuity.
 
 Never treat a thumbnail, vague Library result, or assistant-generated board name as enough to distinguish canonical vs rejected versions.
 
