@@ -28,12 +28,18 @@ Rules:
 | 2026-09-18 | C3 combat-pressure and enemy-distribution tuning is deferred until actor/environment readability stabilizes. | Known debt, not forgotten scope. |
 | 2026-09-18 | Settlement runtime composition/density passed. Preserve the approved layout while replacing/fixing visual assets. | Do not redesign village layout during technical asset repair. |
 | 2026-09-18 | Flying-sword VFX should be restrained white-jade, with impact the brightest moment. | Blade silhouette must remain readable. |
-| 2026-09-19 | Settlement house black-render bug should be solved with a one-house true-RGBA proof before converting all four assets. | Minimal proof first; avoid broad binary churn. |
+| 2026-09-19 | Settlement house black-render bug should be solved with a one-house true-RGBA proof before converting all four assets. | Minimal proof first; avoid broad binary churn. Historical repair strategy now completed. |
 | 2026-09-19 | For cross-chat work, GitHub-backed handoff docs become mandatory. | New chats read `AGENTS.md` and `HANDOFF_CURRENT.md` before acting. |
 | 2026-09-19 | When a problem is materially unclear, use a structured discovery-and-decision round before committing to a full solution. Limit each round to the 5–7 highest-impact questions/decisions, explicitly separate user decisions from safe assumptions and evidence that must be verified, and summarize facts/decisions/assumptions/open issues/next action after each round. | Does not reopen locked decisions or justify questions whose answers can be verified directly. See `docs/DISCOVERY_DECISION_PROTOCOL.md`. |
 | 2026-09-19 | Thanh Vân Thôn environment uses a modular-hybrid composition: shared painterly ground/path/decal layers provide visual continuity while houses, trees, props and NPCs remain modular runtime objects. | Avoid both a single flattened background and isolated “sticker” assets with no ground integration. |
 | 2026-09-19 | Settlement roads should be authored as organic curved routes with variable width, small branches/courtyards and irregular edges rather than a ruler-straight central lane. | Explicitly allows deliberate environment-composition refinement after the earlier “preserve layout during technical repair” rule; gameplay/collision remain unchanged unless separately requested. |
-| 2026-09-19 | Final house scale is deferred until the environment ground/path/blending proof is judged on phone. The current +12% top-pair scale is a working proof, not a locked final value. | Prevents scaling houses in isolation from the environment context. |
+| 2026-09-19 | Final house scale is deferred until the environment ground/path/blending proof is judged on phone. The current +12% top-pair scale is a working proof, not a locked final value. | Historical intermediate state; later phone-QC settlement composition takes precedence. |
+| 2026-09-20 | General village props should create varied environmental rhythm, not a repeated `house + tree + fence + rock + lamp` formula. Props may vary by density, scale, flip and functional zone while keeping the route readable. | Replaces the earlier uniform-looking expansion attempt; current production prop kit itself remains accepted. |
+| 2026-09-20 | Lục Chưởng Quầy's merchant area is a distinct functional vignette built from the accepted Merchant Kit B (stall, cart, goods, sign). | The area should read as trading space even before NPC production art. |
+| 2026-09-20 | Merchant props must use settlement world scale rather than the smaller initial proof scale. Current accepted display widths are stall 270, cart 180, goods 135, sign 60. | Supersedes the earlier smaller proof widths 188 / 118 / 92 / 48. Phone accepted on build `56b9359`. |
+| 2026-09-20 | Remove the lower tile-roof house at `x=1210, settlement top+1090` in the active settlement proof composition to reduce visual clutter; preserve its ground wash. | Composition-only change; no gameplay-space/hitbox intent. |
+| 2026-09-20 | Current merchant/settlement snapshot on build `56b9359` is accepted; do not continue polishing it without a concrete problem. | Phone QC PASS. |
+| 2026-09-20 | Pause implementation after the merchant PASS and run another structured discovery round before choosing the next production proof. | Do not assume NPC production is automatically next simply because placeholders remain. |
 
 ## Current locked values at a glance
 
@@ -47,4 +53,7 @@ Rules:
 - Equipped skill: Trảm Kích / Cleave.
 - First breakthrough: 50 Linh Khí + 3 Tinh Hoa + 3 Kiếp Ảnh.
 - MVP realms: Luyện Khí → Trúc Cơ.
+- Settlement art: modular-hybrid painterly environment with organic paths.
+- Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
 - Phone QC beats desktop intuition for UX/art readability.
+- Next action at this snapshot: structured discovery before further implementation.
