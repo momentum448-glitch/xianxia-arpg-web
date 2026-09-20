@@ -1,10 +1,11 @@
 # Thanh Vân Thôn — Asset Gap Analysis V1
 
-Status: CONTEXT-QC SYNTHESIS
+Status: PROOF A IN PROGRESS
 Date: 2026-09-20
 Parent design: `docs/environment/maps/THANH_VAN_THON_ENVIRONMENT_DESIGN_V1.md`
 Context proof baseline: `7a7f412`
 QC zoom tool baseline: `992071e`
+Proof A branch: `proof/v2a-ground-path-context`
 
 ## Summary
 
@@ -69,6 +70,15 @@ Current accepted houses already create partial edge compounds. No new house vari
 
 Do not regenerate or expand Merchant Kit B, accepted houses, tree, fence, lantern, rock-grass, V2-A footprint, zone alternation, or the QC zoom tool because of the current screenshots.
 
+## Proof A implementation state
+
+- accepted Path A/B restored on the V2-A main spine;
+- accepted ground patch and forecourt reused for blending and service pockets;
+- Elder, Merchant and Healer branches receive accepted path pieces;
+- painterly edge masking follows the existing settlement ground treatment;
+- no production asset bytes changed;
+- primitive healer water/herb/field placeholders remain intentionally unresolved until Proof A Phone QC.
+
 ## Exact next action
 
-Build Proof A by restoring the accepted painterly path/ground kit onto the locked V2-A route. Keep production asset bytes unchanged. Deploy for Phone QC before creating water, bridge, herb, field, or domestic assets.
+Deploy Proof A and Phone QC it at both 1.0x and 0.65x. If the path reads naturally and the negative-space hierarchy survives, lock P0 and begin the healer water + bridge proof. Do not create water, bridge, herb, field, or domestic assets before this gate passes.
