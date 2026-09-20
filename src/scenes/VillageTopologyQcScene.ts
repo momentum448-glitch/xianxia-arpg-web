@@ -7,6 +7,8 @@ const VIEW_WIDTH = 720;
 const VIEW_HEIGHT = 1280;
 const ZOOM_LEVELS = [1, 0.8, 0.65] as const;
 
+type GroundMaskMode = 'path-a' | 'path-b' | 'patch' | 'forecourt';
+
 const TEX = {
   houseThatchA: 'qc-house-thatch-a',
   houseTileA: 'qc-house-tile-a',
@@ -21,11 +23,23 @@ const TEX = {
   merchantCart: 'qc-merchant-cart-b',
   merchantGoods: 'qc-merchant-goods-b',
   merchantSign: 'qc-merchant-sign-b',
+  pathA: 'qc-path-a',
+  pathB: 'qc-path-b',
+  groundPatch: 'qc-ground-patch-a',
+  forecourt: 'qc-forecourt-a',
+  pathARuntime: 'qc-path-a-masked',
+  pathBRuntime: 'qc-path-b-masked',
+  groundPatchRuntime: 'qc-ground-patch-a-masked',
+  forecourtRuntime: 'qc-forecourt-a-masked',
 } as const;
 
 interface Point {
   x: number;
   y: number;
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
 }
 
 export class VillageTopologyQcScene extends Phaser.Scene {
@@ -63,6 +77,10 @@ export class VillageTopologyQcScene extends Phaser.Scene {
       [TEX.merchantCart, C4_ASSETS.settlementMerchantCartB],
       [TEX.merchantGoods, C4_ASSETS.settlementMerchantGoodsB],
       [TEX.merchantSign, C4_ASSETS.settlementMerchantSignB],
+      [TEX.pathA, C4_ASSETS.settlementPathSegA],
+      [TEX.pathB, C4_ASSETS.settlementPathSegB],
+      [TEX.groundPatch, C4_ASSETS.settlementGroundPatchA],
+      [TEX.forecourt, C4_ASSETS.settlementForecourtA],
     ] as const;
 
     for (const [key, path] of assets) {
@@ -79,6 +97,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     this.hudLayer = this.add.container(0, 0);
 
     this.prepareTreeRuntimeTexture();
+    this.prepareGroundRuntimeTextures();
     this.buildContext();
     this.createPlayerMarker();
     this.createHud();
@@ -138,23 +157,77 @@ export class VillageTopologyQcScene extends Phaser.Scene {
       { x: 800, y: 1780 },
     ];
 
-    const road = this.add.graphics().setDepth(-20);
-    road.lineStyle(145, 0xc9b487, 0.18);
-    road.beginPath();
-    spine.forEach((point, index) => {
-      if (index === 0) road.moveTo(point.x, point.y);
-      else road.lineTo(point.x, point.y);
-    });
-    road.strokePath();
+    const patches = [
+      { x: 780, y: 530, w: 390, r: -0.02, flip: false, alpha: 0.26 },
+      { x: 875, y: 930, w: 420, r: 0.03, flip: true, alpha: 0.30 },
+      { x: 760, y: 1320, w: 390, r: -0.03, flip: false, alpha: 0.28 },
+      { x: 860, y: 1645, w: 365, r: 0.03, flip: true, alpha: 0.25 },
+    ] as const;
+    for (const patch of patches) {
+      this.addGroundImage(
+        TEX.groundPatchRuntime,
+        patch.x,
+        patch.y,
+        patch.w,
+        patch.r,
+        patch.flip,
+        patch.alpha,
+      );
+    }
 
-    road.lineStyle(3, 0x8a7556, 0.25);
-    road.beginPath();
+    const pathPieces = [
+      { texture: TEX.pathARuntime, x: 800, y: 105, w: 245, r: -0.03, flip: false },
+      { texture: TEX.pathBRuntime, x: 765, y: 285, w: 250, r: 0.08, flip: true },
+      { texture: TEX.pathARuntime, x: 700, y: 475, w: 255, r: -0.12, flip: true },
+      { texture: TEX.pathBRuntime, x: 805, y: 665, w: 258, r: -0.14, flip: false },
+      { texture: TEX.pathARuntime, x: 925, y: 850, w: 255, r: 0.06, flip: false },
+      { texture: TEX.pathBRuntime, x: 850, y: 1035, w: 250, r: 0.12, flip: true },
+      { texture: TEX.pathARuntime, x: 705, y: 1220, w: 245, r: -0.08, flip: false },
+      { texture: TEX.pathBRuntime, x: 790, y: 1405, w: 250, r: -0.08, flip: false },
+      { texture: TEX.pathARuntime, x: 925, y: 1585, w: 250, r: 0.10, flip: true },
+      { texture: TEX.pathBRuntime, x: 820, y: 1745, w: 238, r: -0.05, flip: true },
+    ] as const;
+    for (const piece of pathPieces) {
+      this.addGroundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.84);
+    }
+
+    const branches = [
+      { texture: TEX.pathARuntime, x: 520, y: 545, w: 184, r: 1.24, flip: true },
+      { texture: TEX.pathBRuntime, x: 1080, y: 885, w: 190, r: -1.24, flip: false },
+      { texture: TEX.pathARuntime, x: 520, y: 1280, w: 188, r: 1.22, flip: false },
+      { texture: TEX.pathBRuntime, x: 1070, y: 1660, w: 175, r: -1.24, flip: true },
+    ] as const;
+    for (const branch of branches) {
+      this.addGroundImage(branch.texture, branch.x, branch.y, branch.w, branch.r, branch.flip, 0.72);
+    }
+
+    const forecourts = [
+      { x: 350, y: 585, w: 305, r: -0.04, flip: false, alpha: 0.66 },
+      { x: 1210, y: 990, w: 330, r: 0.04, flip: true, alpha: 0.78 },
+      { x: 350, y: 1335, w: 300, r: -0.03, flip: true, alpha: 0.67 },
+      { x: 1190, y: 1700, w: 285, r: 0.04, flip: false, alpha: 0.50 },
+    ] as const;
+    for (const forecourt of forecourts) {
+      this.addGroundImage(
+        TEX.forecourtRuntime,
+        forecourt.x,
+        forecourt.y,
+        forecourt.w,
+        forecourt.r,
+        forecourt.flip,
+        forecourt.alpha,
+      );
+    }
+
+    const routeGuide = this.add.graphics();
+    routeGuide.lineStyle(3, 0x7d684f, 0.34);
+    routeGuide.beginPath();
     spine.forEach((point, index) => {
-      if (index === 0) road.moveTo(point.x, point.y);
-      else road.lineTo(point.x, point.y);
+      if (index === 0) routeGuide.moveTo(point.x, point.y);
+      else routeGuide.lineTo(point.x, point.y);
     });
-    road.strokePath();
-    this.contextLayer.add(road);
+    routeGuide.strokePath();
+    this.guideLayer.add(routeGuide);
   }
 
   private addEntryContext(): void {
@@ -298,6 +371,25 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     return image;
   }
 
+  private addGroundImage(
+    texture: string,
+    x: number,
+    y: number,
+    width: number,
+    rotation = 0,
+    flipX = false,
+    alpha = 0.85,
+  ): Phaser.GameObjects.Image {
+    const image = this.add.image(x, y, texture)
+      .setOrigin(0.5)
+      .setRotation(rotation)
+      .setAlpha(alpha);
+    const scale = image.width > 0 ? width / image.width : 1;
+    image.setScale(flipX ? -scale : scale, scale);
+    this.contextLayer.add(image);
+    return image;
+  }
+
   private treeTexture(): string {
     return this.textures.exists(TEX.treeRuntime) ? TEX.treeRuntime : TEX.tree;
   }
@@ -374,6 +466,71 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     target.refresh();
   }
 
+  private prepareGroundRuntimeTextures(): void {
+    this.createMaskedGroundTexture(TEX.pathA, TEX.pathARuntime, 'path-a');
+    this.createMaskedGroundTexture(TEX.pathB, TEX.pathBRuntime, 'path-b');
+    this.createMaskedGroundTexture(TEX.groundPatch, TEX.groundPatchRuntime, 'patch');
+    this.createMaskedGroundTexture(TEX.forecourt, TEX.forecourtRuntime, 'forecourt');
+  }
+
+  private createMaskedGroundTexture(sourceKey: string, outputKey: string, mode: GroundMaskMode): void {
+    if (this.textures.exists(outputKey) || !this.textures.exists(sourceKey)) return;
+
+    const source = this.textures.get(sourceKey).getSourceImage() as CanvasImageSource & {
+      width: number;
+      height: number;
+    };
+    const width = source.width;
+    const height = source.height;
+    const target = this.textures.createCanvas(outputKey, width, height);
+    if (!target) return;
+
+    const context = target.getContext();
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const alphaIndex = (y * width + x) * 4 + 3;
+        const originalAlpha = pixels[alphaIndex] / 255;
+        let mask = 1;
+
+        if (mode === 'path-a' || mode === 'path-b') {
+          const phase = mode === 'path-a' ? 0.2 : 1.3;
+          const centerAmp = width * (mode === 'path-a' ? 0.052 : 0.06);
+          const center = width * 0.5
+            + centerAmp * Math.sin((y / height) * Math.PI * 2 * 1.15 + phase)
+            + width * 0.02 * Math.sin((y / height) * Math.PI * 2 * 2.4 + phase * 0.3);
+          const halfBase = width * (mode === 'path-a' ? 0.26 : 0.25);
+          const halfWidth = halfBase
+            + width * 0.045 * Math.sin((y / height) * Math.PI * 2 * 1.6 + phase + 0.8)
+            + width * 0.016 * Math.sin((y / height) * Math.PI * 2 * 3.3 + 0.2);
+          const feather = width * 0.083;
+          const sideMask = clamp01((halfWidth + feather - Math.abs(x - center)) / feather);
+          const fade = height * 0.18;
+          const verticalMask = Math.min(clamp01(y / fade), clamp01((height - 1 - y) / fade));
+          mask = sideMask * verticalMask;
+        } else if (mode === 'patch') {
+          const nx = (x - width * 0.5) / (width * 0.46);
+          const ny = (y - height * 0.5) / (height * 0.46);
+          const radius = Math.sqrt(nx * nx + ny * ny);
+          mask = clamp01((1.08 - radius) / 0.12);
+        } else {
+          const edgeDistance = Math.min(x, width - 1 - x, y, height - 1 - y);
+          mask = clamp01(edgeDistance / 14);
+        }
+
+        const maskedAlpha = originalAlpha * mask;
+        pixels[alphaIndex] = maskedAlpha < 0.035 ? 0 : Math.round(maskedAlpha * 255);
+      }
+    }
+
+    context.putImageData(imageData, 0, 0);
+    target.refresh();
+  }
+
   private createPlayerMarker(): void {
     const shadow = this.add.ellipse(0, 30, 60, 22, 0x3c382f, 0.16);
     const body = this.add.circle(0, 0, 24, 0x334b55, 0.96)
@@ -386,18 +543,18 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     const panel = this.add.rectangle(VIEW_WIDTH / 2, 106, VIEW_WIDTH - 24, 188, 0xeee5cf, 0.95)
       .setStrokeStyle(2, 0x6b675b, 0.38)
       .setDepth(30000);
-    const title = this.add.text(24, 20, 'V2-A · CONTEXT RESTORE', {
+    const title = this.add.text(24, 20, 'V2-A · GROUND / PATH RESTORE', {
       fontFamily: 'serif',
       fontSize: '25px',
       color: '#2b2b27',
       fontStyle: 'bold',
     }).setDepth(30001);
-    const subtitle = this.add.text(24, 56, 'accepted art · 1600 × 1800 · không asset mới', {
+    const subtitle = this.add.text(24, 56, 'accepted art · accepted path/ground · không asset mới', {
       fontFamily: 'sans-serif',
-      fontSize: '16px',
+      fontSize: '15px',
       color: '#5a554b',
     }).setDepth(30001);
-    const instruction = this.add.text(24, 89, 'QC: massing + toàn cảnh · nút ZOOM chỉ dùng khi test', {
+    const instruction = this.add.text(24, 89, 'QC: đường có tự nhiên + rõ ở 1.0x, toàn cảnh còn thoáng ở 0.65x?', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
       color: '#625a4e',
