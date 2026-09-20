@@ -158,10 +158,10 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     ];
 
     const patches = [
-      { x: 780, y: 530, w: 390, r: -0.02, flip: false, alpha: 0.26 },
-      { x: 875, y: 930, w: 420, r: 0.03, flip: true, alpha: 0.30 },
-      { x: 760, y: 1320, w: 390, r: -0.03, flip: false, alpha: 0.28 },
-      { x: 860, y: 1645, w: 365, r: 0.03, flip: true, alpha: 0.25 },
+      { x: 780, y: 530, w: 370, r: -0.02, flip: false, alpha: 0.22 },
+      { x: 875, y: 930, w: 395, r: 0.03, flip: true, alpha: 0.25 },
+      { x: 760, y: 1320, w: 370, r: -0.03, flip: false, alpha: 0.23 },
+      { x: 860, y: 1645, w: 345, r: 0.03, flip: true, alpha: 0.21 },
     ] as const;
     for (const patch of patches) {
       this.addGroundImage(
@@ -176,36 +176,44 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     }
 
     const pathPieces = [
-      { texture: TEX.pathARuntime, x: 800, y: 105, w: 245, r: -0.03, flip: false },
-      { texture: TEX.pathBRuntime, x: 765, y: 285, w: 250, r: 0.08, flip: true },
-      { texture: TEX.pathARuntime, x: 700, y: 475, w: 255, r: -0.12, flip: true },
-      { texture: TEX.pathBRuntime, x: 805, y: 665, w: 258, r: -0.14, flip: false },
-      { texture: TEX.pathARuntime, x: 925, y: 850, w: 255, r: 0.06, flip: false },
-      { texture: TEX.pathBRuntime, x: 850, y: 1035, w: 250, r: 0.12, flip: true },
-      { texture: TEX.pathARuntime, x: 705, y: 1220, w: 245, r: -0.08, flip: false },
-      { texture: TEX.pathBRuntime, x: 790, y: 1405, w: 250, r: -0.08, flip: false },
-      { texture: TEX.pathARuntime, x: 925, y: 1585, w: 250, r: 0.10, flip: true },
-      { texture: TEX.pathBRuntime, x: 820, y: 1745, w: 238, r: -0.05, flip: true },
+      { texture: TEX.pathARuntime, x: 800, y: 105, w: 218, r: -0.03, flip: false },
+      { texture: TEX.pathBRuntime, x: 765, y: 285, w: 222, r: 0.08, flip: true },
+      { texture: TEX.pathARuntime, x: 700, y: 475, w: 226, r: -0.12, flip: true },
+      { texture: TEX.pathBRuntime, x: 805, y: 665, w: 230, r: -0.14, flip: false },
+      { texture: TEX.pathARuntime, x: 925, y: 850, w: 226, r: 0.06, flip: false },
+      { texture: TEX.pathBRuntime, x: 850, y: 1035, w: 222, r: 0.12, flip: true },
+      { texture: TEX.pathARuntime, x: 705, y: 1220, w: 218, r: -0.08, flip: false },
+      { texture: TEX.pathBRuntime, x: 790, y: 1405, w: 220, r: -0.08, flip: false },
+      { texture: TEX.pathARuntime, x: 925, y: 1585, w: 222, r: 0.10, flip: true },
+      { texture: TEX.pathBRuntime, x: 820, y: 1745, w: 212, r: -0.05, flip: true },
     ] as const;
     for (const piece of pathPieces) {
-      this.addGroundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.84);
+      this.addGroundImage(piece.texture, piece.x, piece.y, piece.w, piece.r, piece.flip, 0.74);
     }
 
     const branches = [
-      { texture: TEX.pathARuntime, x: 520, y: 545, w: 184, r: 1.24, flip: true },
-      { texture: TEX.pathBRuntime, x: 1080, y: 885, w: 190, r: -1.24, flip: false },
-      { texture: TEX.pathARuntime, x: 520, y: 1280, w: 188, r: 1.22, flip: false },
-      { texture: TEX.pathBRuntime, x: 1070, y: 1660, w: 175, r: -1.24, flip: true },
+      { texture: TEX.pathARuntime, x: 520, y: 545, w: 176, r: 1.24, flip: true, alpha: 0.68 },
+      { texture: TEX.pathBRuntime, x: 1080, y: 885, w: 180, r: -1.24, flip: false, alpha: 0.68 },
+      { texture: TEX.pathARuntime, x: 510, y: 1285, w: 208, r: 1.22, flip: false, alpha: 0.80 },
+      { texture: TEX.pathBRuntime, x: 1070, y: 1660, w: 165, r: -1.24, flip: true, alpha: 0.62 },
     ] as const;
     for (const branch of branches) {
-      this.addGroundImage(branch.texture, branch.x, branch.y, branch.w, branch.r, branch.flip, 0.72);
+      this.addGroundImage(
+        branch.texture,
+        branch.x,
+        branch.y,
+        branch.w,
+        branch.r,
+        branch.flip,
+        branch.alpha,
+      );
     }
 
     const forecourts = [
-      { x: 350, y: 585, w: 305, r: -0.04, flip: false, alpha: 0.66 },
-      { x: 1210, y: 990, w: 330, r: 0.04, flip: true, alpha: 0.78 },
-      { x: 350, y: 1335, w: 300, r: -0.03, flip: true, alpha: 0.67 },
-      { x: 1190, y: 1700, w: 285, r: 0.04, flip: false, alpha: 0.50 },
+      { x: 350, y: 585, w: 295, r: -0.04, flip: false, alpha: 0.62 },
+      { x: 1210, y: 990, w: 320, r: 0.04, flip: true, alpha: 0.72 },
+      { x: 350, y: 1335, w: 310, r: -0.03, flip: true, alpha: 0.70 },
+      { x: 1190, y: 1700, w: 275, r: 0.04, flip: false, alpha: 0.44 },
     ] as const;
     for (const forecourt of forecourts) {
       this.addGroundImage(
@@ -220,7 +228,7 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     }
 
     const routeGuide = this.add.graphics();
-    routeGuide.lineStyle(3, 0x7d684f, 0.34);
+    routeGuide.lineStyle(2, 0x7d684f, 0.18);
     routeGuide.beginPath();
     spine.forEach((point, index) => {
       if (index === 0) routeGuide.moveTo(point.x, point.y);
@@ -543,18 +551,18 @@ export class VillageTopologyQcScene extends Phaser.Scene {
     const panel = this.add.rectangle(VIEW_WIDTH / 2, 106, VIEW_WIDTH - 24, 188, 0xeee5cf, 0.95)
       .setStrokeStyle(2, 0x6b675b, 0.38)
       .setDepth(30000);
-    const title = this.add.text(24, 20, 'V2-A · GROUND / PATH RESTORE', {
+    const title = this.add.text(24, 20, 'V2-A · PATH RHYTHM TUNE', {
       fontFamily: 'serif',
       fontSize: '25px',
       color: '#2b2b27',
       fontStyle: 'bold',
     }).setDepth(30001);
-    const subtitle = this.add.text(24, 56, 'accepted art · accepted path/ground · không asset mới', {
+    const subtitle = this.add.text(24, 56, 'accepted art · slimmer spine · healer branch stronger', {
       fontFamily: 'sans-serif',
       fontSize: '15px',
       color: '#5a554b',
     }).setDepth(30001);
-    const instruction = this.add.text(24, 89, 'QC: đường có tự nhiên + rõ ở 1.0x, toàn cảnh còn thoáng ở 0.65x?', {
+    const instruction = this.add.text(24, 89, 'QC: 0.65x đường bớt chiếm mắt? 1.0x nhánh Dược Sư còn rõ?', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
       color: '#625a4e',
