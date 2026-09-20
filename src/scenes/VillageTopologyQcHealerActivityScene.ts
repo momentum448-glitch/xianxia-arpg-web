@@ -86,7 +86,7 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
       [0.11, 0.29],
       [0.17, 0.21],
     ] as const;
-    const maskGraphics = this.make.graphics({ add: false });
+    const maskGraphics = this.make.graphics({}, false);
     const left = herbBedX - herbBedWidth / 2;
     const top = herbBedY - herbBedHeight / 2;
     maskGraphics.fillStyle(0xffffff, 1);
