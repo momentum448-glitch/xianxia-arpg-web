@@ -47,6 +47,7 @@ Rules:
 | 2026-09-20 | Thanh Vân Thôn navigation uses a clear main spine plus a few small side lanes/optional branches. | Avoid both a single corridor and maze-like village routing. |
 | 2026-09-20 | The playable village slice should stay compact while edge composition implies a larger settlement beyond the authored gameplay footprint. | Do not represent population primarily by adding many full hero houses. |
 | 2026-09-20 | Modest natural terrain should shape the village: small stream/pond, simple bridge, and field/garden language are desirable, but must not turn the settlement into a traversal puzzle. | First water proof belongs off the critical spine, near the healer/agricultural pocket. |
+| 2026-09-20 | Macro environment QC uses a two-stage view: `MACRO CLEAN` hides accepted production house/prop art and shows explicit zone/blockout guides; `CONTEXT` restores accepted art for compatibility checking. | Accepted art is not discarded or regenerated. Use CLEAN to judge topology/hierarchy first, then CONTEXT before production expansion. |
 
 ## Current locked values at a glance
 
@@ -64,5 +65,6 @@ Rules:
 - Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
 - Thanh Vân Thôn V1: poor frontier village, light hub, clear spine + branches, compact playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
+- Macro QC: validate CLEAN blockout first, then CONTEXT with accepted art restored.
 - Phone QC beats desktop intuition for UX/art readability.
-- Next action at this snapshot: runtime macro blockout of the Thanh Vân Thôn V1 design before producing new village art.
+- Next action at this snapshot: Phone QC the clean/context Thanh Vân Thôn macro blockout before producing new village art.
