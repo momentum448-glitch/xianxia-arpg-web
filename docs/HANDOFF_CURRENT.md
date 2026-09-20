@@ -3,110 +3,76 @@
 Snapshot: 2026-09-20
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current milestone: C4.2 settlement environment design / Thanh Vân Thôn topology → spatial massing
+Current milestone: C4.2 settlement environment design / Thanh Vân Thôn CONTEXT restore
 
 ## Verified repo/runtime state
 
-- Current main before this documentation branch: `817976dd4b2c985b82bb59783b7751ceeb76466f` (`BUILD 817976d`), merged PR #69.
-- PR #69 is a temporary topology-QC build, not the final game presentation.
-- Accepted runtime/art baseline remains `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`) from PR #63 for the merchant/settlement art snapshot.
-- Merchant-area scale/layout on `56b9359`: Android Phone QC PASS.
+- Current main before this context branch: `b6b47ee18f04cad907e57fe1049cf3161d4ff358` (`BUILD b6b47ee`), merged PR #71.
+- PR #71 is the V2-A primitive spatial-massing QC build.
+- User Phone QC explicitly passed that massing on 2026-09-20: **“Pass rồi đấy”**.
+- Accepted production-art baseline for settlement/merchant remains `56b9359e8c6aeea972ae994b314537aabb2bb7bb` (`BUILD 56b9359`).
 - Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
 
-## Locked Thanh Vân Thôn product direction
+## Locked Thanh Vân Thôn direction
 
-- Identity: **poor, humble frontier village near wilderness**.
-- Role: **light hub**, important early and less dominant later.
-- Navigation: **clear main spine + a few small side lanes/optional branches**.
-- Perceived scale: **compact playable slice that implies a larger village through edge composition**.
-- Terrain: **modest stream/pond + simple bridge + field/garden language**, without becoming a traversal puzzle.
+- Poor, humble frontier village near wilderness.
+- Light hub: important early, less dominant later.
+- Clear main spine + a few small branches.
+- Compact authored slice that implies a larger village at the edges.
+- Modest stream/pond + simple bridge + field/garden language, not a traversal puzzle.
 
-Do not reopen these choices unless the user asks.
+## Locked topology and massing
 
-## Phone-QC topology result
+- Selected footprint: **V2-A, 1600 × 1800**.
+- Rejected comparison: V2-B, 1600 × 3200, unless user explicitly reopens it.
+- Macro sequence north → south:
+  1. frontier threshold;
+  2. Elder pocket, west-biased;
+  3. Merchant pocket, east-biased;
+  4. Healer garden / water pocket, west-biased;
+  5. residential / field fringe and route out.
+- Phone QC PASS on V2-A massing build `b6b47ee` proves the compact footprint can separate zones using lateral staggering, framing, negative space and edge massing.
 
-PR #69 added a dedicated topology-only scene with two switchable variants:
+Do not reopen footprint length or return to giant zone ellipses unless a later Phone QC exposes a concrete problem.
 
-- **V2-A:** compact `1600 × 1800` village footprint;
-- **V2-B:** expanded `1600 × 3200` village footprint.
+## Environment workflow gate
 
-User Phone QC on 2026-09-20 explicitly selected:
+Current workflow is:
 
-> **V2-A tốt hơn**
+1. purpose / fantasy — PASS;
+2. topology — PASS;
+3. topology-only Phone QC — PASS, V2-A selected;
+4. spatial massing — PASS on `b6b47ee`;
+5. accepted-art CONTEXT restore — **CURRENT GATE**;
+6. identify real asset gaps;
+7. produce only needed assets;
+8. runtime integration;
+9. Phone QC.
 
-Therefore:
+Do not create new village production PNGs until CONTEXT restore passes.
 
-- **V2-A is the locked topology direction.**
-- Do not expand Thanh Vân Thôn to 3200 just to create spacing.
-- Solve separation/readability inside the compact 1800 footprint through lateral staggering, framing, negative space, density and spatial massing.
-- V2-B is a rejected comparison path unless the user explicitly reopens it.
+## Current context proof
 
-## Why V2-A was selected
+Branch: `proof/thanh-van-thon-v2a-context`
+PR: #72
 
-The compact footprint better matches the intended starting-village feel and avoids making the village unnecessarily long. The next problem is no longer footprint length. The design task is to make each functional pocket read clearly within a tall portrait viewport that sees much of the village at once.
+The context proof restores only accepted production assets onto the V2-A massing:
 
-## Current macro sequence
+- houses: Thatch A, Tile A, Hall A, Thatch B;
+- general props: accepted tree, fence, rock/grass, lantern;
+- Merchant Kit B at accepted world scale: stall 270, cart 180, goods 135, sign 60;
+- tree uses the existing runtime RGBA normalization path to avoid the known dark-background artifact.
 
-North to south:
+Still blockout-only because no production asset is approved yet:
 
-1. frontier threshold;
-2. Elder pocket, west-biased;
-3. Merchant pocket, east-biased;
-4. Healer garden / water branch, west-biased;
-5. quiet residential / field fringe / route out.
+- healer pond/stream;
+- simple bridge;
+- herb-bed rows;
+- field rows.
 
-The exact footprints and massing remain design variables for the next proof; the sequence and compact topology are locked.
+No new art is generated for this proof.
 
-## Verified settlement metrics
-
-- World: `1600 × 9000`.
-- Settlement: world `y=7200..9000` → local `1600 × 1800`.
-- Portrait viewport: `720 × 1280`; one viewport covers about 71% of village height.
-- Player visual height: `112`.
-- Player collision rectangle: `58 × 78`.
-- NPC interaction radius: `155`.
-- Existing house display widths: roughly `275..347`.
-- Merchant Phone-PASS widths: stall `270`, cart `180`, goods `135`, sign `60`.
-
-Design consequence: vertical distance alone cannot separate zones. Each zone needs distinct lateral bias, framing, activity, foreground/background mass and negative space.
-
-## Environment workflow now locked
-
-For substantial map work:
-
-1. purpose / fantasy;
-2. topology;
-3. topology-only Phone QC;
-4. spatial massing with primitives;
-5. Phone QC;
-6. restore accepted production art for context compatibility;
-7. identify real asset gaps;
-8. produce only needed assets;
-9. runtime integration;
-10. Phone QC.
-
-Do not jump from topology directly to new production PNGs.
-
-## Next proof: V2-A spatial massing
-
-Build a dedicated **V2-A spatial-massing proof** using primitives only.
-
-Goals:
-
-- retain the 1800-high footprint;
-- make Elder, Merchant and Healer read as separate places despite the tall viewport;
-- replace giant debug ellipses with believable mass relationships;
-- test building footprints / tree masses / fences / courtyards / water / field edges as simple blocks;
-- keep the main spine immediately readable;
-- keep Healer water off the critical route;
-- make residential/field scale mostly edge/background implication rather than a large UI-obscured focal zone;
-- use no new production assets yet.
-
-### Primary Phone-QC question
-
-**Within the compact V2-A footprint, do the Elder, Merchant and Healer pockets now feel like separate places connected by one village, without clutter or a corridor-like map?**
-
-## Existing accepted art that must not be regenerated
+## Existing accepted assets that must not be regenerated
 
 Houses:
 
@@ -135,45 +101,47 @@ env_merchant_goods_b.png
 env_merchant_sign_b.png
 ```
 
-Accepted assets stay preserved outside the temporary primitive QC flow.
-
 ## Runtime/gameplay constraints that must not regress
 
 - Mobile browser portrait 9:16.
-- Manual `ATK + SKILL + NÉ` combat.
+- Manual `ATK + SKILL + NÉ` combat in production runtime.
 - One flying sword per attack press.
 - Base attack range 205 + future bonus.
 - Base cooldown 800 ms through `basicAttackSpeedPct`.
 - Settlement safe zone and NPC interaction remain intact in production runtime.
 - Third-Kiếp-Ảnh projectile cleanup freeze fix must not regress.
-- Art/layout work must not alter gameplay hitboxes/timing unless explicitly requested.
+- Environment proof must not alter gameplay hitboxes or timing.
 
 ## Failed / rejected paths
 
-- **V2-B 3200-height village:** rejected by Phone QC in favor of V2-A.
-- Old mixed-art macro proof: difficult to QC because accepted art obscured new blockout information.
-- Giant diagnostic ellipses are useful for topology debug but are not a spatial-massing solution.
-- Do not return to ad-hoc `house + tree + fence + rock + lamp` stamping.
+- V2-B 3200-height village: rejected by Phone QC.
+- Mixed old-art macro proof: hard to QC because existing art obscured new topology information.
+- Giant zone ellipses: diagnostic only, not a composition solution.
+- Ad-hoc `house + tree + fence + rock + lamp` stamping: rejected workflow.
 - Do not regenerate DESIGN_PASS / PHONE_PASS assets for layout problems.
-- Do not create a broad prop kit before spatial massing proves what is actually missing.
+- Do not create a broad prop kit before context proof exposes actual gaps.
 - Do not use Remote Desktop Commander.
 
 ## Exact next action
 
-Create a reversible **V2-A spatial-massing-only runtime proof**, deploy it, and ask for Phone QC. Do not restore production art or make new PNGs until this proof passes.
+Finish PR #72, verify CI + Pages deploy, then ask for Phone QC on the V2-A CONTEXT restore.
 
-## PASS gate before context restore / asset production
+### Phone-QC pass question
 
-V2-A massing must prove:
+**With labels hidden, does the accepted art preserve the massing hierarchy: Elder / Merchant / Healer still read as separate places, the main route stays clear, and the village still feels compact rather than cluttered?**
 
-- critical route is immediately readable;
-- Elder / Merchant / Healer each have distinct spatial identity;
-- zones do not rely on large debug circles to be understood;
-- water improves healer/agriculture logic without blocking movement;
-- residential/field edges imply more village beyond the authored slice;
-- phone UI does not hide a required focal landmark;
-- Phone QC says the compact layout works.
+## PASS gate before asset-gap planning
+
+Do not create new water / bridge / healer / residential assets until context restore proves:
+
+- Elder, Merchant and Healer remain spatially distinct with real accepted art;
+- Merchant remains readable at its accepted scale;
+- accepted houses/props do not collapse the negative-space rhythm;
+- main spine remains readable;
+- edge houses imply a larger village without becoming focal clutter;
+- phone UI does not hide a required landmark;
+- Phone QC says CONTEXT passes.
 
 ## Resume sentence
 
-Resume from `main` build `817976d`: topology-only comparison is complete and Phone QC selected **V2-A compact 1600 × 1800** over V2-B; next action is a primitive-only V2-A spatial-massing proof before restoring accepted art or creating any new assets.
+Resume from V2-A topology + spatial massing Phone PASS (`b6b47ee`); PR #72 restores only accepted art onto that layout, with water/bridge/herb/field still primitive. Next gate is Phone QC of CONTEXT before producing any new environment asset.
