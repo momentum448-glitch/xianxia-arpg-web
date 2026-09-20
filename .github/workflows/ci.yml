@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -14,28 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-
-      - name: Seed merchant Prop Kit V2 binaries
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          set -euo pipefail
-          asset_dir="public/assets/c4/environment/settlement"
-          mkdir -p "$asset_dir"
-          if [ ! -f "$asset_dir/env_merchant_cart_a.png" ]; then
-            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-e620-820b-8336-9088269bd444/raw?se=2026-09-20T01%3A45%3A14Z&sp=r&sv=2026-02-06&sr=b&scid=835ad215-6f28-543d-aa8c-41870ba58f20&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T20%3A48%3A39Z&ske=2026-09-20T20%3A48%3A39Z&sks=b&skv=2026-02-06&sig=23%2F4b2rozujFdyonC9tSPUyOI4ePauoCH%2FJ6kJOoFeY%3D' -o "$asset_dir/env_merchant_cart_a.png"
-            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-6974-820b-a107-2f1c7e97f64c/raw?se=2026-09-20T01%3A45%3A23Z&sp=r&sv=2026-02-06&sr=b&scid=c838a6a4-da0a-5455-b3e0-b098d7f43c91&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T19%3A34%3A59Z&ske=2026-09-20T19%3A34%3A59Z&sks=b&skv=2026-02-06&sig=soAQwTeodQg11fA1Tmm3fPYpvYOIJfrNmLuTr11zXgA%3D' -o "$asset_dir/env_merchant_goods_a.png"
-            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-7ffc-820b-a42a-0019d5ede160/raw?se=2026-09-20T01%3A45%3A30Z&sp=r&sv=2026-02-06&sr=b&scid=81c5e3e1-bd1a-5c61-be9a-f0ea73077fe4&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T22%3A22%3A44Z&ske=2026-09-20T22%3A22%3A44Z&sks=b&skv=2026-02-06&sig=h9JUOKxoFmhL4ITxGkhnI0biTGpzwZOAzSgVTZzytfc%3D' -o "$asset_dir/env_merchant_sign_a.png"
-            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-db88-820b-bbb4-7d7b057c0336/raw?se=2026-09-20T01%3A45%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=aa942484-1c31-54bc-b6ee-5008881785a1&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T23%3A21%3A45Z&ske=2026-09-20T23%3A21%3A45Z&sks=b&skv=2026-02-06&sig=e9YXlU2vSo9VgkVW6EB58bQjGtzbv7nL82W5%2Fouljko%3D' -o "$asset_dir/env_merchant_stall_a.png"
-            file "$asset_dir"/env_merchant_*.png
-            git config user.name github-actions[bot]
-            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git add "$asset_dir"/env_merchant_*.png
-            git commit -m 'Seed merchant Prop Kit V2 binary assets'
-            git push origin HEAD:${{ github.head_ref }}
-          fi
 
       - name: Setup Node
         uses: actions/setup-node@v7
