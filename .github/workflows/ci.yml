@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -14,6 +14,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Seed merchant V2 clean binaries
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_dir="public/assets/c4/environment/settlement"
+          mkdir -p "$asset_dir"
+          if [ ! -f "$asset_dir/env_merchant_stall_b.png" ]; then
+            curl -fL --retry 3 'https://sdmntpraustraliaeast.oaiusercontent.com/files/00000000-d4d8-81fa-9b0b-5c159ba6e1a9/raw?se=2026-09-20T02%3A18%3A07Z&sp=r&sv=2026-02-06&sr=b&scid=638293a7-1822-5824-bb1f-74a9d0072a45&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T19%3A25%3A06Z&ske=2026-09-20T19%3A25%3A06Z&sks=b&skv=2026-02-06&sig=pYRO7GX0Zfk6iH4QJQ4Pc%2B34JsGp77HxS3OZ%2FU%2Fig9g%3D' -o "$asset_dir/env_merchant_stall_b.png"
+            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-2790-820b-bf35-33e4ac115aa6/raw?se=2026-09-20T02%3A18%3A17Z&sp=r&sv=2026-02-06&sr=b&scid=170ba862-dbbd-5754-a5e3-4e7b015f3226&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-20T01%3A50%3A49Z&ske=2026-09-21T01%3A50%3A49Z&sks=b&skv=2026-02-06&sig=BSjTgYLfKfphhqUP2e6GVoK%2FbYkvLOQebVdL7KXtyQI%3D' -o "$asset_dir/env_merchant_cart_b.png"
+            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-f22c-820b-bda3-6d4a678b38fd/raw?se=2026-09-20T02%3A18%3A27Z&sp=r&sv=2026-02-06&sr=b&scid=0e5f1c7a-6099-5c02-a685-e675a585ed3b&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-19T07%3A20%3A47Z&ske=2026-09-20T07%3A20%3A47Z&sks=b&skv=2026-02-06&sig=%2FWJYSSsRuymtDeOpcCejSWErrHTFP%2FLeibg9ao02C7c%3D' -o "$asset_dir/env_merchant_goods_b.png"
+            curl -fL --retry 3 'https://sdmntprnznorth.oaiusercontent.com/files/00000000-6738-820b-9f70-1fa2d94635d9/raw?se=2026-09-20T02%3A18%3A35Z&sp=r&sv=2026-02-06&sr=b&scid=4a5f9fb3-9334-5d06-a18d-b9fe22a25bca&skoid=f5e14fda-2af7-44a3-9d18-d372ffcad871&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-20T01%3A50%3A56Z&ske=2026-09-21T01%3A50%3A56Z&sks=b&skv=2026-02-06&sig=qjn574mbZJEV5SzazTa3%2B3qhCDfm0UKP9sSB1mJ%2BzWw%3D' -o "$asset_dir/env_merchant_sign_b.png"
+            file "$asset_dir"/env_merchant_*_b.png
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add "$asset_dir"/env_merchant_*_b.png
+            git commit -m 'Seed merchant V2 clean binary assets'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v7
