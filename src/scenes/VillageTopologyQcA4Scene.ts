@@ -4,6 +4,7 @@ import { VillageTopologyQcScene } from './VillageTopologyQcScene';
 
 // Thin QC-only integration layer: preserve the PHONE_PASS village scene and replace water/bridge blockout only.
 const HEALER_WATER_BRIDGE_TEX = 'qc-healer-water-bridge-a4';
+const HEALER_WATER_BRIDGE_RUNTIME_TEX = 'qc-healer-water-bridge-a4-rgba';
 const HEALER_WATER_BRIDGE_PATH = 'assets/c4/environment/settlement/env_healer_water_bridge_a.png';
 
 export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
@@ -16,9 +17,87 @@ export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
 
   create(): void {
     super.create();
+    this.prepareHealerWaterBridgeRuntimeTexture();
     this.replaceHealerWaterBridgeBlockout();
     this.refreshQcCopy();
     this.focusHealerPocket();
+  }
+
+  private prepareHealerWaterBridgeRuntimeTexture(): void {
+    if (
+      this.textures.exists(HEALER_WATER_BRIDGE_RUNTIME_TEX)
+      || !this.textures.exists(HEALER_WATER_BRIDGE_TEX)
+    ) return;
+
+    const source = this.textures.get(HEALER_WATER_BRIDGE_TEX).getSourceImage() as CanvasImageSource & {
+      width: number;
+      height: number;
+    };
+    const width = source.width;
+    const height = source.height;
+    const target = this.textures.createCanvas(HEALER_WATER_BRIDGE_RUNTIME_TEX, width, height);
+    if (!target) return;
+
+    const context = target.getContext();
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+
+    // Some mobile/WebGL paths displayed the indexed PNG's transparent palette as opaque black.
+    // Rebuild it as a canvas RGBA texture and only clear edge-connected transparent/near-black pixels.
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    const visited = new Uint8Array(width * height);
+    const queue = new Int32Array(width * height);
+    let head = 0;
+    let tail = 0;
+
+    const isBackgroundCandidate = (index: number): boolean => {
+      const offset = index * 4;
+      const alpha = pixels[offset + 3];
+      return alpha <= 8 || (
+        pixels[offset] <= 14
+        && pixels[offset + 1] <= 14
+        && pixels[offset + 2] <= 14
+      );
+    };
+
+    const enqueue = (x: number, y: number): void => {
+      if (x < 0 || x >= width || y < 0 || y >= height) return;
+      const index = y * width + x;
+      if (visited[index] || !isBackgroundCandidate(index)) return;
+      visited[index] = 1;
+      queue[tail] = index;
+      tail += 1;
+    };
+
+    for (let x = 0; x < width; x += 1) {
+      enqueue(x, 0);
+      enqueue(x, height - 1);
+    }
+    for (let y = 0; y < height; y += 1) {
+      enqueue(0, y);
+      enqueue(width - 1, y);
+    }
+
+    while (head < tail) {
+      const index = queue[head];
+      head += 1;
+      const offset = index * 4;
+      pixels[offset] = 0;
+      pixels[offset + 1] = 0;
+      pixels[offset + 2] = 0;
+      pixels[offset + 3] = 0;
+
+      const x = index % width;
+      const y = Math.floor(index / width);
+      enqueue(x - 1, y);
+      enqueue(x + 1, y);
+      enqueue(x, y - 1);
+      enqueue(x, y + 1);
+    }
+
+    context.putImageData(imageData, 0, 0);
+    target.refresh();
   }
 
   private replaceHealerWaterBridgeBlockout(): void {
@@ -35,7 +114,10 @@ export class VillageTopologyQcA4Scene extends VillageTopologyQcScene {
       }
     }
 
-    const waterBridge = this.add.image(325, 1455, HEALER_WATER_BRIDGE_TEX)
+    const texture = this.textures.exists(HEALER_WATER_BRIDGE_RUNTIME_TEX)
+      ? HEALER_WATER_BRIDGE_RUNTIME_TEX
+      : HEALER_WATER_BRIDGE_TEX;
+    const waterBridge = this.add.image(325, 1455, texture)
       .setOrigin(0.5)
       .setDisplaySize(500, 281)
       .setDepth(1320);
