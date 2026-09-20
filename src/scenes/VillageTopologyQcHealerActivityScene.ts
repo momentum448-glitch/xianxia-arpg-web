@@ -51,15 +51,16 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
       }
     }
 
-    // One compact herb garden plus one drying/work cluster. Keep both off the main spine and below hero-house hierarchy.
-    const herbBedX = 575;
-    const herbBedY = 1450;
+    // Phone QC composition revise: the herb garden belongs on the greener left edge of the healer house,
+    // not on the right side of the water pocket. Preserve accepted art, scale and mask; move position only.
+    const herbBedX = 125;
+    const herbBedY = 1335;
     const herbBedWidth = 205;
     const herbBedHeight = 126;
     const herbBed = this.add.image(herbBedX, herbBedY, HEALER_HERB_TEX)
       .setOrigin(0.5)
       .setDisplaySize(herbBedWidth, herbBedHeight)
-      .setDepth(1450)
+      .setDepth(herbBedY)
       .setAlpha(0.95);
 
     // The source proof contains a pale rectangular matte plus two detached edge fragments.
@@ -114,10 +115,10 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
     const { hudLayer, guideLayer } = this.activityLayers();
 
     const replacements = new Map<string, string>([
-      ['V2-A · HEALER WATER + BRIDGE A4 TUNE', 'V2-A · HEALER ACTIVITY KIT A'],
-      ['ground/path locked · A4 12% smaller · softer hierarchy', 'water/bridge locked · herb garden + drying/work proof'],
-      ['QC: 0.65x cụm nước bớt hút mắt? 1.0x cầu/nước vẫn đủ rõ?', 'QC: 0.65x pocket có quá rối? 1.0x luống + giàn phơi có đọc rõ?'],
-      ['NƯỚC + CẦU: A4 TUNE · RUỘNG: BLOCKOUT', 'NƯỚC + CẦU: PASS · HEALER ACTIVITY: PROOF'],
+      ['V2-A · HEALER WATER + BRIDGE A4 TUNE', 'V2-A · HEALER ACTIVITY KIT A · GARDEN POS'],
+      ['ground/path locked · A4 12% smaller · softer hierarchy', 'water/bridge locked · herb garden moved to healer-left edge'],
+      ['QC: 0.65x cụm nước bớt hút mắt? 1.0x cầu/nước vẫn đủ rõ?', 'QC: vườn bên trái nhà Dược Sư đã hợp lý? 0.65x pocket còn thoáng?'],
+      ['NƯỚC + CẦU: A4 TUNE · RUỘNG: BLOCKOUT', 'NƯỚC + CẦU: PASS · HEALER ACTIVITY: POSITION REVISE'],
     ]);
 
     const visit = (child: Phaser.GameObjects.GameObject): void => {
