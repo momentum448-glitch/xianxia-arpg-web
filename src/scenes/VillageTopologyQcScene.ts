@@ -5,6 +5,7 @@ const WORLD_WIDTH = 1600;
 const WORLD_HEIGHT = 1800;
 const VIEW_WIDTH = 720;
 const VIEW_HEIGHT = 1280;
+const ZOOM_LEVELS = [1, 0.8, 0.65] as const;
 
 const TEX = {
   houseThatchA: 'qc-house-thatch-a',
@@ -30,9 +31,13 @@ interface Point {
 export class VillageTopologyQcScene extends Phaser.Scene {
   private contextLayer!: Phaser.GameObjects.Container;
   private guideLayer!: Phaser.GameObjects.Container;
+  private hudLayer!: Phaser.GameObjects.Container;
   private player!: Phaser.GameObjects.Container;
+  private uiCamera!: Phaser.Cameras.Scene2D.Camera;
   private guideButtonLabel!: Phaser.GameObjects.Text;
+  private zoomButtonLabel!: Phaser.GameObjects.Text;
   private guidesVisible = true;
+  private zoomIndex = 0;
   private moveX = 0;
   private moveY = 0;
   private joystickPointerId: number | null = null;
@@ -71,12 +76,14 @@ export class VillageTopologyQcScene extends Phaser.Scene {
 
     this.contextLayer = this.add.container(0, 0);
     this.guideLayer = this.add.container(0, 0);
+    this.hudLayer = this.add.container(0, 0);
 
     this.prepareTreeRuntimeTexture();
     this.buildContext();
     this.createPlayerMarker();
     this.createHud();
     this.createJoystick();
+    this.configureUiCamera();
     this.bindInput();
 
     this.cameras.main.startFollow(this.player, true, 0.14, 0.14);
@@ -211,7 +218,6 @@ export class VillageTopologyQcScene extends Phaser.Scene {
   }
 
   private addResidentialContext(): void {
-    // Partial edge houses imply the village continues beyond the authored slice.
     this.addAsset(TEX.houseThatchA, 75, 1750, 292, false, 0.84);
     this.addAsset(TEX.houseTileA, 1535, 1665, 310, true, 0.82);
     this.addAsset(this.treeTexture(), 120, 1540, 155, false, 0.74);
@@ -377,70 +383,100 @@ export class VillageTopologyQcScene extends Phaser.Scene {
   }
 
   private createHud(): void {
-    this.add.rectangle(VIEW_WIDTH / 2, 88, VIEW_WIDTH - 24, 152, 0xeee5cf, 0.95)
+    const panel = this.add.rectangle(VIEW_WIDTH / 2, 106, VIEW_WIDTH - 24, 188, 0xeee5cf, 0.95)
       .setStrokeStyle(2, 0x6b675b, 0.38)
-      .setScrollFactor(0)
       .setDepth(30000);
-
-    this.add.text(24, 20, 'V2-A · CONTEXT RESTORE', {
+    const title = this.add.text(24, 20, 'V2-A · CONTEXT RESTORE', {
       fontFamily: 'serif',
       fontSize: '25px',
       color: '#2b2b27',
       fontStyle: 'bold',
-    }).setScrollFactor(0).setDepth(30001);
-
-    this.add.text(24, 56, 'accepted art · 1600 × 1800 · không asset mới', {
+    }).setDepth(30001);
+    const subtitle = this.add.text(24, 56, 'accepted art · 1600 × 1800 · không asset mới', {
       fontFamily: 'sans-serif',
       fontSize: '16px',
       color: '#5a554b',
-    }).setScrollFactor(0).setDepth(30001);
-
-    const instruction = this.add.text(24, 89, 'QC: massing có còn đọc tốt khi art thật quay lại không?', {
+    }).setDepth(30001);
+    const instruction = this.add.text(24, 89, 'QC: massing + toàn cảnh · nút ZOOM chỉ dùng khi test', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
       color: '#625a4e',
       wordWrap: { width: 430 },
-    }).setScrollFactor(0).setDepth(30001);
+    }).setDepth(30001);
 
-    const button = this.add.rectangle(VIEW_WIDTH - 112, 90, 188, 70, 0x46554c, 0.96)
+    const guideButton = this.add.rectangle(VIEW_WIDTH - 112, 69, 188, 52, 0x46554c, 0.96)
       .setStrokeStyle(2, 0xe7d6b7, 0.72)
-      .setScrollFactor(0)
       .setDepth(30002)
       .setInteractive({ useHandCursor: true });
-
-    this.guideButtonLabel = this.add.text(VIEW_WIDTH - 112, 90, 'ẨN NHÃN', {
+    this.guideButtonLabel = this.add.text(VIEW_WIDTH - 112, 69, 'ẨN NHÃN', {
       fontFamily: 'sans-serif',
-      fontSize: '17px',
+      fontSize: '16px',
       color: '#fff4d8',
       fontStyle: 'bold',
       align: 'center',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(30003);
+    }).setOrigin(0.5).setDepth(30003);
 
-    button.on('pointerdown', () => {
+    const zoomButton = this.add.rectangle(VIEW_WIDTH - 112, 139, 188, 52, 0x5b4b39, 0.96)
+      .setStrokeStyle(2, 0xe7d6b7, 0.72)
+      .setDepth(30002)
+      .setInteractive({ useHandCursor: true });
+    this.zoomButtonLabel = this.add.text(VIEW_WIDTH - 112, 139, 'ZOOM · 1.0x', {
+      fontFamily: 'sans-serif',
+      fontSize: '16px',
+      color: '#fff4d8',
+      fontStyle: 'bold',
+      align: 'center',
+    }).setOrigin(0.5).setDepth(30003);
+
+    guideButton.on('pointerdown', () => {
       this.guidesVisible = !this.guidesVisible;
       this.guideLayer.setVisible(this.guidesVisible);
       this.guideButtonLabel.setText(this.guidesVisible ? 'ẨN NHÃN' : 'HIỆN NHÃN');
     });
+    zoomButton.on('pointerdown', () => this.cycleZoom());
 
-    instruction.setInteractive();
+    this.hudLayer.add([
+      panel,
+      title,
+      subtitle,
+      instruction,
+      guideButton,
+      this.guideButtonLabel,
+      zoomButton,
+      this.zoomButtonLabel,
+    ]);
   }
 
   private createJoystick(): void {
-    this.add.circle(this.joystickX, this.joystickY, 86, 0x4f5a51, 0.08)
+    const ring = this.add.circle(this.joystickX, this.joystickY, 86, 0x4f5a51, 0.08)
       .setStrokeStyle(3, 0x4f5a51, 0.48)
-      .setScrollFactor(0)
       .setDepth(30005);
     this.joystickNub = this.add.circle(this.joystickX, this.joystickY, 38, 0x4f5a51, 0.42)
-      .setScrollFactor(0)
       .setDepth(30006);
-    this.add.text(this.joystickX, this.joystickY + 108, 'DI CHUYỂN', {
+    const label = this.add.text(this.joystickX, this.joystickY + 108, 'DI CHUYỂN', {
       fontFamily: 'sans-serif',
       fontSize: '14px',
       color: '#514c43',
       fontStyle: 'bold',
       backgroundColor: '#eee5cfcc',
       padding: { x: 5, y: 3 },
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(30006);
+    }).setOrigin(0.5).setDepth(30006);
+    this.hudLayer.add([ring, this.joystickNub, label]);
+  }
+
+  private configureUiCamera(): void {
+    this.uiCamera = this.cameras.add(0, 0, VIEW_WIDTH, VIEW_HEIGHT, false, 'qc-ui');
+    this.uiCamera.setBackgroundColor('rgba(0,0,0,0)');
+    this.cameras.main.ignore(this.hudLayer);
+    this.uiCamera.ignore([this.contextLayer, this.guideLayer, this.player]);
+  }
+
+  private cycleZoom(): void {
+    this.zoomIndex = (this.zoomIndex + 1) % ZOOM_LEVELS.length;
+    const zoom = ZOOM_LEVELS[this.zoomIndex];
+    this.cameras.main.setZoom(zoom);
+    const label = zoom === 1 ? '1.0x' : zoom === 0.8 ? '0.8x' : '0.65x';
+    this.zoomButtonLabel.setText(`ZOOM · ${label}`);
   }
 
   private bindInput(): void {
