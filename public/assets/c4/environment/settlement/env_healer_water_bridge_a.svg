@@ -1,37 +1,110 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420">
   <defs>
     <linearGradient id="water" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#527f82" stop-opacity=".88"/>
-      <stop offset=".5" stop-color="#739a95" stop-opacity=".9"/>
-      <stop offset="1" stop-color="#496f75" stop-opacity=".84"/>
+      <stop offset="0" stop-color="#5f8580" stop-opacity=".82"/>
+      <stop offset=".52" stop-color="#789a8f" stop-opacity=".84"/>
+      <stop offset="1" stop-color="#587873" stop-opacity=".78"/>
+    </linearGradient>
+    <linearGradient id="mud" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#96866b" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#b2a382" stop-opacity=".08"/>
     </linearGradient>
     <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#a77f50"/>
-      <stop offset=".55" stop-color="#85613e"/>
-      <stop offset="1" stop-color="#6c4e36"/>
+      <stop offset="0" stop-color="#8a6847"/>
+      <stop offset=".55" stop-color="#70533b"/>
+      <stop offset="1" stop-color="#5c4534"/>
     </linearGradient>
-    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.6"/></filter>
-    <filter id="tiny" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".7"/></filter>
+    <filter id="soft" x="-12%" y="-12%" width="124%" height="124%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="edge" x="-12%" y="-12%" width="124%" height="124%"><feGaussianBlur stdDeviation="1.2"/></filter>
   </defs>
-  <path d="M24 254 C62 190 126 166 216 154 C316 141 410 119 505 96 C555 84 605 88 629 103 C638 129 631 162 606 182 C549 193 493 207 432 230 C348 261 268 294 185 327 C123 351 67 364 30 347 C18 322 17 281 24 254Z" fill="#8f8a69" opacity=".2" filter="url(#soft)"/>
-  <path d="M36 251 C76 202 139 179 220 167 C311 154 405 132 503 109 C549 98 593 98 611 110 C617 129 612 151 600 168 C547 180 490 194 428 218 C349 249 267 282 170 318 C111 340 65 346 40 329 C31 309 31 275 36 251Z" fill="url(#water)" stroke="#496d6f" stroke-opacity=".46" stroke-width="3"/>
-  <g fill="none" stroke-linecap="round" filter="url(#tiny)">
-    <path d="M74 271 C145 250 203 242 278 218" stroke="#d8d7b5" stroke-opacity=".35" stroke-width="4"/>
-    <path d="M130 303 C214 274 300 251 387 213" stroke="#c4c9aa" stroke-opacity=".26" stroke-width="3"/>
-    <path d="M336 195 C415 166 482 147 560 133" stroke="#d6d9c0" stroke-opacity=".3" stroke-width="3"/>
-    <path d="M94 229 C161 214 228 205 303 186" stroke="#345e67" stroke-opacity=".28" stroke-width="5"/>
+
+  <!-- soft soil/wet-bank transition -->
+  <path d="M28 246 C58 209 92 191 129 183 C175 172 205 176 246 163 C289 149 327 132 366 127 C406 121 433 135 467 122 C509 107 550 92 591 101 C620 107 631 128 620 153 C607 183 574 190 544 203 C512 216 486 240 454 249 C416 260 381 252 347 266 C308 282 284 307 248 324 C207 344 175 343 137 354 C92 367 48 360 29 336 C11 313 13 273 28 246Z" fill="url(#mud)" filter="url(#soft)"/>
+
+  <!-- irregular water body -->
+  <path d="M48 251 C80 218 116 203 158 198 C197 193 221 196 256 184 C296 170 328 149 366 144 C404 139 428 151 461 140 C499 127 540 111 579 116 C602 119 613 136 604 153 C593 174 566 179 539 190 C507 204 483 226 452 235 C415 246 383 237 349 251 C310 267 282 291 247 308 C207 327 174 327 136 339 C100 350 66 346 49 326 C34 308 35 268 48 251Z" fill="url(#water)"/>
+
+  <!-- broken, soft edge washes -->
+  <g fill="#7a866c" opacity=".18" filter="url(#edge)">
+    <ellipse cx="104" cy="213" rx="74" ry="24" transform="rotate(-18 104 213)"/>
+    <ellipse cx="204" cy="190" rx="62" ry="19" transform="rotate(-8 204 190)"/>
+    <ellipse cx="390" cy="143" rx="70" ry="22" transform="rotate(7 390 143)"/>
+    <ellipse cx="532" cy="147" rx="64" ry="20" transform="rotate(-10 532 147)"/>
+    <ellipse cx="447" cy="247" rx="72" ry="20" transform="rotate(-5 447 247)"/>
+    <ellipse cx="292" cy="302" rx="75" ry="20" transform="rotate(-12 292 302)"/>
+    <ellipse cx="112" cy="341" rx="66" ry="20" transform="rotate(3 112 341)"/>
   </g>
-  <g stroke="#5d6557" stroke-width="2">
-    <ellipse cx="70" cy="205" rx="21" ry="13" fill="#747a66"/><ellipse cx="128" cy="178" rx="18" ry="12" fill="#89876d"/><ellipse cx="209" cy="162" rx="22" ry="14" fill="#737966"/><ellipse cx="302" cy="151" rx="18" ry="11" fill="#8c8b72"/><ellipse cx="405" cy="128" rx="24" ry="15" fill="#6e7868"/><ellipse cx="509" cy="109" rx="20" ry="13" fill="#898871"/><ellipse cx="595" cy="111" rx="18" ry="11" fill="#7b806b"/><ellipse cx="596" cy="176" rx="18" ry="11" fill="#737968"/><ellipse cx="547" cy="188" rx="20" ry="12" fill="#8d8b70"/><ellipse cx="476" cy="205" rx="18" ry="11" fill="#717868"/><ellipse cx="406" cy="231" rx="19" ry="12" fill="#85856e"/><ellipse cx="331" cy="255" rx="18" ry="11" fill="#777c69"/><ellipse cx="248" cy="289" rx="20" ry="12" fill="#8c8a70"/><ellipse cx="168" cy="320" rx="18" ry="11" fill="#727966"/><ellipse cx="91" cy="341" rx="17" ry="10" fill="#88876f"/><ellipse cx="44" cy="329" rx="15" ry="10" fill="#707866"/>
+
+  <!-- subtle water movement -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M82 279 C145 258 196 253 258 232" stroke="#d8d6b7" stroke-opacity=".24" stroke-width="3"/>
+    <path d="M153 307 C224 286 294 265 359 235" stroke="#d9d8bc" stroke-opacity=".18" stroke-width="2.5"/>
+    <path d="M339 193 C410 168 469 152 544 137" stroke="#e2dec2" stroke-opacity=".2" stroke-width="2.5"/>
+    <path d="M114 237 C172 225 228 215 284 198" stroke="#3f6969" stroke-opacity=".18" stroke-width="4"/>
   </g>
-  <g stroke-linecap="round" fill="none"><g stroke="#64754f" stroke-width="2" opacity=".82"><path d="M55 217 l-9 -20 M63 215 l3 -22 M75 218 l12 -18 M117 191 l-8 -24 M131 191 l5 -24 M145 190 l13 -20 M196 176 l-7 -24 M211 177 l5 -25 M226 176 l14 -21 M392 146 l-5 -26 M407 146 l7 -25 M423 144 l13 -19 M493 124 l-8 -21 M510 124 l6 -22 M526 122 l14 -18 M562 191 l-10 18 M548 193 l0 22 M532 197 l-11 17 M416 242 l-8 21 M399 248 l1 22 M380 253 l12 17 M266 302 l-8 21 M248 308 l2 20 M231 315 l12 16"/></g></g>
-  <g fill="#55775c" stroke="#496755" stroke-width="1.4" opacity=".9"><ellipse cx="117" cy="258" rx="16" ry="8"/><ellipse cx="151" cy="278" rx="13" ry="7"/><ellipse cx="268" cy="236" rx="12" ry="6"/><ellipse cx="475" cy="159" rx="14" ry="7"/><ellipse cx="505" cy="151" rx="11" ry="6"/></g>
-  <g fill="#d7aaa5" opacity=".95"><circle cx="130" cy="251" r="4"/><circle cx="125" cy="252" r="3"/><circle cx="135" cy="253" r="3"/><circle cx="488" cy="158" r="4"/><circle cx="484" cy="160" r="3"/><circle cx="492" cy="161" r="3"/></g>
-  <path d="M224 229 L386 184 L421 228 L253 270Z" fill="#4f4535" opacity=".18" filter="url(#soft)"/>
-  <path d="M222 204 L384 164 L422 214 L252 259Z" fill="url(#wood)" stroke="#5f4632" stroke-width="3"/>
-  <g stroke="#5f4632" stroke-width="2" opacity=".9"><path d="M225 210 L390 170"/><path d="M228 216 L394 176"/><path d="M232 222 L398 181"/><path d="M235 229 L403 188"/><path d="M239 235 L407 194"/><path d="M242 241 L411 201"/><path d="M246 248 L416 207"/><path d="M249 254 L420 213"/></g>
-  <g stroke="#b98d58" stroke-width="1" opacity=".45"><path d="M244 216 l37 -9 M296 201 l49 -12 M268 239 l52 -13 M333 222 l53 -13 M360 187 l22 -5"/></g>
-  <g fill="#65482f" stroke="#4e3829" stroke-width="2"><rect x="220" y="176" width="13" height="39"/><rect x="377" y="136" width="13" height="39"/><rect x="247" y="237" width="13" height="39"/><rect x="416" y="191" width="13" height="39"/></g>
-  <g fill="#aa7c4a" opacity=".7"><rect x="223" y="179" width="3" height="32"/><rect x="380" y="139" width="3" height="32"/><rect x="250" y="240" width="3" height="32"/><rect x="419" y="194" width="3" height="32"/></g>
-  <g fill="none" stroke-linecap="round"><path d="M227 180 L383 141" stroke="#60442e" stroke-width="6"/><path d="M254 241 L423 196" stroke="#60442e" stroke-width="6"/><path d="M229 187 L385 148" stroke="#8d643e" stroke-width="2.5"/><path d="M256 248 L425 203" stroke="#8d643e" stroke-width="2.5"/></g>
+
+  <!-- uneven bank stones, intentionally sparse -->
+  <g stroke="#5f6355" stroke-width="1.6">
+    <ellipse cx="72" cy="224" rx="17" ry="11" fill="#777762" transform="rotate(-16 72 224)"/>
+    <ellipse cx="139" cy="196" rx="13" ry="9" fill="#88816a" transform="rotate(7 139 196)"/>
+    <ellipse cx="223" cy="181" rx="19" ry="12" fill="#716f60" transform="rotate(-7 223 181)"/>
+    <ellipse cx="333" cy="151" rx="14" ry="9" fill="#8a8069" transform="rotate(10 333 151)"/>
+    <ellipse cx="442" cy="143" rx="20" ry="12" fill="#6f7461" transform="rotate(-5 442 143)"/>
+    <ellipse cx="566" cy="124" rx="14" ry="10" fill="#8b8169" transform="rotate(8 566 124)"/>
+    <ellipse cx="575" cy="178" rx="18" ry="10" fill="#737462" transform="rotate(-11 575 178)"/>
+    <ellipse cx="487" cy="230" rx="14" ry="9" fill="#85806a" transform="rotate(12 487 230)"/>
+    <ellipse cx="369" cy="257" rx="16" ry="10" fill="#747565" transform="rotate(-8 369 257)"/>
+    <ellipse cx="267" cy="305" rx="18" ry="11" fill="#8c826d" transform="rotate(5 267 305)"/>
+    <ellipse cx="149" cy="338" rx="14" ry="9" fill="#707363" transform="rotate(-6 149 338)"/>
+    <ellipse cx="70" cy="331" rx="16" ry="10" fill="#85816c" transform="rotate(11 70 331)"/>
+  </g>
+
+  <!-- reeds/grass clusters, varied size and spacing -->
+  <g fill="none" stroke-linecap="round">
+    <g stroke="#67744f" stroke-width="2" opacity=".82">
+      <path d="M79 236 l-8 -28 M83 236 l4 -31 M91 235 l14 -24 M104 234 l3 -22 M116 229 l13 -20"/>
+      <path d="M162 204 l-4 -25 M170 205 l7 -28 M177 206 l15 -22"/>
+      <path d="M415 159 l-6 -28 M423 158 l7 -27 M431 159 l16 -20"/>
+      <path d="M514 151 l-7 -25 M521 152 l5 -27 M529 154 l15 -20"/>
+      <path d="M505 239 l-5 25 M495 242 l-13 22 M516 239 l7 27"/>
+      <path d="M391 269 l-8 24 M380 274 l-15 20 M399 267 l5 26"/>
+      <path d="M286 316 l-9 25 M274 319 l-15 20 M294 313 l5 25"/>
+      <path d="M123 348 l-8 23 M111 348 l-15 17 M132 345 l4 22"/>
+    </g>
+    <g stroke="#8e8f61" stroke-width="1.4" opacity=".55">
+      <path d="M98 243 l-2 -16 M113 238 l8 -14 M454 159 l3 -16 M478 150 l8 -13 M458 246 l-4 15 M230 319 l5 16"/>
+    </g>
+  </g>
+
+  <!-- lily pads, few only -->
+  <g fill="#5d7658" stroke="#4e654f" stroke-width="1" opacity=".82">
+    <ellipse cx="141" cy="271" rx="13" ry="7"/><ellipse cx="177" cy="290" rx="10" ry="6"/><ellipse cx="301" cy="244" rx="11" ry="6"/>
+  </g>
+  <g fill="#d3a29f" opacity=".82"><circle cx="151" cy="267" r="3.5"/><circle cx="155" cy="269" r="2.5"/></g>
+
+  <!-- bridge shadow -->
+  <path d="M236 239 L385 203 L416 236 L263 278Z" fill="#4e4739" opacity=".13" filter="url(#soft)"/>
+
+  <!-- rougher, quieter wood bridge -->
+  <path d="M232 214 L382 179 L411 216 L260 253Z" fill="url(#wood)" stroke="#5a4635" stroke-width="2.4"/>
+  <g stroke="#574535" stroke-width="1.6" opacity=".78">
+    <path d="M237 218 L386 184"/><path d="M241 224 L391 190"/><path d="M245 230 L395 196"/><path d="M249 236 L400 202"/><path d="M253 242 L404 208"/><path d="M257 248 L408 214"/>
+  </g>
+  <!-- uneven plank seams -->
+  <g stroke="#a17a52" stroke-width="1" opacity=".25">
+    <path d="M267 219 l31 -7"/><path d="M312 208 l24 -6"/><path d="M346 199 l29 -7"/><path d="M281 241 l27 -7"/><path d="M327 230 l33 -8"/>
+  </g>
+  <!-- weathered bridge posts, no clean rail silhouette -->
+  <g fill="#624b37" stroke="#4e3d31" stroke-width="1.7">
+    <rect x="230" y="194" width="10" height="31" transform="rotate(-3 235 210)"/>
+    <rect x="373" y="160" width="10" height="31" transform="rotate(4 378 176)"/>
+    <rect x="256" y="241" width="10" height="31" transform="rotate(-4 261 257)"/>
+    <rect x="404" y="204" width="10" height="31" transform="rotate(3 409 220)"/>
+  </g>
+  <g fill="#947050" opacity=".46"><rect x="233" y="198" width="2" height="23"/><rect x="376" y="164" width="2" height="23"/><rect x="259" y="245" width="2" height="23"/><rect x="407" y="208" width="2" height="23"/></g>
+
+  <!-- contact grass around bridge feet -->
+  <g fill="none" stroke="#66734f" stroke-width="1.6" opacity=".7" stroke-linecap="round">
+    <path d="M228 225 l-9 11 M232 225 l0 13 M240 225 l8 10 M373 190 l-7 10 M382 188 l6 10 M254 273 l-8 10 M263 270 l3 12 M410 236 l-7 11 M416 235 l5 10"/>
+  </g>
 </svg>
