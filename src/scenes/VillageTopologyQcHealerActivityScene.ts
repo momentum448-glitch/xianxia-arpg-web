@@ -51,18 +51,18 @@ export class VillageTopologyQcHealerActivityScene extends VillageTopologyQcA4Sce
       }
     }
 
-    // Keep the proof compact and off the main spine: one readable herb garden plus one small drying/work cluster.
+    // One compact herb garden plus one drying/work cluster. Keep both off the main spine and below hero-house hierarchy.
     const herbBed = this.add.image(575, 1450, HEALER_HERB_TEX)
       .setOrigin(0.5)
       .setDisplaySize(205, 126)
       .setDepth(1450)
-      .setAlpha(0.96);
+      .setAlpha(0.95);
 
     const dryingProps = this.add.image(548, 1340, HEALER_DRYING_TEX)
       .setOrigin(0.5)
       .setDisplaySize(112, 124)
       .setDepth(1340)
-      .setAlpha(0.96);
+      .setAlpha(0.95);
 
     contextLayer.add([herbBed, dryingProps]);
   }
