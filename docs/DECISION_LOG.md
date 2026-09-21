@@ -56,6 +56,8 @@ Rules:
 | 2026-09-20 | V2-A Ground/Path P0 is `PHONE_PASS` after final Phone QC at both 0.65x and 1.0x. | Supersedes the pending status above. At 0.65x the road no longer dominates or reads as a dark ribbon/groove; at 1.0x the Healer branch is clear without becoming a second main road. Preserve this layer unless a new concrete Phone-QC problem appears. Next production proof is `ENV-HEALER-WATER-BRIDGE-A` only. |
 | 2026-09-20 | `ENV-HEALER-WATER-BRIDGE-A` is `PHONE_PASS` on tuned runtime build `6fd3477`. | Bridge logic, 1.0x scale/readability, and 0.65x hierarchy all passed. Preserve current WebP + runtime presentation. |
 | 2026-09-20 | Next production proof is `ENV-HEALER-ACTIVITY-KIT-A`: one compact herb garden plus one small drying/work cluster only. | Keep field-edge kit deferred; do not touch topology/path/house/gameplay. |
+| 2026-09-21 | `ENV-HEALER-ACTIVITY-KIT-A` is `PHONE_PASS` on reviewed build `c45288c`. Final herb garden center is `(125,1335)` at display `205 × 126` on the green left edge of the Healer house; drying/work cluster remains `(548,1340)` at `112 × 124`; the herb runtime geometry mask is part of the accepted presentation. | Supersedes the earlier pending proof state and the earlier right-side garden placement. Preserve art, mask, scale and placement unless a new Phone-QC issue appears. |
+| 2026-09-21 | Next production proof is `ENV-FIELD-EDGE-KIT-A`, beginning with one humble agriculture-edge cluster only. | Prefer low cultivated rows / earthen boundary language; do not create another hero landmark, new water feature, dense prop pile, topology/path/house/gameplay change, or broad field expansion before the minimal proof passes. |
 
 ## Current locked values at a glance
 
@@ -75,6 +77,7 @@ Rules:
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.
 - Macro QC: V2-A topology PASS, spatial massing PASS, accepted-art CONTEXT PASS, QC zoom PASS.
 - Ground/path P0: `PHONE_PASS`.
-- `ENV-HEALER-WATER-BRIDGE-A`: `PHONE_PASS` on build `6fd3477`.
+- `ENV-HEALER-WATER-BRIDGE-A`: `PHONE_PASS`.
+- `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production proof: `ENV-HEALER-ACTIVITY-KIT-A`, compact herb garden + drying/work cluster; field edge remains deferred.
+- Current production proof: `ENV-FIELD-EDGE-KIT-A`, one humble agriculture-edge cluster only before expansion.
