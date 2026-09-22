@@ -58,6 +58,9 @@ Rules:
 | 2026-09-20 | Next production proof is `ENV-HEALER-ACTIVITY-KIT-A`: one compact herb garden plus one small drying/work cluster only. | Keep field-edge kit deferred; do not touch topology/path/house/gameplay. |
 | 2026-09-21 | `ENV-HEALER-ACTIVITY-KIT-A` is `PHONE_PASS` on reviewed build `c45288c`. Final herb garden center is `(125,1335)` at display `205 × 126` on the green left edge of the Healer house; drying/work cluster remains `(548,1340)` at `112 × 124`; the herb runtime geometry mask is part of the accepted presentation. | Supersedes the earlier pending proof state and the earlier right-side garden placement. Preserve art, mask, scale and placement unless a new Phone-QC issue appears. |
 | 2026-09-21 | Next production proof is `ENV-FIELD-EDGE-KIT-A`, beginning with one humble agriculture-edge cluster only. | Prefer low cultivated rows / earthen boundary language; do not create another hero landmark, new water feature, dense prop pile, topology/path/house/gameplay change, or broad field expansion before the minimal proof passes. |
+| 2026-09-22 | `ENV-FIELD-EDGE-KIT-A` is rejected for production art quality; its regular tile-like rows/sticker feel failed 1.0x Phone QC. `ENV-FIELD-EDGE-KIT-B` supersedes it. | Do not restore A merely because it rendered technically. |
+| 2026-09-22 | `ENV-FIELD-EDGE-KIT-B` is `PHONE_PASS` on `BUILD de30ae7`. Canonical runtime file is `env_field_edge_kit_b.webp`, rendered directly as verified RGBA at center about `(1210,1620)`, display `320 × 180`, alpha `0.96`, depth `-14`. | Supersedes all temporary black-matte/canvas-cleanup variants. 1.0x painterly/agriculture read PASS; 0.65x hierarchy + southern-exit openness PASS. Preserve art, binary, footprint, scale and placement. |
+| 2026-09-22 | After Field Edge B PASS, do not automatically jump to NPC art or another environment kit. Run a structured discovery round to choose the next substantial production proof. | Preserves the earlier rule that placeholders alone do not determine production order. |
 
 ## Current locked values at a glance
 
@@ -79,5 +82,6 @@ Rules:
 - Ground/path P0: `PHONE_PASS`.
 - `ENV-HEALER-WATER-BRIDGE-A`: `PHONE_PASS`.
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
+- `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production proof: `ENV-FIELD-EDGE-KIT-A`, one humble agriculture-edge cluster only before expansion.
+- Current production action: structured discovery round to select the next proof. Do not assume NPC art or broad environment rollout is next.
