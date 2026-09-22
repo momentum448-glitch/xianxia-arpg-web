@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { C4_ASSETS } from './art/assetManifest';
-import { SETTLEMENT_GROUND_TEXTURES, SETTLEMENT_HOUSE_TEXTURES } from './environmentVisuals';
+import { SETTLEMENT_HOUSE_TEXTURES } from './environmentVisuals';
 import type { WorldZone } from './worldConfig';
 
 export const SETTLEMENT_V2A_TEXTURES = {
@@ -43,9 +43,10 @@ const GROUND_RUNTIME = {
 
 function removeLegacySettlementArt(scene: Phaser.Scene, zone: WorldZone): void {
   for (const child of [...scene.children.list]) {
-    const depth = child.depth;
+    const candidate = child as Phaser.GameObjects.GameObject & { depth?: number; y?: number };
+    const depth = candidate.depth ?? 0;
     if (depth >= 0 || depth <= -10) continue;
-    const y = 'y' in child && typeof child.y === 'number' ? child.y : Number.NEGATIVE_INFINITY;
+    const y = typeof candidate.y === 'number' ? candidate.y : Number.NEGATIVE_INFINITY;
     if (y >= zone.yMin - 4) child.destroy();
   }
 }
