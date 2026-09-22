@@ -1,4 +1,4 @@
-import { C4_ASSETS, c4AssetUrl } from '../game/art/assetManifest';
+import { c4AssetUrl } from '../game/art/assetManifest';
 import {
   promoteLockedSettlementV2A,
   SETTLEMENT_V2A_PRELOADS,
@@ -21,5 +21,3 @@ export class ProductionGameScene extends GameScene {
     promoteLockedSettlementV2A(this, settlement);
   }
 }
-
-void C4_ASSETS;
