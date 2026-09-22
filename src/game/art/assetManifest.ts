@@ -22,6 +22,10 @@ export const C4_ASSETS = {
   settlementMerchantGoodsB: 'assets/c4/environment/settlement/env_merchant_goods_b.png',
   settlementMerchantSignB: 'assets/c4/environment/settlement/env_merchant_sign_b.png',
   settlementMerchantStallB: 'assets/c4/environment/settlement/env_merchant_stall_b.png',
+  settlementHealerWaterBridgeA: 'assets/c4/environment/settlement/env_healer_water_bridge_a.webp',
+  settlementHealerHerbBedA: 'assets/c4/environment/settlement/env_healer_herb_bed_a.webp',
+  settlementHealerDryingPropsA: 'assets/c4/environment/settlement/env_healer_drying_props_a.webp',
+  settlementFieldEdgeKitB: 'assets/c4/environment/settlement/env_field_edge_kit_b.webp',
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;
