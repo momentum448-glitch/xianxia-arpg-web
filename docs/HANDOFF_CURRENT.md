@@ -1,19 +1,19 @@
 # Current Project Handoff
 
-Snapshot: 2026-09-21 09:10 (+07)
+Snapshot: 2026-09-22 10:00 (+07)
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Current milestone: C4.2 / Thanh Vân Thôn V2-A environment production
-Active continuity branch: `docs/healer-activity-phone-pass`
-Next production proof: `ENV-FIELD-EDGE-KIT-A`
+Continuity branch: `docs/field-edge-b-phone-pass`
+Next production decision: run a structured discovery round before choosing the next proof.
 
 ## Verified repo/runtime state
 
-- Current `main`: `c327fb2f0679cf1b4d300b1dd5342b337f4d5d8b`.
-- Current main tree is `a84762be793590cc0d18ee3e83d16e481e8fefb4`, the same runtime tree that was Phone-QC reviewed on build `c45288c`; the later administrative cleanup did not change game files.
-- PR #87 `Move healer herb garden to left pocket` is merged.
-- CI and GitHub Pages for the reviewed runtime passed.
-- V2-A topology, spatial massing, accepted-art context, QC zoom, Ground/Path P0, Healer Water+Bridge, and Healer Activity Kit are all Phone PASS.
+- Current reviewed runtime lineage: `de30ae78a631101fe5fbd4a393e17e70c29dfbb6` (`BUILD de30ae7`).
+- PR #95 `Repair Field Edge B runtime asset` merged.
+- PR #95 replaced the incomplete/corrupt Field Edge B runtime WebP with a verified RGBA WebP and removed the temporary runtime canvas-cleanup workaround.
+- CI PASS and GitHub Pages deploy PASS for `de30ae7`.
+- Phone QC at 1.0x + 0.65x confirms Field Edge B renders correctly with transparency and no black matte.
 - Live QC URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
 - Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
 
@@ -27,7 +27,9 @@ Next production proof: `ENV-FIELD-EDGE-KIT-A`
 - Selected footprint: **V2-A, 1600 × 1800**. V2-B 1600 × 3200 is rejected unless explicitly reopened.
 - North → south hierarchy: frontier threshold → Elder west → Merchant east → Healer west → residential/field fringe + route out.
 
-## Ground/path P0 — PHONE PASS
+## Locked environment layers
+
+### Ground/path P0 — PHONE PASS
 
 Accepted runtime kit:
 
@@ -40,7 +42,7 @@ public/assets/c4/environment/settlement/env_settlement_forecourt_a.png
 
 Do not reopen/regenerate without a new concrete Phone-QC problem.
 
-## Healer water + bridge — PHONE PASS
+### Healer water + bridge — PHONE PASS
 
 Asset ID: `ENV-HEALER-WATER-BRIDGE-A`
 
@@ -50,17 +52,9 @@ Canonical runtime asset:
 public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp
 ```
 
-Accepted presentation:
+Accepted presentation: display `440 × 247`, subtle warm tint + alpha `0.96`; bridge crosses the narrow water gap and connects both banks; 1.0x + 0.65x PASS.
 
-- display `440 × 247`;
-- subtle warm tint + alpha `0.96`;
-- bridge crosses the narrow water gap and connects both banks;
-- 1.0x scale/readability PASS;
-- 0.65x hierarchy PASS.
-
-Do not regenerate or retune without a new concrete Phone-QC problem.
-
-## Healer activity kit — PHONE PASS
+### Healer activity kit — PHONE PASS
 
 Asset ID: `ENV-HEALER-ACTIVITY-KIT-A`
 
@@ -77,43 +71,42 @@ Runtime scene:
 src/scenes/VillageTopologyQcHealerActivityScene.ts
 ```
 
-Accepted Phone-QC presentation on build `c45288c`:
+Accepted Phone-QC presentation:
 
 - herb garden display `205 × 126`, final center `(125, 1335)` on the green left edge of the Healer house;
-- herb asset keeps the runtime geometry mask that removes the source matte/edge fragments;
+- herb asset keeps the accepted runtime geometry mask;
 - drying/work cluster display `112 × 124`, center `(548, 1340)`;
-- 1.0x: garden placement and healer work-language read naturally;
-- 0.65x: pocket remains open, main spine remains clear, Healer house retains hierarchy;
-- water/bridge remains unchanged and PASS.
+- water/bridge unchanged;
+- 1.0x + 0.65x PASS.
 
-Decision: **`ENV-HEALER-ACTIVITY-KIT-A = PHONE_PASS`. Preserve art, placement, scale and runtime mask.**
+### Field edge kit — PHONE PASS
 
-## Next production proof — FIELD EDGE
+Asset ID: `ENV-FIELD-EDGE-KIT-B`
 
-Asset ID: `ENV-FIELD-EDGE-KIT-A`
+Canonical runtime asset:
 
-Purpose:
+```text
+public/assets/c4/environment/settlement/env_field_edge_kit_b.webp
+```
 
-- make the southern residential/agriculture fringe imply a larger working village beyond the authored slice;
-- add agricultural edge language without creating another hero landmark;
-- preserve the critical route, healer pocket, residential houses and gameplay space.
+Runtime scene:
 
-Proof-first scope:
+```text
+src/scenes/VillageTopologyQcFieldEdgeScene.ts
+```
 
-- one small representative field-edge cluster only;
-- low cultivated rows / earthen boundary language suitable for a poor frontier village;
-- no large building, no new water feature, no dense prop pile;
-- no topology/path/house/gameplay/hitbox/timing changes.
+Accepted Phone-QC presentation on `BUILD de30ae7`:
 
-Working assumption: start with a humble dry-field/vegetable-row edge treatment rather than a bright rice-paddy feature, because the water landmark is already owned by the Healer pocket. This is reversible and must be judged in runtime.
+- field-edge B uses the accepted southern footprint centered around `(1210, 1620)`;
+- display `320 × 180`, alpha `0.96`, ground depth `-14`;
+- direct render from the canonical RGBA WebP, no runtime canvas cleanup;
+- 1.0x: reads as humble cultivated rows / poor frontier agriculture and blends with painterly village art;
+- 0.65x: remains subordinate to houses/player and keeps the southern exit route visually open;
+- no black matte, no missing texture, no sticker-like hard rectangle.
 
-Pass gate:
+Decision: **`ENV-FIELD-EDGE-KIT-B = PHONE_PASS`. Preserve art, binary, footprint, scale and placement.**
 
-- isolated proof reads as agriculture at phone scale;
-- 1.0x: field edge feels grounded and subordinate to houses/player;
-- 0.65x: it extends the village visually without stealing hierarchy or blocking the exit route;
-- no sticker/matte artifacts;
-- Phone QC says PASS before expansion.
+`ENV-FIELD-EDGE-KIT-A` is rejected/superseded by B and must not be restored.
 
 ## Accepted assets that must not be regenerated
 
@@ -144,12 +137,13 @@ env_merchant_goods_b.png
 env_merchant_sign_b.png
 ```
 
-Healer:
+Healer + field:
 
 ```text
 env_healer_water_bridge_a.webp
 env_healer_herb_bed_a.webp
 env_healer_drying_props_a.webp
+env_field_edge_kit_b.webp
 ```
 
 ## Runtime/gameplay constraints that must not regress
@@ -172,20 +166,29 @@ env_healer_drying_props_a.webp
 - Regenerating DESIGN_PASS / PHONE_PASS art for layout/scale problems: prohibited.
 - Water/bridge PNG transport caused black/missing art; validated WebP runtime path fixed it.
 - Herb-bed corrupt WebP caused Phaser missing texture; fixed with valid WebP.
-- Herb-bed source matte/edge fragments are handled by the accepted runtime geometry mask; do not re-open unless Phone QC exposes a concrete issue.
+- Field Edge A looked tile-like and was rejected on art/style.
+- Early Field Edge B binary transport produced black matte; runtime flood-cleanup then removed the asset entirely on phone. Final fix was to replace the runtime file with a verified RGBA WebP and render it directly. Do not restore the runtime cleanup workaround.
 - Remote Desktop Commander: prohibited for this project workflow.
 
-## Exact next actions
+## Exact next action
+
+Do **not** automatically choose NPC art or another environment kit just because placeholders remain. The previous project decision explicitly requires discovery before selecting the next substantial proof.
+
+Next step:
 
 1. Merge this continuity sync.
-2. Create `proof/field-edge-kit-a` from verified current `main`.
-3. Make one isolated `ENV-FIELD-EDGE-KIT-A` representative asset/cluster, not a broad kit.
-4. Self-QC technical transparency/crop/style before runtime integration.
-5. Integrate only the smallest southern field-edge proof.
-6. CI/build/deploy.
-7. Phone QC at **1.0x first**, then **0.65x**.
-8. Expand only after PASS.
+2. Run one structured discovery round for the next production target.
+3. Compare only the highest-impact candidate directions (e.g. NPC identity, remaining settlement polish/promotion, or another zone) against current milestone goals and blockers.
+4. Choose one small reversible proof.
+5. Only then create the next branch and implement.
+
+## Pass gate for next selection
+
+- target solves a concrete milestone need;
+- does not reopen locked V2-A / ground / merchant / healer / field-edge decisions;
+- proof can be isolated and Phone-QC tested before expansion;
+- no broad batch generation while a core uncertainty remains.
 
 ## Resume sentence
 
-Resume after Healer Activity Phone PASS: preserve all accepted V2-A topology/ground/merchant/healer layers. `ENV-HEALER-ACTIVITY-KIT-A` is locked at herb garden `(125,1335)` + drying cluster `(548,1340)` on reviewed build `c45288c`. The next proof is `ENV-FIELD-EDGE-KIT-A`, one humble agriculture-edge cluster only; prove it in isolation and runtime before any broader field expansion.
+Resume after `ENV-FIELD-EDGE-KIT-B = PHONE_PASS` on `BUILD de30ae7`. Preserve all accepted V2-A topology, ground/path, Merchant Kit B, Healer Water+Bridge, Healer Activity Kit A and Field Edge Kit B. Do not restore Field Edge A or the temporary Field Edge runtime cleanup workaround. The next action is a structured discovery round to choose the next production proof, not automatic implementation.
