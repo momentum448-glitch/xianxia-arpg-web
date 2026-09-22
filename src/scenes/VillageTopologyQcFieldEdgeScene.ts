@@ -49,11 +49,11 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
       }
     }
 
-    // Phone QC showed an opaque near-black matte around B. Remove only dark pixels
-    // connected to the source-image edges so interior soil/shadow details survive.
-    this.removeEdgeConnectedDarkMatte(FIELD_EDGE_TEX);
+    // Keep the loader texture intact. Build a cleaned canvas under a separate key and render
+    // directly from that key so Phaser never has to remove/rename the source texture at runtime.
+    const renderTextureKey = this.buildEdgeConnectedDarkMatteCanvas(FIELD_EDGE_TEX);
 
-    const fieldEdge = this.add.image(1210, 1620, FIELD_EDGE_TEX)
+    const fieldEdge = this.add.image(1210, 1620, renderTextureKey)
       .setOrigin(0.5)
       .setDisplaySize(320, 180)
       .setDepth(-14)
@@ -62,7 +62,7 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
     contextLayer.add(fieldEdge);
   }
 
-  private removeEdgeConnectedDarkMatte(textureKey: string): void {
+  private buildEdgeConnectedDarkMatteCanvas(textureKey: string): string {
     const source = this.textures.get(textureKey).getSourceImage() as CanvasImageSource & {
       width: number;
       height: number;
@@ -72,7 +72,7 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
     const targetKey = `${textureKey}-alpha-fixed`;
     if (this.textures.exists(targetKey)) this.textures.remove(targetKey);
     const target = this.textures.createCanvas(targetKey, width, height);
-    if (!target) return;
+    if (!target) return textureKey;
 
     const context = target.getContext();
     context.clearRect(0, 0, width, height);
@@ -130,8 +130,7 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
 
     context.putImageData(imageData, 0, 0);
     target.refresh();
-    this.textures.remove(textureKey);
-    this.textures.renameTexture(targetKey, textureKey);
+    return targetKey;
   }
 
   private refreshFieldQcCopy(): void {
