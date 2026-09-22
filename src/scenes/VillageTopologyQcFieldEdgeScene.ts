@@ -49,6 +49,10 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
       }
     }
 
+    // Phone QC showed an opaque near-black matte around B. Remove only dark pixels
+    // connected to the source-image edges so interior soil/shadow details survive.
+    this.removeEdgeConnectedDarkMatte(FIELD_EDGE_TEX);
+
     const fieldEdge = this.add.image(1210, 1620, FIELD_EDGE_TEX)
       .setOrigin(0.5)
       .setDisplaySize(320, 180)
@@ -56,6 +60,78 @@ export class VillageTopologyQcFieldEdgeScene extends VillageTopologyQcHealerActi
       .setAlpha(0.96);
 
     contextLayer.add(fieldEdge);
+  }
+
+  private removeEdgeConnectedDarkMatte(textureKey: string): void {
+    const source = this.textures.get(textureKey).getSourceImage() as CanvasImageSource & {
+      width: number;
+      height: number;
+    };
+    const width = source.width;
+    const height = source.height;
+    const targetKey = `${textureKey}-alpha-fixed`;
+    if (this.textures.exists(targetKey)) this.textures.remove(targetKey);
+    const target = this.textures.createCanvas(targetKey, width, height);
+    if (!target) return;
+
+    const context = target.getContext();
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    const visited = new Uint8Array(width * height);
+    const queue = new Uint32Array(width * height);
+    let head = 0;
+    let tail = 0;
+
+    const isBackgroundCandidate = (index: number): boolean => {
+      const offset = index * 4;
+      const alpha = pixels[offset + 3];
+      if (alpha <= 8) return true;
+      return pixels[offset] <= 40
+        && pixels[offset + 1] <= 40
+        && pixels[offset + 2] <= 40;
+    };
+
+    const enqueue = (x: number, y: number): void => {
+      if (x < 0 || x >= width || y < 0 || y >= height) return;
+      const index = y * width + x;
+      if (visited[index] || !isBackgroundCandidate(index)) return;
+      visited[index] = 1;
+      queue[tail] = index;
+      tail += 1;
+    };
+
+    for (let x = 0; x < width; x += 1) {
+      enqueue(x, 0);
+      enqueue(x, height - 1);
+    }
+    for (let y = 0; y < height; y += 1) {
+      enqueue(0, y);
+      enqueue(width - 1, y);
+    }
+
+    while (head < tail) {
+      const index = queue[head];
+      head += 1;
+      const offset = index * 4;
+      pixels[offset] = 0;
+      pixels[offset + 1] = 0;
+      pixels[offset + 2] = 0;
+      pixels[offset + 3] = 0;
+
+      const x = index % width;
+      const y = Math.floor(index / width);
+      enqueue(x - 1, y);
+      enqueue(x + 1, y);
+      enqueue(x, y - 1);
+      enqueue(x, y + 1);
+    }
+
+    context.putImageData(imageData, 0, 0);
+    target.refresh();
+    this.textures.remove(textureKey);
+    this.textures.renameTexture(targetKey, textureKey);
   }
 
   private refreshFieldQcCopy(): void {
