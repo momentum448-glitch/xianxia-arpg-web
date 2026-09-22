@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import './style.css';
-import { VillageTopologyQcFieldEdgeScene } from './scenes/VillageTopologyQcFieldEdgeScene';
+import { CharacterSelectScene } from './scenes/CharacterSelectScene';
+import { ProductionGameScene } from './scenes/ProductionGameScene';
 
 const buildBadge = document.createElement('div');
 buildBadge.id = 'build-id';
@@ -13,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
   width: 720,
   height: 1280,
   backgroundColor: '#171914',
-  scene: [VillageTopologyQcFieldEdgeScene],
+  scene: [CharacterSelectScene, ProductionGameScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
