@@ -69,7 +69,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
 - Road rule: organic curved/irregular routes, not ruler-straight lanes.
 - Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
-- Next action: preserve topology/massing/ground-path; continue with the scoped `ENV-FIELD-EDGE-KIT-A` proof only.
+- Next action: preserve topology/massing/ground-path. Field Edge B has passed; next production target must be selected through structured discovery rather than assumed.
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
 
@@ -218,12 +218,34 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 ### ENV-FIELD-EDGE-KIT-A
 
-- Purpose: field/agriculture edge language that implies a larger village beyond the authored slice.
-- Status: `NOT_STARTED`; now the active next proof after Healer Activity PASS.
-- Proof-first target: one humble agricultural edge cluster only, using low cultivated rows / earthen boundary language appropriate to a poor frontier village.
-- Working assumption: prefer a dry-field/vegetable-row edge over a bright rice-paddy landmark so the Healer water pocket retains ownership of the water motif.
-- Must remain subordinate to houses/player and keep the southern exit route open.
-- Next action: create one isolated representative cluster, self-QC technical transparency/crop/style, then integrate the smallest runtime proof before any broader field expansion.
+- Purpose: original field/agriculture edge proof for the southern village fringe.
+- Status: `REVISE` / superseded by `ENV-FIELD-EDGE-KIT-B`.
+- Historical result: runtime technical repair eventually rendered, but Phone QC found the art too tile-like, regular and sticker-like at 1.0x.
+- Do not restore or promote A.
+- Next action: none; retain only as rejected lineage if needed for history.
+
+### ENV-FIELD-EDGE-KIT-B
+
+- Purpose: humble agricultural fringe that implies a larger working village beyond the authored V2-A slice without becoming a hero landmark.
+- Status: `PHONE_PASS` on `BUILD de30ae7` after 1.0x + 0.65x Phone QC on 2026-09-22.
+- Canonical runtime asset: `public/assets/c4/environment/settlement/env_field_edge_kit_b.webp`.
+- Runtime scene: `src/scenes/VillageTopologyQcFieldEdgeScene.ts`.
+- Accepted runtime presentation:
+  - center around `(1210, 1620)`;
+  - display `320 × 180`;
+  - alpha `0.96`;
+  - ground depth `-14`;
+  - direct render from the canonical RGBA WebP; no runtime canvas cleanup.
+- Phone QC:
+  - TECH: transparent runtime render PASS; no black rectangle, no missing texture, no lost art;
+  - 1.0x: irregular cultivated rows, broken earthen/grass edge and muted palette blend with the village painterly language;
+  - 0.65x: remains subordinate to houses/player and preserves the southern exit route and overall hierarchy.
+- Important lineage:
+  - an earlier B binary arrived with a black matte;
+  - an edge-connected runtime cleanup removed the matte but also caused the field art to disappear on phone;
+  - PR #95 replaced the incomplete runtime WebP with a verified RGBA file and removed the cleanup workaround;
+  - `BUILD de30ae7` is the reviewed PASS lineage.
+- Next action: preserve accepted art, binary, footprint, scale and placement. Do not regenerate/tune without a new concrete Phone-QC problem.
 
 ## 8. Current critical non-art architecture note
 
@@ -233,9 +255,9 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Status: active implementation lineage, not a visual asset.
 - Earlier file: `src/scenes/SettlementPropsProofScene.ts`.
 - Current V2-A environment QC file: `src/scenes/VillageTopologyQcScene.ts`.
-- Current accepted Healer proof layers: `VillageTopologyQcA4Scene.ts` → `VillageTopologyQcHealerActivityScene.ts`.
+- Current accepted Healer/field proof layers: `VillageTopologyQcA4Scene.ts` → `VillageTopologyQcHealerActivityScene.ts` → `VillageTopologyQcFieldEdgeScene.ts`.
 - Risk: accepted proof work eventually needs promotion back into normal `GameScene`/environment path rather than remaining permanent QC architecture.
-- Next action: finish the scoped V2-A field-edge proof gate first; promotion is a later VERIFY task.
+- Next action: selection of the next substantial target requires structured discovery; proof-scene promotion remains a VERIFY candidate, not an automatic next task.
 
 ## 9. QC camera utility
 
@@ -276,4 +298,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **create one isolated `ENV-FIELD-EDGE-KIT-A` proof, then integrate only the smallest southern field-edge cluster and Phone QC at 1.0x + 0.65x before expansion.**
+Current exact next action: **run a structured discovery round to choose the next production target. Do not automatically jump to NPC art, another environment kit, or broad rollout.**
