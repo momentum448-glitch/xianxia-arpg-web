@@ -47,9 +47,9 @@ const TOPOLOGY_REVISION_A = {
   elder: { dx: 120, dy: 20 },
   merchant: { dx: -150, dy: -75 },
   healer: { dx: 120, dy: -145 },
-  southWest: { dx: 130, dy: -185 },
-  southEast: { dx: -170, dy: -180 },
-  field: { dx: -125, dy: -175 },
+  southWest: { dx: 220, dy: -185 },
+  southEast: { dx: -260, dy: -180 },
+  field: { dx: -85, dy: -175 },
 } as const;
 
 function removeLegacySettlementArt(scene: Phaser.Scene, zone: WorldZone): void {
@@ -215,6 +215,8 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   scene.add.rectangle(800, top + 900, 1600, 1800, 0xe7dcc2, 1).setDepth(-9);
 
   const patches = [
+    // Northern threshold wash softens the empty approach without adding a new POI.
+    { x: 800, y: 330, w: 340, r: 0.01, flip: true, alpha: 0.17 },
     { x: 760, y: 500, w: 390, r: -0.02, flip: false, alpha: 0.22 },
     { x: 850, y: 810, w: 410, r: 0.03, flip: true, alpha: 0.25 },
     { x: 760, y: 1115, w: 395, r: -0.03, flip: false, alpha: 0.24 },
@@ -242,16 +244,18 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   }
 
   const branches = [
-    { texture: GROUND_RUNTIME.pathA, x: 615, y: 575, w: 215, r: 1.18, flip: true, alpha: 0.72 },
-    { texture: GROUND_RUNTIME.pathB, x: 955, y: 820, w: 190, r: -1.16, flip: false, alpha: 0.72 },
-    { texture: GROUND_RUNTIME.pathA, x: 615, y: 1145, w: 215, r: 1.15, flip: false, alpha: 0.78 },
-    { texture: GROUND_RUNTIME.pathB, x: 1005, y: 1430, w: 190, r: -1.15, flip: true, alpha: 0.64 },
+    // A1: make the three hero-pocket branches read clearly at 0.5x without becoming roads of equal rank.
+    { texture: GROUND_RUNTIME.pathA, x: 625, y: 575, w: 248, r: 1.18, flip: true, alpha: 0.80 },
+    { texture: GROUND_RUNTIME.pathB, x: 945, y: 820, w: 225, r: -1.16, flip: false, alpha: 0.80 },
+    { texture: GROUND_RUNTIME.pathA, x: 625, y: 1145, w: 248, r: 1.15, flip: false, alpha: 0.84 },
+    { texture: GROUND_RUNTIME.pathB, x: 995, y: 1430, w: 200, r: -1.15, flip: true, alpha: 0.64 },
   ] as const;
   for (const branch of branches) {
     addGroundImage(scene, branch.texture, branch.x, top + branch.y, branch.w, branch.r, branch.flip, branch.alpha);
   }
 
   const forecourts = [
+    { x: 800, y: 390, w: 245, r: 0.02, flip: true, alpha: 0.22 },
     { x: 470, y: 605, w: 295, r: -0.04, flip: false, alpha: 0.62 },
     { x: 1060, y: 915, w: 320, r: 0.04, flip: true, alpha: 0.72 },
     { x: 470, y: 1190, w: 310, r: -0.03, flip: true, alpha: 0.70 },
