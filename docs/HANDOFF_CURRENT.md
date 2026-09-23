@@ -1,15 +1,16 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
 Return condition: Work deploys Terrain Proof V2 and returns a QC link/build, or Work encounters a new high-impact ASK/design ambiguity and marks RETURN_TO_DESIGN.
 
 Snapshot: 2026-09-23
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current main: `f987be1c2edf39988534879d32ba7451fb67e671`
-Phone/runtime build: `BUILD 1823667`
-Relevant merged PR: #104 — Thanh Van Thon whole-map terrain proof V1
+Current main: `97516128e2f4938e6ba74810b59bd4acc64ea468`
+Phone/runtime build: V1 Phone-QC lineage `BUILD 1823667`; current code-equivalent Pages redeploy is `BUILD 9751612` (run #166 PASS)
+Relevant merged PRs: #104 — terrain proof V1; #106 — V1 REVISE and Work handoff
+Active execution branch: `work/terrain-proof-v2` (based on verified main `9751612`)
 Open relevant execution PR: none
 Unrelated old open PR: #4
 CI: PASS
