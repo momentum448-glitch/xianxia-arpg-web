@@ -67,6 +67,10 @@ Rules:
 | 2026-09-23 | Production QC utilities include world zoom presets `1.0x / 0.8x / 0.65x / 0.5x` plus `ẨN UI / HIỆN UI`, with QC controls persistent while gameplay UI/world labels are hidden. | QC-only utility; does not change production gameplay camera intent. |
 | 2026-09-23 | After whole-map topology PASS, the next substantial visual target is NPC identity, starting with one minimal proof before expanding to all settlement NPCs. | Preserve settlement topology, interaction coordinates/radii and gameplay logic during NPC art work. |
 
+| 2026-09-23 | Adopt a two-conversation operating model: the normal project chat is DESIGN / DECISION OWNER, while a Work conversation is WORK EXECUTION OWNER after decisions are locked. Only one conversation may own repo writes at a time; transfer through GitHub-backed handoff state, not chat memory. | Work self-resolves VERIFY items but must return new high-impact ASK/design ambiguities to the design chat. Use explicit transfer states: DESIGN_ACTIVE / WAIT_QC / READY_FOR_WORK / WORK_EXECUTING / RETURN_TO_DESIGN. |
+| 2026-09-23 | Whole-map Thanh Vân Thôn completion direction is locked as: preserve A1 spine/hero-pocket skeleton; stronger surrounding terrain composition is allowed; rural agriculture + one secondary stream; remove purposeless fence scatter while retaining functional fences; moderate ground realism; natural macro framing with an open playable interior. | Supersedes the earlier assumption that NPC identity is automatically the next production target. North-star asset: `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1`. |
+| 2026-09-23 | `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is the first modular runtime proof for the whole-map direction, merged via PR #104 on `BUILD 1823667`. CI/Pages PASS; Phone QC is still pending. | Do not raise art fidelity, add more edge detail, or move to NPC identity until this proof is evaluated on phone. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -89,4 +93,4 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: structured discovery round to select the next proof. Do not assume NPC art or broad environment rollout is next.
+- Current production action: Phone-QC Whole-map Terrain Proof V1 on `BUILD 1823667`. The two-conversation workflow is active; do not hand execution to Work while transfer state is `WAIT_QC`.

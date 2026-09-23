@@ -1,121 +1,125 @@
 # Current Project Handoff
 
-Snapshot: 2026-09-23 14:25 (+07)
-Project: ARPG / Xianxia ARPG Web
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: user provides Phone-QC screenshots/observations for BUILD 1823667; DESIGN_CHAT evaluates PASS/REVISE and either continues discovery or marks READY_FOR_WORK.
+
+Snapshot: 2026-09-23
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current milestone: C4.2 / Thanh Vân Thôn production integration and whole-map composition
-Current reviewed runtime: `63d75ba82e9a78e86290437e96054b322c914dd2` (`BUILD 63d75ba`)
-Current branch for continuity sync: `docs/topology-a1-phone-pass`
+Current main: `18236670a62da3b9a5347c37c2c243e0a08feda8`
+Phone/runtime build: `BUILD 1823667`
+Relevant merged PR: #104 — Thanh Van Thon whole-map terrain proof V1
+Open relevant execution PR: none
+Unrelated old open PR: #4
+CI: PASS
+GitHub Pages deploy: PASS
 
-## Verified repo/runtime state
+## Current objective
 
-- PR #97 promoted accepted Thanh Vân Thôn V2-A layers from QC-only architecture into the production game flow.
-- PR #98 added production QC zoom presets `1.0x → 0.8x → 0.65x → 0.5x`.
-- PR #99 added `ẨN UI / HIỆN UI` QC controls while preserving persistent zoom controls.
-- PR #100 Cohesion Pass A was a useful diagnostic but did not solve the whole-map structure; its additive prop layer is no longer active.
-- User explicitly reopened whole-map topology while preserving internal hero-pocket composition.
-- PR #101 applied Topology Revision A: compacted the active village mass, moved Elder/Merchant/Healer pockets as intact units, and moved NPC interaction nodes with their pockets without changing interaction radius.
-- PR #102 applied Topology Tune A1: strengthened the three hero-pocket branches, added a subtle north-entry ground transition, and pulled the southern residential/agricultural fringe inward.
-- CI PASS and GitHub Pages deploy PASS for `63d75ba`.
-- Phone QC screenshots on Android at 0.65x with UI hidden show the compact settlement reads coherently across Elder, Merchant, Healer and the southern fringe.
+Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before any further production execution.
 
-## Locked whole-map result
+## Verified completed state
 
-### ENV-SETTLEMENT-LAYOUT — PHONE PASS
+- Production flow is `CharacterSelect → Production Game`.
+- QC utilities are available in production: zoom `1.0x / 0.8x / 0.65x / 0.5x` and `ẨN UI / HIỆN UI`.
+- Thanh Vân Thôn compact topology, Topology Revision A + Tune A1, remains accepted/locked.
+- Elder / Merchant / Healer internal pocket composition remains accepted and should not be regenerated for this terrain pass.
+- Existing Phone-PASS environment assets remain canonical: houses, Merchant Kit B, Healer Water+Bridge A, Healer Activity Kit A, Field Edge Kit B, Ground/Path P0 and base prop kit.
+- User and DESIGN_CHAT completed a new whole-map discovery round and locked a stronger terrain/environment direction.
+- North-star reference `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1` is durably stored in Drive.
+- `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is integrated in production and deployed through PR #104.
+- Terrain proof changes are visual only; gameplay collision, interaction radius, combat hitbox and timing were not changed.
 
-Accepted production implementation:
+## Locked whole-map direction
 
-```text
-src/game/settlementV2AProduction.ts
-src/game/npcConfig.ts
-src/scenes/ProductionGameScene.ts
-```
+- Preserve the accepted A1 vertical spine and hero-pocket skeleton.
+- Allow strong terrain/environment composition around that skeleton.
+- Village context: humble rural settlement beside agriculture and water.
+- Use one secondary stream that cuts across part of the lower map and exits the village edge.
+- Remove most purposeless free-standing fence scatter.
+- Retain fence only where it has yard/field/property logic.
+- Ground should gain moderate believable variation: worn earth, value variation, grass/soil edges and light cultivation traces.
+- Frame the village with natural macro shapes: meadow/brush/low earth/tree/rock language, not a hard perimeter wall.
+- Keep the playable interior readable/open for portrait mobile.
+- The north-star image is a composition reference, not permission to flatten the game into one background.
 
-Current accepted production lineage:
+## Current proof
 
-```text
-BUILD 63d75ba
-PR #101 Topology Revision A
-PR #102 Topology Tune A1
-```
+### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1
 
-Locked intent:
+- Role: reference / composition north-star
+- Status: `REFERENCE_ONLY`
+- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v001.png`
+- Drive file ID: `1WzAg_jBz3J6xiNO3jbmh7fMON6wBueJR`
+- Design doc: `docs/environment/THANH_VAN_THON_WHOLE_MAP_V1.md`
 
-- V2-A remains the selected `1600 × 1800` settlement footprint.
-- Elder / Merchant / Healer internal pocket composition remains preserved.
-- Whole-map topology now uses a compact zig-zag rhythm around the main spine rather than three isolated POIs.
-- Three hero-pocket branches must remain readable but subordinate to the main spine.
-- North entry keeps a light threshold transition rather than a new POI.
-- Southern residential + agriculture fringe is intentionally pulled inward so it reads as one village edge.
-- Do not re-enable Cohesion Pass A's additive scatter layer merely to fill negative space.
-- Do not reopen topology or hero-pocket placement without a new concrete Phone-QC problem.
+### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
 
-## Locked environment assets
+- Role: runtime proof
+- Status: `INTEGRATED`, Phone QC pending
+- Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg`
+- Runtime integration: `src/game/settlementV2AProduction.ts`
+- Preload integration: `src/scenes/ProductionGameScene.ts`
+- Build: `1823667`
+- PR: #104
+- Technical gate: PASS
+- Phone gate: PENDING
 
-Preserve all previously accepted runtime assets:
+## What the terrain proof intentionally changes
 
-- Ground/path P0 — `PHONE_PASS`
-- Merchant Kit B — `PHONE_PASS`
-- `ENV-HEALER-WATER-BRIDGE-A` — `PHONE_PASS`
-- `ENV-HEALER-ACTIVITY-KIT-A` — `PHONE_PASS`
-- `ENV-FIELD-EDGE-KIT-B` — `PHONE_PASS`
-- `ENV-HOUSE-SET-A` — `PHONE_PASS`
-- base village tree/fence/rock/lantern kit — `PHONE_PASS`
+- more varied/lived-in soil underlay;
+- natural village-edge framing;
+- secondary lower-map stream;
+- light agricultural traces;
+- removal of floating north/south decorative fence stamps.
 
-Field Edge A remains rejected/superseded.
+## What it intentionally does not change
 
-## Production QC utilities
+- accepted hero-pocket positions/composition;
+- house/Merchant/Healer/Field Edge canonical art;
+- NPC interaction coordinates/radii;
+- gameplay pathfinding/collision;
+- combat hitboxes/timing;
+- camera gameplay intent.
 
-Production runtime currently includes:
+## Do not repeat blindly
 
-- zoom presets: `1.0x / 0.8x / 0.65x / 0.5x`;
-- `ẨN UI / HIỆN UI`;
-- QC controls remain visible when gameplay UI/world labels are hidden.
-
-These are QC utilities only; they do not change production gameplay intent.
-
-## Runtime/gameplay constraints that must not regress
-
-- Mobile browser portrait 9:16.
-- Manual `ATK + SKILL + NÉ`.
-- One flying sword per ATK press.
-- Base attack range 205 + future bonus.
-- Base cooldown 800 ms through `basicAttackSpeedPct`.
-- Settlement safe zone and NPC interaction remain intact.
-- Environment/art passes do not change gameplay hitboxes or timing unless explicitly requested.
-- NPC interaction radius remains unchanged by the topology revision.
-
-## Failed / superseded paths to avoid
-
-- V2-B 1600 × 3200 settlement.
-- Giant zone ellipses / mixed old-art macro proof.
-- Repeating `house + tree + fence + rock + lamp` stamps.
-- Cohesion Pass A scatter-prop strategy as a substitute for whole-map structure.
-- Regenerating accepted hero-pocket art for layout problems.
-- Restoring Field Edge A.
-- Restoring temporary Field Edge canvas-cleanup workarounds.
-- Reopening accepted topology without a new Phone-QC problem.
+- Do not solve whole-map cohesion by re-enabling Cohesion Pass A scatter props.
+- Do not regenerate accepted hero-pocket assets for terrain problems.
+- Do not flatten the north-star image into a single runtime background.
+- Do not add more fence/trees/rocks merely to fill blank areas before this terrain proof is judged.
+- Do not jump to NPC identity while this proof is unresolved.
+- Do not let DESIGN_CHAT and Work edit the repo concurrently.
 
 ## Exact next action
 
-The largest remaining visual prototype signal is the NPC placeholder layer.
+1. User opens deployed build `1823667`.
+2. Phone QC at `0.5x + ẨN UI` for whole-map envelope / stream / negative-space balance.
+3. Phone QC at `0.65x` for pocket continuity.
+4. Capture/inspect `1.0x` around Healer-to-stream join, stream/spine crossing and southern field/residential edge.
+5. DESIGN_CHAT classifies PASS / REVISE and closes any new ASK items.
+6. Only after decisions are closed: set transfer state to `READY_FOR_WORK` and hand the exact implementation task to Work.
 
-Next action:
+## PASS gate
 
-1. Run a short structured discovery round for **NPC identity production**.
-2. Define a minimal proof for one NPC first, not all three.
-3. Prefer an NPC whose visual identity gives the strongest settlement readability gain.
-4. Preserve settlement topology, pocket art, interaction coordinates/radius and gameplay logic.
-5. Isolate → integrate → deploy → Phone QC before expanding to the other NPCs.
+- village feels naturally enclosed without a fence perimeter;
+- stream makes the map more alive but remains subordinate to the route/hero pockets;
+- ground no longer reads like a flat blank sheet;
+- stream/water joins do not look broken at 1.0x;
+- southern residential + agricultural fringe reads coherently;
+- accepted hero-pocket hierarchy remains intact;
+- no runtime/mobile rendering artifact;
+- no gameplay or interaction regression.
 
-## Pass gate for the next proof
+## Two-conversation workflow
 
-- NPC reads clearly at 1.0x phone gameplay scale.
-- Fits the established xianxia painterly/anime visual language.
-- Role can be inferred visually without relying only on a text label.
-- Does not alter interaction radius, gameplay state or accepted settlement composition.
-- Proof is small and reversible.
+- DESIGN_CHAT owns discovery, decisions, Phone-QC interpretation and PASS/REVISE.
+- WORK owns implementation only after transfer state becomes `READY_FOR_WORK`.
+- During `WAIT_QC`, neither Work nor the design chat should broaden production implementation.
+- If Work later finds a new high-impact creative/product ambiguity, it returns with `RETURN_TO_DESIGN`.
+- GitHub + this handoff + registry/decision docs are shared memory.
 
 ## Resume sentence
 
-Resume from `BUILD 63d75ba`: Thanh Vân Thôn V2-A whole-map topology, Topology Revision A + Tune A1, is accepted and should remain locked. Preserve all PHONE_PASS environment assets and QC utilities. Next run a short NPC-identity discovery round and prove one NPC before expanding.
+Resume from `BUILD 1823667` with transfer state `WAIT_QC`: Whole-map Terrain Proof V1 is technically deployed and awaits Phone QC. Do not start further environment production or NPC identity until DESIGN_CHAT evaluates the proof and explicitly changes the handoff to `READY_FOR_WORK`.
