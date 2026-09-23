@@ -272,20 +272,16 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
 
 - Purpose: first reversible runtime proof for whole-map completion: more believable soil variation, natural village-edge framing, lower-map stream, light agricultural traces and fence cleanup.
-- Status: `INTEGRATED`; **Phone QC pending**.
+- Status: `REVISE` after Phone QC.
 - Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg`.
 - Runtime integration: `src/game/settlementV2AProduction.ts` + `src/scenes/ProductionGameScene.ts`.
 - Runtime lineage: PR #104, merged build `1823667`.
 - Technical state: CI PASS + GitHub Pages deploy PASS.
 - Gameplay state: visual-only proof; no gameplay collision, interaction radius, combat hitbox or timing change.
 - Fence cleanup: removes free-standing north-entry/southern decorative fence stamps; keeps functional pocket/property fences.
-- Phone QC required:
-  - 0.5x + UI hidden whole-map read;
-  - 0.65x pocket continuity;
-  - 1.0x Healer water/stream join;
-  - 1.0x stream/spine crossing;
-  - 1.0x southern field/residential edge.
-- Next action: wait for Phone QC before increasing art fidelity or adding more edge detail.
+- Phone QC result on 2026-09-23: REVISE. Large circular/rounded macro masks read as procedural/vector overlays; stream is too cyan/regular; Healer pond→stream join is synthetic; ground remains too flat; southern fringe does not yet blend into one painterly terrain language.
+- What remains valid: lower-map secondary-stream concept, fence cleanup, and accepted A1 topology/hero-pocket hierarchy.
+- Next action: replace the terrain treatment with one painterly Terrain Proof V2; do not reopen topology or scatter more props as a substitute.
 
 ## 8. Current critical non-art architecture note
 
