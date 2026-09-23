@@ -39,6 +39,23 @@ This separation keeps future handoffs small and useful.
 
 Every `HANDOFF_CURRENT.md` update must answer all of these.
 
+### A0. Ownership / transfer state
+
+Every handoff must explicitly record:
+
+- **Current owner:** `DESIGN_CHAT` or `WORK`;
+- **Transfer state:** one of `DESIGN_ACTIVE`, `WAIT_QC`, `READY_FOR_WORK`, `WORK_EXECUTING`, `RETURN_TO_DESIGN`;
+- **Repo-write permission:** which conversation is currently allowed to write;
+- **Return condition:** what evidence/question transfers ownership back.
+
+Rules:
+
+- only one conversation may own repo writes at a time;
+- `WAIT_QC` means no Work continuation until the user provides QC evidence;
+- `READY_FOR_WORK` means the design/decision owner has closed the important ASK items and Work may execute the exact next action;
+- if Work hits a new high-impact ASK, switch to `RETURN_TO_DESIGN` rather than inventing a product/art decision;
+- every ownership transfer starts by reconciling live GitHub state against the handoff.
+
 ### A. Snapshot identity
 
 - date/time or date;
@@ -234,6 +251,11 @@ For gameplay changes:
 
 ```markdown
 # Current Project Handoff
+
+Current owner: DESIGN_CHAT | WORK
+Transfer state: DESIGN_ACTIVE | WAIT_QC | READY_FOR_WORK | WORK_EXECUTING | RETURN_TO_DESIGN
+Repo-write permission: DESIGN_CHAT | WORK | NONE_WHILE_WAITING_QC
+Return condition: <evidence/question that returns ownership>
 
 Snapshot: YYYY-MM-DD
 Repo: owner/repo
