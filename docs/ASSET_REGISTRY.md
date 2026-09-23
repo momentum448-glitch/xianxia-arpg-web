@@ -71,7 +71,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Locked topology rule: preserve current whole-pocket placement, route rhythm, north threshold and southern residential/agriculture fringe unless a new concrete Phone-QC problem appears.
 - Hero-pocket rule: Elder / Merchant / Healer internal composition remains independently PHONE_PASS and must not be regenerated/rearranged merely to change whole-map layout.
 - Cohesion Pass A additive scatter layer is superseded and should remain disabled.
-- Next action: preserve layout while proving one NPC identity asset.
+- Next action: preserve the accepted topology while Whole-map Terrain Proof V1 is Phone-QC'd. Do not resume the older NPC-next assumption unless the terrain proof is resolved.
 
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
@@ -249,6 +249,43 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - PR #95 replaced the incomplete runtime WebP with a verified RGBA file and removed the cleanup workaround;
   - `BUILD de30ae7` is the reviewed PASS lineage.
 - Next action: preserve accepted art, binary, footprint, scale and placement. Do not regenerate/tune without a new concrete Phone-QC problem.
+
+
+### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1
+
+- Purpose: approved whole-map visual north-star for completing Thanh Vân Thôn as one believable rural settlement.
+- Status: `REFERENCE_ONLY`.
+- Design direction: keep the accepted A1 vertical spine; stronger terrain composition is allowed around it; village sits beside agriculture and a secondary stream; use natural earth/grass/tree/rock framing instead of decorative fence scatter; ground should feel more lived-in while remaining mobile-readable.
+- Locked discovery choices:
+  - preserve current skeleton while opening terrain composition;
+  - rural agriculture + stream context;
+  - one secondary stream crossing part of the lower map;
+  - most purposeless fences removed; functional yard/field fences retained;
+  - moderate ground realism;
+  - macro framing around the village while keeping the interior playable/open.
+- Durable reference location: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v001.png`.
+- Drive file ID: `1WzAg_jBz3J6xiNO3jbmh7fMON6wBueJR`.
+- Role: composition reference only, not a flattened runtime background.
+- Map design doc: `docs/environment/THANH_VAN_THON_WHOLE_MAP_V1.md`.
+- Next action: preserve as the visual target while runtime terrain is iterated modularly.
+
+### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
+
+- Purpose: first reversible runtime proof for whole-map completion: more believable soil variation, natural village-edge framing, lower-map stream, light agricultural traces and fence cleanup.
+- Status: `INTEGRATED`; **Phone QC pending**.
+- Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg`.
+- Runtime integration: `src/game/settlementV2AProduction.ts` + `src/scenes/ProductionGameScene.ts`.
+- Runtime lineage: PR #104, merged build `1823667`.
+- Technical state: CI PASS + GitHub Pages deploy PASS.
+- Gameplay state: visual-only proof; no gameplay collision, interaction radius, combat hitbox or timing change.
+- Fence cleanup: removes free-standing north-entry/southern decorative fence stamps; keeps functional pocket/property fences.
+- Phone QC required:
+  - 0.5x + UI hidden whole-map read;
+  - 0.65x pocket continuity;
+  - 1.0x Healer water/stream join;
+  - 1.0x stream/spine crossing;
+  - 1.0x southern field/residential edge.
+- Next action: wait for Phone QC before increasing art fidelity or adding more edge detail.
 
 ## 8. Current critical non-art architecture note
 
