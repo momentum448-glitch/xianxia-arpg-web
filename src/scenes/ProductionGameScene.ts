@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { c4AssetUrl } from '../game/art/assetManifest';
-import { applySettlementCohesionPassA } from '../game/settlementCohesionPassA';
 import {
   promoteLockedSettlementV2A,
   SETTLEMENT_V2A_PRELOADS,
@@ -31,10 +30,7 @@ export class ProductionGameScene extends GameScene {
   create(): void {
     super.create();
     const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
-    if (settlement) {
-      promoteLockedSettlementV2A(this, settlement);
-      applySettlementCohesionPassA(this, settlement);
-    }
+    if (settlement) promoteLockedSettlementV2A(this, settlement);
 
     this.qcZoomIndex = 0;
     this.qcUiVisible = true;
