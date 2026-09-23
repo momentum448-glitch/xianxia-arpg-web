@@ -62,6 +62,11 @@ Rules:
 | 2026-09-22 | `ENV-FIELD-EDGE-KIT-B` is `PHONE_PASS` on `BUILD de30ae7`. Canonical runtime file is `env_field_edge_kit_b.webp`, rendered directly as verified RGBA at center about `(1210,1620)`, display `320 × 180`, alpha `0.96`, depth `-14`. | Supersedes all temporary black-matte/canvas-cleanup variants. 1.0x painterly/agriculture read PASS; 0.65x hierarchy + southern-exit openness PASS. Preserve art, binary, footprint, scale and placement. |
 | 2026-09-22 | After Field Edge B PASS, do not automatically jump to NPC art or another environment kit. Run a structured discovery round to choose the next substantial production proof. | Preserves the earlier rule that placeholders alone do not determine production order. |
 
+| 2026-09-23 | User explicitly reopened only whole-map Thanh Vân Thôn topology after Cohesion Pass A still read as disconnected POIs. Hero-pocket internal art/composition, gameplay hitboxes and interaction radii remained locked. | This is a deliberate exception to the earlier topology lock, limited to whole-pocket placement and route structure. |
+| 2026-09-23 | Topology Revision A + Tune A1 is `PHONE_PASS` on `BUILD 63d75ba`. The accepted village is compacted around a clearer zig-zag spine/branch rhythm; the north threshold is softened and the southern residential/agricultural fringe is pulled inward. | Supersedes Cohesion Pass A as the production whole-map composition. Do not reopen topology without a new concrete Phone-QC problem. |
+| 2026-09-23 | Production QC utilities include world zoom presets `1.0x / 0.8x / 0.65x / 0.5x` plus `ẨN UI / HIỆN UI`, with QC controls persistent while gameplay UI/world labels are hidden. | QC-only utility; does not change production gameplay camera intent. |
+| 2026-09-23 | After whole-map topology PASS, the next substantial visual target is NPC identity, starting with one minimal proof before expanding to all settlement NPCs. | Preserve settlement topology, interaction coordinates/radii and gameplay logic during NPC art work. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
