@@ -61,15 +61,18 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 ### ENV-SETTLEMENT-LAYOUT — Thanh Vân Thôn composition
 
-- Purpose: settlement route, density and broad composition.
-- Status: `PHONE_PASS` for V2-A topology + spatial massing + accepted-art context compatibility.
+- Purpose: production settlement route, density and whole-map composition.
+- Status: `PHONE_PASS`.
 - Selected footprint: `1600 × 1800` V2-A.
 - Rejected footprint: V2-B `1600 × 3200`, unless explicitly reopened.
-- Primary current QC implementation: `src/scenes/VillageTopologyQcScene.ts`.
-- Current art rule: modular-hybrid painterly ground/path/decal layers plus modular houses/props/NPCs.
-- Road rule: organic curved/irregular routes, not ruler-straight lanes.
-- Current composition hierarchy: Elder west → Merchant east → Healer west → residential/field fringe.
-- Next action: preserve topology/massing/ground-path. Field Edge B has passed; next production target must be selected through structured discovery rather than assumed.
+- Production implementation: `src/game/settlementV2AProduction.ts`.
+- Accepted runtime lineage: PR #101 Topology Revision A + PR #102 Topology Tune A1, reviewed on `BUILD 63d75ba`.
+- Phone QC: compact settlement reads coherently across Elder / Merchant / Healer / southern fringe; branches read as part of one village rather than isolated POIs.
+- Locked topology rule: preserve current whole-pocket placement, route rhythm, north threshold and southern residential/agriculture fringe unless a new concrete Phone-QC problem appears.
+- Hero-pocket rule: Elder / Merchant / Healer internal composition remains independently PHONE_PASS and must not be regenerated/rearranged merely to change whole-map layout.
+- Cohesion Pass A additive scatter layer is superseded and should remain disabled.
+- Next action: preserve layout while proving one NPC identity asset.
+
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
 
@@ -265,9 +268,10 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 - Purpose: Phone QC at micro, zone and macro scales without changing production camera intent.
 - Status: `PHONE_PASS`.
-- Presets: `1.0x`, `0.8x`, `0.65x`.
-- Scope: world camera only; HUD remains fixed screen-space.
-- Next action: preserve while environment production continues.
+- Presets: `1.0x`, `0.8x`, `0.65x`, `0.5x`.
+- Companion control: `ẨN UI / HIỆN UI` hides gameplay HUD/world labels while retaining QC controls.
+- Scope: world camera only; gameplay HUD/QC controls use dedicated cameras so QC zoom does not resize controls.
+- Next action: preserve for production Phone QC.
 
 ## 10. Drive vault
 
