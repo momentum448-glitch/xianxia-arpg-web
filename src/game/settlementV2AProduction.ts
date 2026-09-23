@@ -17,6 +17,7 @@ export const SETTLEMENT_V2A_TEXTURES = {
   healerHerbBed: 'prod-v2a-healer-herb-bed-a',
   healerDrying: 'prod-v2a-healer-drying-a',
   fieldEdge: 'prod-v2a-field-edge-b',
+  terrainUnderlay: 'prod-v2a-terrain-underlay-v1',
 } as const;
 
 export const SETTLEMENT_V2A_PRELOADS = [
@@ -32,6 +33,10 @@ export const SETTLEMENT_V2A_PRELOADS = [
   [SETTLEMENT_V2A_TEXTURES.healerHerbBed, C4_ASSETS.settlementHealerHerbBedA],
   [SETTLEMENT_V2A_TEXTURES.healerDrying, C4_ASSETS.settlementHealerDryingPropsA],
   [SETTLEMENT_V2A_TEXTURES.fieldEdge, C4_ASSETS.settlementFieldEdgeKitB],
+] as const;
+
+export const SETTLEMENT_V2A_SVG_PRELOADS = [
+  [SETTLEMENT_V2A_TEXTURES.terrainUnderlay, C4_ASSETS.settlementTerrainWholeMapV1],
 ] as const;
 
 const GROUND_RUNTIME = {
@@ -212,7 +217,13 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   removeLegacySettlementArt(scene, zone);
   prepareTreeRuntimeTexture(scene);
 
-  scene.add.rectangle(800, top + 900, 1600, 1800, 0xe7dcc2, 1).setDepth(-9);
+  scene.add.rectangle(800, top + 900, 1600, 1800, 0xe7dcc2, 1).setDepth(-9.5);
+  if (scene.textures.exists(SETTLEMENT_V2A_TEXTURES.terrainUnderlay)) {
+    scene.add.image(800, top + 900, SETTLEMENT_V2A_TEXTURES.terrainUnderlay)
+      .setOrigin(0.5)
+      .setDisplaySize(1600, 1800)
+      .setDepth(-8.8);
+  }
 
   const patches = [
     // Northern threshold wash softens the empty approach without adding a new POI.
@@ -269,8 +280,7 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
     ? SETTLEMENT_V2A_TEXTURES.treeRuntime
     : SETTLEMENT_V2A_TEXTURES.tree;
 
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 505, top + 255, 205, false, 0.94);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 1090, top + 250, 205, true, 0.92);
+  // Whole-map V1 removes the free-standing entry fences; the natural edge now frames the threshold.
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 835, top + 260, 76, false, 0.96);
   addAsset(scene, tree, 150, top + 330, 178, false, 0.88);
   addAsset(scene, tree, 1460, top + 355, 184, true, 0.86);
@@ -319,8 +329,7 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.tileA, 1535 + southEast.dx, top + 1665 + southEast.dy, 310, true, 0.82);
   addAsset(scene, tree, 120 + southWest.dx, top + 1540 + southWest.dy, 155, false, 0.74);
   addAsset(scene, tree, 1490 + southEast.dx, top + 1505 + southEast.dy, 168, true, 0.76);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 430 + southWest.dx, top + 1695 + southWest.dy, 175, false, 0.82);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 1190 + field.dx, top + 1690 + field.dy, 175, true, 0.82);
+  // Remove floating southern fence stamps; field/terrain edges now carry the boundary logic.
 
   scene.add.image(1210 + field.dx, top + 1620 + field.dy, SETTLEMENT_V2A_TEXTURES.fieldEdge)
     .setOrigin(0.5)

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1800" viewBox="0 0 1600 1800">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eadfc6"/>
+      <stop offset="0.55" stop-color="#e5d8bc"/>
+      <stop offset="1" stop-color="#e1d2b2"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#74aaa6"/>
+      <stop offset="0.45" stop-color="#619b98"/>
+      <stop offset="1" stop-color="#4e8b88"/>
+    </linearGradient>
+    <pattern id="soilSpeck" width="72" height="72" patternUnits="userSpaceOnUse">
+      <circle cx="9" cy="18" r="2.2" fill="#9f8e71" opacity=".16"/>
+      <ellipse cx="31" cy="12" rx="3.6" ry="1.5" fill="#a9987a" opacity=".12"/>
+      <circle cx="55" cy="31" r="1.8" fill="#8f8066" opacity=".13"/>
+      <ellipse cx="20" cy="48" rx="4.2" ry="1.4" fill="#b5a68a" opacity=".17"/>
+      <circle cx="61" cy="59" r="2.4" fill="#907e63" opacity=".11"/>
+      <ellipse cx="41" cy="65" rx="2.9" ry="1.3" fill="#c0b296" opacity=".18"/>
+    </pattern>
+    <pattern id="waterSpeck" width="88" height="56" patternUnits="userSpaceOnUse">
+      <path d="M8 14 C22 9, 32 9, 46 14" fill="none" stroke="#d9ece5" stroke-width="2" opacity=".24"/>
+      <path d="M38 38 C50 34, 63 34, 77 39" fill="none" stroke="#d9ece5" stroke-width="1.6" opacity=".18"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="1800" fill="url(#ground)"/>
+  <rect width="1600" height="1800" fill="url(#soilSpeck)" opacity=".72"/>
+
+  <!-- broad lived-in ground variation -->
+  <path d="M510 120 C650 65 895 75 1040 150 C1155 210 1210 335 1165 450 C1105 600 920 640 730 610 C555 582 420 505 420 382 C420 275 455 185 510 120Z" fill="#d7c8a7" opacity=".19"/>
+  <path d="M250 590 C375 500 585 485 735 555 C835 602 862 718 810 818 C742 950 530 982 360 905 C205 835 155 695 250 590Z" fill="#cbbd9f" opacity=".17"/>
+  <path d="M760 650 C925 565 1175 600 1300 730 C1408 843 1375 1005 1225 1088 C1065 1176 825 1118 730 990 C650 880 660 705 760 650Z" fill="#d5c5a3" opacity=".16"/>
+  <path d="M255 1015 C415 930 610 958 725 1085 C835 1208 810 1375 660 1460 C520 1540 315 1498 225 1362 C140 1230 150 1080 255 1015Z" fill="#d0c09e" opacity=".18"/>
+  <path d="M830 1225 C1015 1115 1275 1152 1390 1308 C1490 1445 1415 1618 1235 1685 C1048 1755 835 1660 785 1510 C748 1402 760 1278 830 1225Z" fill="#cbbb99" opacity=".16"/>
+
+  <!-- soft village envelope: meadow / low brush masses around the playable core -->
+  <g fill="#9fa77b" opacity=".18">
+    <path d="M0 0 H360 C300 110 290 250 330 355 C270 470 185 545 0 565Z"/>
+    <path d="M0 605 C150 575 260 630 285 760 C248 892 158 980 0 1025Z"/>
+    <path d="M0 1120 C145 1070 285 1135 300 1280 C238 1425 128 1505 0 1540Z"/>
+    <path d="M0 1590 C145 1530 310 1600 350 1800 H0Z"/>
+    <path d="M1600 0 H1265 C1325 112 1308 230 1268 342 C1325 475 1435 555 1600 585Z"/>
+    <path d="M1600 650 C1460 600 1350 670 1332 790 C1365 910 1450 1002 1600 1042Z"/>
+    <path d="M1600 1105 C1455 1070 1335 1138 1320 1260 C1358 1405 1472 1490 1600 1520Z"/>
+    <path d="M1600 1570 C1468 1528 1320 1602 1270 1800 H1600Z"/>
+  </g>
+
+  <!-- low earthen / rocky framing cues, not a hard wall -->
+  <g opacity=".34" fill="#7f7a65">
+    <ellipse cx="72" cy="260" rx="58" ry="22"/><ellipse cx="185" cy="210" rx="38" ry="15"/>
+    <ellipse cx="95" cy="760" rx="52" ry="18"/><ellipse cx="225" cy="840" rx="46" ry="15"/>
+    <ellipse cx="90" cy="1295" rx="58" ry="20"/><ellipse cx="210" cy="1375" rx="40" ry="14"/>
+    <ellipse cx="1470" cy="280" rx="56" ry="20"/><ellipse cx="1360" cy="205" rx="36" ry="14"/>
+    <ellipse cx="1510" cy="820" rx="58" ry="19"/><ellipse cx="1372" cy="920" rx="42" ry="14"/>
+    <ellipse cx="1490" cy="1360" rx="62" ry="20"/><ellipse cx="1375" cy="1450" rx="38" ry="14"/>
+  </g>
+
+  <!-- Stream B2: cuts through the lower half and exits the village edge.
+       It starts under the accepted healer-water asset, so the join is hidden by existing art. -->
+  <path d="M500 1270 C610 1300 650 1350 745 1388 C865 1438 930 1450 1035 1485 C1180 1532 1308 1555 1605 1570"
+        fill="none" stroke="#8b8f70" stroke-width="150" stroke-linecap="round" stroke-linejoin="round" opacity=".28"/>
+  <path d="M500 1270 C610 1300 650 1350 745 1388 C865 1438 930 1450 1035 1485 C1180 1532 1308 1555 1605 1570"
+        fill="none" stroke="#b8a779" stroke-width="132" stroke-linecap="round" stroke-linejoin="round" opacity=".68"/>
+  <path d="M500 1270 C610 1300 650 1350 745 1388 C865 1438 930 1450 1035 1485 C1180 1532 1308 1555 1605 1570"
+        fill="none" stroke="url(#water)" stroke-width="94" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M500 1270 C610 1300 650 1350 745 1388 C865 1438 930 1450 1035 1485 C1180 1532 1308 1555 1605 1570"
+        fill="none" stroke="url(#waterSpeck)" stroke-width="82" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>
+
+  <!-- irregular bank islands / grasses -->
+  <g fill="#73805c" opacity=".62">
+    <ellipse cx="610" cy="1310" rx="36" ry="12"/><ellipse cx="690" cy="1362" rx="28" ry="10"/>
+    <ellipse cx="905" cy="1460" rx="40" ry="12"/><ellipse cx="1120" cy="1515" rx="32" ry="10"/>
+    <ellipse cx="1310" cy="1542" rx="42" ry="12"/><ellipse cx="1500" cy="1588" rx="36" ry="10"/>
+  </g>
+  <g fill="#7b7461" opacity=".72">
+    <ellipse cx="575" cy="1290" rx="18" ry="11"/><ellipse cx="660" cy="1338" rx="15" ry="9"/>
+    <ellipse cx="822" cy="1425" rx="18" ry="10"/><ellipse cx="1005" cy="1492" rx="14" ry="8"/>
+    <ellipse cx="1242" cy="1522" rx="17" ry="9"/><ellipse cx="1420" cy="1568" rx="15" ry="8"/>
+  </g>
+
+  <!-- subtle field / cultivation traces on southern-right fringe -->
+  <g fill="none" stroke="#9b8f69" stroke-width="7" opacity=".24" stroke-linecap="round">
+    <path d="M1080 1650 C1180 1618 1290 1628 1395 1658"/>
+    <path d="M1080 1682 C1185 1650 1295 1660 1400 1690"/>
+    <path d="M1095 1715 C1190 1688 1295 1696 1388 1725"/>
+  </g>
+
+  <!-- dry worn-earth traces linking household areas into the ground -->
+  <g fill="#b6a486" opacity=".18">
+    <ellipse cx="475" cy="590" rx="230" ry="105"/>
+    <ellipse cx="1060" cy="845" rx="245" ry="115"/>
+    <ellipse cx="480" cy="1150" rx="245" ry="120"/>
+    <ellipse cx="350" cy="1565" rx="190" ry="86"/>
+    <ellipse cx="1270" cy="1505" rx="210" ry="88"/>
+  </g>
+</svg>
