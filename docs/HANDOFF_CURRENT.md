@@ -1,13 +1,13 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: user provides Phone-QC screenshots/observations for BUILD 1823667; DESIGN_CHAT evaluates PASS/REVISE and either continues discovery or marks READY_FOR_WORK.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys Terrain Proof V2 and returns a QC link/build, or Work encounters a new high-impact ASK/design ambiguity and marks RETURN_TO_DESIGN.
 
 Snapshot: 2026-09-23
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current main: `18236670a62da3b9a5347c37c2c243e0a08feda8`
+Current main: `f987be1c2edf39988534879d32ba7451fb67e671`
 Phone/runtime build: `BUILD 1823667`
 Relevant merged PR: #104 — Thanh Van Thon whole-map terrain proof V1
 Open relevant execution PR: none
@@ -17,7 +17,7 @@ GitHub Pages deploy: PASS
 
 ## Current objective
 
-Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before any further production execution.
+Execute **Whole-map Terrain Proof V2** after Phone QC rejected V1's vector-looking terrain treatment. Preserve the accepted map skeleton and good V1 structural choices, but replace the terrain treatment with a painterly, natural, mobile-readable result.
 
 ## Verified completed state
 
@@ -29,6 +29,7 @@ Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before a
 - User and DESIGN_CHAT completed a new whole-map discovery round and locked a stronger terrain/environment direction.
 - North-star reference `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1` is durably stored in Drive.
 - `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is integrated in production and deployed through PR #104.
+- Phone QC of V1 at 0.5x + UI hidden is **REVISE**.
 - Terrain proof changes are visual only; gameplay collision, interaction radius, combat hitbox and timing were not changed.
 
 ## Locked whole-map direction
@@ -57,14 +58,14 @@ Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before a
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
 
 - Role: runtime proof
-- Status: `INTEGRATED`, Phone QC pending
+- Status: `REVISE` after Phone QC
 - Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg`
 - Runtime integration: `src/game/settlementV2AProduction.ts`
 - Preload integration: `src/scenes/ProductionGameScene.ts`
 - Build: `1823667`
 - PR: #104
 - Technical gate: PASS
-- Phone gate: PENDING
+- Phone gate: REVISE
 
 ## What the terrain proof intentionally changes
 
@@ -83,6 +84,71 @@ Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before a
 - combat hitboxes/timing;
 - camera gameplay intent.
 
+## Phone-QC findings for V1
+
+What worked and should be preserved:
+
+- removing the purposeless floating fences improved logic;
+- the overall idea of a secondary stream in the lower half is useful;
+- accepted A1 topology / hero-pocket hierarchy still reads correctly;
+- the stream belongs in the lower map rather than becoming a new central axis.
+
+Why V1 failed:
+
+1. **Macro edge shapes look procedural/vectorial.** Large pale-green circular/rounded masses are visibly geometric and read as overlay masks instead of terrain.
+2. **Stream color/fidelity is mismatched.** The stream is too cyan/clean and visually detached from the painterly village art.
+3. **Water geometry is too regular.** Width and banks feel generated from a broad stroke rather than a natural creek.
+4. **Healer pond → stream join is hard and synthetic.** A rectangular/strip-like transition is visible instead of a believable wet bank/channel.
+5. **Ground still reads too flat.** Despite added variation, the village floor still lacks enough painterly soil, grass-edge and worn-ground language to feel like one continuous place.
+6. **Southern fringe is structurally better, but the underlay art does not yet blend with the accepted field/house assets.**
+
+This is an **art-treatment failure, not a topology failure**. Do not reopen A1 topology or accepted hero-pocket placement.
+
+## Exact execution brief for Work — Terrain Proof V2
+
+1. Start from verified current `main` and create a focused branch.
+2. Preserve:
+   - A1 topology and all hero-pocket placement;
+   - current stream *role* and lower-map direction concept;
+   - fence cleanup;
+   - all PHONE_PASS houses/pockets/field assets;
+   - gameplay, collision, NPC coordinates/radii and combat logic.
+3. Replace the V1 vector-looking terrain treatment with a painterly terrain layer:
+   - **do not use large circular/elliptical macro masks**;
+   - **do not fake the fix with more scattered props**;
+   - prefer a raster/painterly terrain source or natural irregular decals that visually match the accepted environment art;
+   - if Work cannot access an image-generation/art-production path, return `RETURN_TO_DESIGN` instead of substituting another geometric SVG proof.
+4. Stream V2:
+   - muted jade/earthy water closer to the healer pond palette;
+   - irregular width and meander;
+   - softer, broken natural banks;
+   - blend the Healer pond into the creek with a believable outlet/wet-bank transition;
+   - keep water subordinate to the main spine and hero buildings.
+5. Ground V2:
+   - irregular worn-earth patches, subtle soil value changes and grass/weed edges;
+   - strongest detail around used village spaces, lighter detail in quiet negative space;
+   - no giant tonal blobs that reveal their construction.
+6. Village edge V2:
+   - use natural brush/grass/low earth/rock/tree framing;
+   - avoid a hard perimeter;
+   - do not create a repetitive prop ring.
+7. Integrate one reversible V2 proof only, build, deploy and verify.
+8. Update `ASSET_REGISTRY`, `HANDOFF_CURRENT` and any decision/source records affected by the new asset.
+
+## V2 PASS gate
+
+Phone QC must show:
+
+- at 0.5x + UI hidden, no obvious circular/vector terrain masks;
+- whole village reads as one continuous rural landscape;
+- stream looks naturally embedded in the ground and visually matches the healer pond;
+- pond → stream join is believable;
+- stream remains secondary to road/buildings;
+- southern field/residential edge blends into the same terrain language;
+- ground feels materially richer without becoming noisy;
+- no accepted pocket/topology/gameplay regression.
+
+
 ## Do not repeat blindly
 
 - Do not solve whole-map cohesion by re-enabling Cohesion Pass A scatter props.
@@ -94,12 +160,7 @@ Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before a
 
 ## Exact next action
 
-1. User opens deployed build `1823667`.
-2. Phone QC at `0.5x + ẨN UI` for whole-map envelope / stream / negative-space balance.
-3. Phone QC at `0.65x` for pocket continuity.
-4. Capture/inspect `1.0x` around Healer-to-stream join, stream/spine crossing and southern field/residential edge.
-5. DESIGN_CHAT classifies PASS / REVISE and closes any new ASK items.
-6. Only after decisions are closed: set transfer state to `READY_FOR_WORK` and hand the exact implementation task to Work.
+Work executes **Terrain Proof V2** from the brief above, then returns the deployed build/link for Phone QC. Do not broaden scope beyond terrain/water/edge treatment.
 
 ## PASS gate
 
@@ -122,4 +183,4 @@ Phone-QC the first modular whole-map terrain proof for Thanh Vân Thôn before a
 
 ## Resume sentence
 
-Resume from `BUILD 1823667` with transfer state `WAIT_QC`: Whole-map Terrain Proof V1 is technically deployed and awaits Phone QC. Do not start further environment production or NPC identity until DESIGN_CHAT evaluates the proof and explicitly changes the handoff to `READY_FOR_WORK`.
+Resume from `main f987be1` with transfer state `READY_FOR_WORK`: Terrain Proof V1 on `BUILD 1823667` is REVISE because its SVG/vector terrain treatment reads artificial on phone. Execute one painterly Terrain Proof V2 that preserves A1 topology, hero pockets, fence cleanup and gameplay, then deploy and return for Phone QC.
