@@ -41,6 +41,17 @@ const GROUND_RUNTIME = {
   forecourt: 'c4-settlement-forecourt-a-masked',
 } as const;
 
+// Topology Revision A moves whole accepted pockets without changing their internal composition.
+// The active village mass is compressed vertically and pulled inward toward the main spine.
+const TOPOLOGY_REVISION_A = {
+  elder: { dx: 120, dy: 20 },
+  merchant: { dx: -150, dy: -75 },
+  healer: { dx: 120, dy: -145 },
+  southWest: { dx: 130, dy: -185 },
+  southEast: { dx: -170, dy: -180 },
+  field: { dx: -125, dy: -175 },
+} as const;
+
 function removeLegacySettlementArt(scene: Phaser.Scene, zone: WorldZone): void {
   for (const child of [...scene.children.list]) {
     const candidate = child as Phaser.GameObjects.GameObject & { depth?: number; y?: number };
@@ -163,9 +174,9 @@ function addAsset(
   return image;
 }
 
-function addHerbGarden(scene: Phaser.Scene, top: number): void {
-  const x = 125;
-  const y = top + 1335;
+function addHerbGarden(scene: Phaser.Scene, top: number, dx = 0, dy = 0): void {
+  const x = 125 + dx;
+  const y = top + 1335 + dy;
   const width = 205;
   const height = 126;
   const herbBed = scene.add.image(x, y, SETTLEMENT_V2A_TEXTURES.healerHerbBed)
@@ -204,46 +215,47 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   scene.add.rectangle(800, top + 900, 1600, 1800, 0xe7dcc2, 1).setDepth(-9);
 
   const patches = [
-    { x: 780, y: 530, w: 370, r: -0.02, flip: false, alpha: 0.22 },
-    { x: 875, y: 930, w: 395, r: 0.03, flip: true, alpha: 0.25 },
-    { x: 760, y: 1320, w: 370, r: -0.03, flip: false, alpha: 0.23 },
-    { x: 860, y: 1645, w: 345, r: 0.03, flip: true, alpha: 0.21 },
+    { x: 760, y: 500, w: 390, r: -0.02, flip: false, alpha: 0.22 },
+    { x: 850, y: 810, w: 410, r: 0.03, flip: true, alpha: 0.25 },
+    { x: 760, y: 1115, w: 395, r: -0.03, flip: false, alpha: 0.24 },
+    { x: 835, y: 1435, w: 380, r: 0.03, flip: true, alpha: 0.22 },
   ] as const;
   for (const patch of patches) {
     addGroundImage(scene, GROUND_RUNTIME.patch, patch.x, top + patch.y, patch.w, patch.r, patch.flip, patch.alpha);
   }
 
   const pathPieces = [
-    { texture: GROUND_RUNTIME.pathA, x: 800, y: 105, w: 218, r: -0.03, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 765, y: 285, w: 222, r: 0.08, flip: true },
-    { texture: GROUND_RUNTIME.pathA, x: 700, y: 475, w: 226, r: -0.12, flip: true },
-    { texture: GROUND_RUNTIME.pathB, x: 805, y: 665, w: 230, r: -0.14, flip: false },
-    { texture: GROUND_RUNTIME.pathA, x: 925, y: 850, w: 226, r: 0.06, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 850, y: 1035, w: 222, r: 0.12, flip: true },
-    { texture: GROUND_RUNTIME.pathA, x: 705, y: 1220, w: 218, r: -0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 790, y: 1405, w: 220, r: -0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathA, x: 925, y: 1585, w: 222, r: 0.10, flip: true },
-    { texture: GROUND_RUNTIME.pathB, x: 820, y: 1745, w: 212, r: -0.05, flip: true },
+    { texture: GROUND_RUNTIME.pathA, x: 820, y: 95, w: 214, r: -0.02, flip: false },
+    { texture: GROUND_RUNTIME.pathB, x: 790, y: 250, w: 218, r: 0.06, flip: true },
+    { texture: GROUND_RUNTIME.pathA, x: 745, y: 410, w: 220, r: -0.10, flip: true },
+    { texture: GROUND_RUNTIME.pathB, x: 760, y: 570, w: 224, r: -0.08, flip: false },
+    { texture: GROUND_RUNTIME.pathA, x: 820, y: 730, w: 220, r: 0.08, flip: false },
+    { texture: GROUND_RUNTIME.pathB, x: 835, y: 890, w: 220, r: 0.10, flip: true },
+    { texture: GROUND_RUNTIME.pathA, x: 785, y: 1050, w: 218, r: -0.08, flip: false },
+    { texture: GROUND_RUNTIME.pathB, x: 755, y: 1210, w: 218, r: -0.08, flip: false },
+    { texture: GROUND_RUNTIME.pathA, x: 790, y: 1370, w: 216, r: 0.08, flip: true },
+    { texture: GROUND_RUNTIME.pathB, x: 815, y: 1530, w: 212, r: -0.04, flip: true },
+    { texture: GROUND_RUNTIME.pathA, x: 805, y: 1685, w: 205, r: 0.02, flip: false },
   ] as const;
   for (const piece of pathPieces) {
     addGroundImage(scene, piece.texture, piece.x, top + piece.y, piece.w, piece.r, piece.flip, 0.74);
   }
 
   const branches = [
-    { texture: GROUND_RUNTIME.pathA, x: 520, y: 545, w: 176, r: 1.24, flip: true, alpha: 0.68 },
-    { texture: GROUND_RUNTIME.pathB, x: 1080, y: 885, w: 180, r: -1.24, flip: false, alpha: 0.68 },
-    { texture: GROUND_RUNTIME.pathA, x: 510, y: 1285, w: 208, r: 1.22, flip: false, alpha: 0.80 },
-    { texture: GROUND_RUNTIME.pathB, x: 1070, y: 1660, w: 165, r: -1.24, flip: true, alpha: 0.62 },
+    { texture: GROUND_RUNTIME.pathA, x: 615, y: 575, w: 215, r: 1.18, flip: true, alpha: 0.72 },
+    { texture: GROUND_RUNTIME.pathB, x: 955, y: 820, w: 190, r: -1.16, flip: false, alpha: 0.72 },
+    { texture: GROUND_RUNTIME.pathA, x: 615, y: 1145, w: 215, r: 1.15, flip: false, alpha: 0.78 },
+    { texture: GROUND_RUNTIME.pathB, x: 1005, y: 1430, w: 190, r: -1.15, flip: true, alpha: 0.64 },
   ] as const;
   for (const branch of branches) {
     addGroundImage(scene, branch.texture, branch.x, top + branch.y, branch.w, branch.r, branch.flip, branch.alpha);
   }
 
   const forecourts = [
-    { x: 350, y: 585, w: 295, r: -0.04, flip: false, alpha: 0.62 },
-    { x: 1210, y: 990, w: 320, r: 0.04, flip: true, alpha: 0.72 },
-    { x: 350, y: 1335, w: 310, r: -0.03, flip: true, alpha: 0.70 },
-    { x: 1190, y: 1700, w: 275, r: 0.04, flip: false, alpha: 0.44 },
+    { x: 470, y: 605, w: 295, r: -0.04, flip: false, alpha: 0.62 },
+    { x: 1060, y: 915, w: 320, r: 0.04, flip: true, alpha: 0.72 },
+    { x: 470, y: 1190, w: 310, r: -0.03, flip: true, alpha: 0.70 },
+    { x: 1065, y: 1525, w: 275, r: 0.04, flip: false, alpha: 0.44 },
   ] as const;
   for (const forecourt of forecourts) {
     addGroundImage(scene, GROUND_RUNTIME.forecourt, forecourt.x, top + forecourt.y, forecourt.w, forecourt.r, forecourt.flip, forecourt.alpha);
@@ -259,48 +271,54 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   addAsset(scene, tree, 150, top + 330, 178, false, 0.88);
   addAsset(scene, tree, 1460, top + 355, 184, true, 0.86);
 
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.hallA, 350, top + 555, 315);
-  addAsset(scene, tree, 150, top + 575, 185, false, 0.96);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 540, top + 595, 195, false, 0.94);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 535, top + 510, 120, false, 0.92);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615, top + 570, 74, false, 0.96);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 235, top + 650, 105, true, 0.82);
+  const elder = TOPOLOGY_REVISION_A.elder;
+  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.hallA, 350 + elder.dx, top + 555 + elder.dy, 315);
+  addAsset(scene, tree, 150 + elder.dx, top + 575 + elder.dy, 185, false, 0.96);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 540 + elder.dx, top + 595 + elder.dy, 195, false, 0.94);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 535 + elder.dx, top + 510 + elder.dy, 120, false, 0.92);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615 + elder.dx, top + 570 + elder.dy, 74, false, 0.96);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 235 + elder.dx, top + 650 + elder.dy, 105, true, 0.82);
 
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantStall, 1210, top + 925, 270);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantSign, 1040, top + 900, 60);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantGoods, 1325, top + 975, 135);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantCart, 1460, top + 935, 180);
-  addAsset(scene, tree, 1490, top + 735, 165, false, 0.86);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 990, top + 965, 118, true, 0.84);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 990, top + 845, 72, false, 0.94);
+  const merchant = TOPOLOGY_REVISION_A.merchant;
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantStall, 1210 + merchant.dx, top + 925 + merchant.dy, 270);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantSign, 1040 + merchant.dx, top + 900 + merchant.dy, 60);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantGoods, 1325 + merchant.dx, top + 975 + merchant.dy, 135);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantCart, 1460 + merchant.dx, top + 935 + merchant.dy, 180);
+  addAsset(scene, tree, 1490 + merchant.dx, top + 735 + merchant.dy, 165, false, 0.86);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 990 + merchant.dx, top + 965 + merchant.dy, 118, true, 0.84);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 990 + merchant.dx, top + 845 + merchant.dy, 72, false, 0.94);
 
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchB, 350, top + 1295, 292);
-  addAsset(scene, tree, 135, top + 1310, 168, true, 0.92);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 565, top + 1315, 182, true, 0.91);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 540, top + 1225, 112, true, 0.90);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615, top + 1265, 72, false, 0.94);
+  const healer = TOPOLOGY_REVISION_A.healer;
+  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchB, 350 + healer.dx, top + 1295 + healer.dy, 292);
+  addAsset(scene, tree, 135 + healer.dx, top + 1310 + healer.dy, 168, true, 0.92);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 565 + healer.dx, top + 1315 + healer.dy, 182, true, 0.91);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 540 + healer.dx, top + 1225 + healer.dy, 112, true, 0.90);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615 + healer.dx, top + 1265 + healer.dy, 72, false, 0.94);
 
-  scene.add.image(325, top + 1455, SETTLEMENT_V2A_TEXTURES.healerWaterBridge)
+  scene.add.image(325 + healer.dx, top + 1455 + healer.dy, SETTLEMENT_V2A_TEXTURES.healerWaterBridge)
     .setOrigin(0.5)
     .setDisplaySize(440, 247)
     .setTint(0xe8e1d8)
     .setAlpha(0.96)
     .setDepth(-6);
-  addHerbGarden(scene, top);
-  scene.add.image(548, top + 1340, SETTLEMENT_V2A_TEXTURES.healerDrying)
+  addHerbGarden(scene, top, healer.dx, healer.dy);
+  scene.add.image(548 + healer.dx, top + 1340 + healer.dy, SETTLEMENT_V2A_TEXTURES.healerDrying)
     .setOrigin(0.5)
     .setDisplaySize(112, 124)
     .setAlpha(0.95)
     .setDepth(-2.7);
 
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchA, 75, top + 1750, 292, false, 0.84);
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.tileA, 1535, top + 1665, 310, true, 0.82);
-  addAsset(scene, tree, 120, top + 1540, 155, false, 0.74);
-  addAsset(scene, tree, 1490, top + 1505, 168, true, 0.76);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 430, top + 1695, 175, false, 0.82);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 1190, top + 1690, 175, true, 0.82);
+  const southWest = TOPOLOGY_REVISION_A.southWest;
+  const southEast = TOPOLOGY_REVISION_A.southEast;
+  const field = TOPOLOGY_REVISION_A.field;
+  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchA, 75 + southWest.dx, top + 1750 + southWest.dy, 292, false, 0.84);
+  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.tileA, 1535 + southEast.dx, top + 1665 + southEast.dy, 310, true, 0.82);
+  addAsset(scene, tree, 120 + southWest.dx, top + 1540 + southWest.dy, 155, false, 0.74);
+  addAsset(scene, tree, 1490 + southEast.dx, top + 1505 + southEast.dy, 168, true, 0.76);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 430 + southWest.dx, top + 1695 + southWest.dy, 175, false, 0.82);
+  addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 1190 + field.dx, top + 1690 + field.dy, 175, true, 0.82);
 
-  scene.add.image(1210, top + 1620, SETTLEMENT_V2A_TEXTURES.fieldEdge)
+  scene.add.image(1210 + field.dx, top + 1620 + field.dy, SETTLEMENT_V2A_TEXTURES.fieldEdge)
     .setOrigin(0.5)
     .setDisplaySize(320, 180)
     .setAlpha(0.96)
