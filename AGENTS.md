@@ -123,7 +123,60 @@ For runtime assets, GitHub is canonical. For accepted but pre-runtime references
 
 Never treat a thumbnail, vague Library result, or assistant-generated board name as enough to distinguish canonical vs rejected versions.
 
-## 7. Handoff discipline
+
+## 7. Two-conversation operating model
+
+The project may intentionally use two ChatGPT conversations with different ownership roles.
+
+### DESIGN / DECISION OWNER
+
+The normal project chat is the design room. It owns:
+
+- structured discovery;
+- product/gameplay/art direction;
+- ASK decisions and trade-offs;
+- deciding what is locked vs still open;
+- defining the smallest proof and its PASS gate;
+- evaluating Phone QC and deciding whether a result is PASS, REVISE, or requires reopening a prior decision.
+
+This chat should not hand off vague intent. Before execution transfer, it must convert the decision into a concrete repository-backed handoff.
+
+### WORK EXECUTION OWNER
+
+A Work conversation is the execution shop. It owns:
+
+- reading the required project docs and verifying live GitHub state;
+- implementing the exact approved proof;
+- using tools/browser/code/build/deploy workflows;
+- self-resolving VERIFY items with evidence;
+- checking for partial success before retrying;
+- updating handoff/registry/decision docs when execution changes durable state;
+- returning a deployed build or other concrete evidence for Phone QC.
+
+Work must **not** silently reopen creative/product decisions that are already locked. If execution reveals a new high-impact ambiguity that belongs to ASK, Work must stop at that boundary and return the question to the DESIGN / DECISION OWNER.
+
+### Single execution owner rule
+
+At any moment, only one conversation may be the active repo-writing execution owner.
+
+Do not let the design chat and Work independently edit the same branch/repo state in parallel. Before transferring ownership:
+
+1. verify current `main`, branch, PR and recent operation state;
+2. update `docs/HANDOFF_CURRENT.md`;
+3. set the transfer state explicitly;
+4. stop repo writes in the sending conversation until ownership returns.
+
+Allowed transfer states:
+
+- `WAIT_QC` — user/Phone QC is the next gate; Work must not continue production.
+- `READY_FOR_WORK` — decisions are sufficiently locked and Work may execute the exact handoff.
+- `WORK_EXECUTING` — Work owns repo writes.
+- `RETURN_TO_DESIGN` — execution found an ASK/design issue or completed a proof and needs evaluation.
+- `DESIGN_ACTIVE` — design chat owns discovery/decision work; no Work execution is active.
+
+GitHub + continuity documents are the shared memory between the two conversations. Chat history is not the handoff mechanism.
+
+## 8. Handoff discipline
 
 When a conversation becomes long, before moving to a new chat, or after a complex milestone/debug session:
 
@@ -137,7 +190,7 @@ When a conversation becomes long, before moving to a new chat, or after a comple
 
 A handoff is not complete if it only says what was discussed. It must say what actually exists in GitHub, what exact assets survive the chat boundary, and what has or has not passed validation.
 
-## 8. Definition of a good resume
+## 9. Definition of a good resume
 
 A new chat should be able to answer these within a few minutes of reading the repo:
 
