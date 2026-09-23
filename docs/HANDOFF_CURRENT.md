@@ -1,194 +1,121 @@
 # Current Project Handoff
 
-Snapshot: 2026-09-22 10:00 (+07)
+Snapshot: 2026-09-23 14:25 (+07)
 Project: ARPG / Xianxia ARPG Web
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current milestone: C4.2 / Thanh Vân Thôn V2-A environment production
-Continuity branch: `docs/field-edge-b-phone-pass`
-Next production decision: run a structured discovery round before choosing the next proof.
+Current milestone: C4.2 / Thanh Vân Thôn production integration and whole-map composition
+Current reviewed runtime: `63d75ba82e9a78e86290437e96054b322c914dd2` (`BUILD 63d75ba`)
+Current branch for continuity sync: `docs/topology-a1-phone-pass`
 
 ## Verified repo/runtime state
 
-- Current reviewed runtime lineage: `de30ae78a631101fe5fbd4a393e17e70c29dfbb6` (`BUILD de30ae7`).
-- PR #95 `Repair Field Edge B runtime asset` merged.
-- PR #95 replaced the incomplete/corrupt Field Edge B runtime WebP with a verified RGBA WebP and removed the temporary runtime canvas-cleanup workaround.
-- CI PASS and GitHub Pages deploy PASS for `de30ae7`.
-- Phone QC at 1.0x + 0.65x confirms Field Edge B renders correctly with transparency and no black matte.
-- Live QC URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/`.
-- Do not use Remote Desktop Commander. Use GitHub + Drive connectors and Phone QC.
+- PR #97 promoted accepted Thanh Vân Thôn V2-A layers from QC-only architecture into the production game flow.
+- PR #98 added production QC zoom presets `1.0x → 0.8x → 0.65x → 0.5x`.
+- PR #99 added `ẨN UI / HIỆN UI` QC controls while preserving persistent zoom controls.
+- PR #100 Cohesion Pass A was a useful diagnostic but did not solve the whole-map structure; its additive prop layer is no longer active.
+- User explicitly reopened whole-map topology while preserving internal hero-pocket composition.
+- PR #101 applied Topology Revision A: compacted the active village mass, moved Elder/Merchant/Healer pockets as intact units, and moved NPC interaction nodes with their pockets without changing interaction radius.
+- PR #102 applied Topology Tune A1: strengthened the three hero-pocket branches, added a subtle north-entry ground transition, and pulled the southern residential/agricultural fringe inward.
+- CI PASS and GitHub Pages deploy PASS for `63d75ba`.
+- Phone QC screenshots on Android at 0.65x with UI hidden show the compact settlement reads coherently across Elder, Merchant, Healer and the southern fringe.
 
-## Locked Thanh Vân Thôn direction
+## Locked whole-map result
 
-- Poor, humble frontier village near wilderness.
-- Light hub: important early, less dominant later.
-- Clear main spine + a few small branches.
-- Compact authored slice that implies a larger village at the edges.
-- Modest stream/pond + simple bridge + field/garden language, not a traversal puzzle.
-- Selected footprint: **V2-A, 1600 × 1800**. V2-B 1600 × 3200 is rejected unless explicitly reopened.
-- North → south hierarchy: frontier threshold → Elder west → Merchant east → Healer west → residential/field fringe + route out.
+### ENV-SETTLEMENT-LAYOUT — PHONE PASS
 
-## Locked environment layers
-
-### Ground/path P0 — PHONE PASS
-
-Accepted runtime kit:
+Accepted production implementation:
 
 ```text
-public/assets/c4/environment/settlement/env_settlement_path_seg_a.png
-public/assets/c4/environment/settlement/env_settlement_path_seg_b.png
-public/assets/c4/environment/settlement/env_settlement_ground_patch_a.png
-public/assets/c4/environment/settlement/env_settlement_forecourt_a.png
+src/game/settlementV2AProduction.ts
+src/game/npcConfig.ts
+src/scenes/ProductionGameScene.ts
 ```
 
-Do not reopen/regenerate without a new concrete Phone-QC problem.
-
-### Healer water + bridge — PHONE PASS
-
-Asset ID: `ENV-HEALER-WATER-BRIDGE-A`
-
-Canonical runtime asset:
+Current accepted production lineage:
 
 ```text
-public/assets/c4/environment/settlement/env_healer_water_bridge_a.webp
+BUILD 63d75ba
+PR #101 Topology Revision A
+PR #102 Topology Tune A1
 ```
 
-Accepted presentation: display `440 × 247`, subtle warm tint + alpha `0.96`; bridge crosses the narrow water gap and connects both banks; 1.0x + 0.65x PASS.
+Locked intent:
 
-### Healer activity kit — PHONE PASS
+- V2-A remains the selected `1600 × 1800` settlement footprint.
+- Elder / Merchant / Healer internal pocket composition remains preserved.
+- Whole-map topology now uses a compact zig-zag rhythm around the main spine rather than three isolated POIs.
+- Three hero-pocket branches must remain readable but subordinate to the main spine.
+- North entry keeps a light threshold transition rather than a new POI.
+- Southern residential + agriculture fringe is intentionally pulled inward so it reads as one village edge.
+- Do not re-enable Cohesion Pass A's additive scatter layer merely to fill negative space.
+- Do not reopen topology or hero-pocket placement without a new concrete Phone-QC problem.
 
-Asset ID: `ENV-HEALER-ACTIVITY-KIT-A`
+## Locked environment assets
 
-Canonical runtime assets:
+Preserve all previously accepted runtime assets:
 
-```text
-public/assets/c4/environment/settlement/env_healer_herb_bed_a.webp
-public/assets/c4/environment/settlement/env_healer_drying_props_a.webp
-```
+- Ground/path P0 — `PHONE_PASS`
+- Merchant Kit B — `PHONE_PASS`
+- `ENV-HEALER-WATER-BRIDGE-A` — `PHONE_PASS`
+- `ENV-HEALER-ACTIVITY-KIT-A` — `PHONE_PASS`
+- `ENV-FIELD-EDGE-KIT-B` — `PHONE_PASS`
+- `ENV-HOUSE-SET-A` — `PHONE_PASS`
+- base village tree/fence/rock/lantern kit — `PHONE_PASS`
 
-Runtime scene:
+Field Edge A remains rejected/superseded.
 
-```text
-src/scenes/VillageTopologyQcHealerActivityScene.ts
-```
+## Production QC utilities
 
-Accepted Phone-QC presentation:
+Production runtime currently includes:
 
-- herb garden display `205 × 126`, final center `(125, 1335)` on the green left edge of the Healer house;
-- herb asset keeps the accepted runtime geometry mask;
-- drying/work cluster display `112 × 124`, center `(548, 1340)`;
-- water/bridge unchanged;
-- 1.0x + 0.65x PASS.
+- zoom presets: `1.0x / 0.8x / 0.65x / 0.5x`;
+- `ẨN UI / HIỆN UI`;
+- QC controls remain visible when gameplay UI/world labels are hidden.
 
-### Field edge kit — PHONE PASS
-
-Asset ID: `ENV-FIELD-EDGE-KIT-B`
-
-Canonical runtime asset:
-
-```text
-public/assets/c4/environment/settlement/env_field_edge_kit_b.webp
-```
-
-Runtime scene:
-
-```text
-src/scenes/VillageTopologyQcFieldEdgeScene.ts
-```
-
-Accepted Phone-QC presentation on `BUILD de30ae7`:
-
-- field-edge B uses the accepted southern footprint centered around `(1210, 1620)`;
-- display `320 × 180`, alpha `0.96`, ground depth `-14`;
-- direct render from the canonical RGBA WebP, no runtime canvas cleanup;
-- 1.0x: reads as humble cultivated rows / poor frontier agriculture and blends with painterly village art;
-- 0.65x: remains subordinate to houses/player and keeps the southern exit route visually open;
-- no black matte, no missing texture, no sticker-like hard rectangle.
-
-Decision: **`ENV-FIELD-EDGE-KIT-B = PHONE_PASS`. Preserve art, binary, footprint, scale and placement.**
-
-`ENV-FIELD-EDGE-KIT-A` is rejected/superseded by B and must not be restored.
-
-## Accepted assets that must not be regenerated
-
-Houses:
-
-```text
-env_house_thatch_a.png
-env_house_tile_a.png
-env_house_hall_a.png
-env_house_thatch_b.png
-```
-
-General props:
-
-```text
-env_tree_village_a.png
-env_fence_village_a.png
-env_rockgrass_village_a.png
-env_lanternpost_village_a.png
-```
-
-Merchant Kit B:
-
-```text
-env_merchant_stall_b.png
-env_merchant_cart_b.png
-env_merchant_goods_b.png
-env_merchant_sign_b.png
-```
-
-Healer + field:
-
-```text
-env_healer_water_bridge_a.webp
-env_healer_herb_bed_a.webp
-env_healer_drying_props_a.webp
-env_field_edge_kit_b.webp
-```
+These are QC utilities only; they do not change production gameplay intent.
 
 ## Runtime/gameplay constraints that must not regress
 
 - Mobile browser portrait 9:16.
-- Manual `ATK + SKILL + NÉ` combat in production runtime.
-- One flying sword per attack press.
+- Manual `ATK + SKILL + NÉ`.
+- One flying sword per ATK press.
 - Base attack range 205 + future bonus.
 - Base cooldown 800 ms through `basicAttackSpeedPct`.
 - Settlement safe zone and NPC interaction remain intact.
-- Third-Kiếp-Ảnh projectile cleanup freeze fix must not regress.
-- Environment proofs must not alter gameplay hitboxes or timing.
+- Environment/art passes do not change gameplay hitboxes or timing unless explicitly requested.
+- NPC interaction radius remains unchanged by the topology revision.
 
-## Failed / rejected paths to avoid
+## Failed / superseded paths to avoid
 
-- V2-B 3200-height village: rejected by Phone QC.
-- Mixed old-art macro proof / giant zone ellipses: diagnostic only.
-- Repeated `house + tree + fence + rock + lamp` stamping: rejected workflow.
-- Broad asset generation before topology/composition proof: rejected workflow.
-- Regenerating DESIGN_PASS / PHONE_PASS art for layout/scale problems: prohibited.
-- Water/bridge PNG transport caused black/missing art; validated WebP runtime path fixed it.
-- Herb-bed corrupt WebP caused Phaser missing texture; fixed with valid WebP.
-- Field Edge A looked tile-like and was rejected on art/style.
-- Early Field Edge B binary transport produced black matte; runtime flood-cleanup then removed the asset entirely on phone. Final fix was to replace the runtime file with a verified RGBA WebP and render it directly. Do not restore the runtime cleanup workaround.
-- Remote Desktop Commander: prohibited for this project workflow.
+- V2-B 1600 × 3200 settlement.
+- Giant zone ellipses / mixed old-art macro proof.
+- Repeating `house + tree + fence + rock + lamp` stamps.
+- Cohesion Pass A scatter-prop strategy as a substitute for whole-map structure.
+- Regenerating accepted hero-pocket art for layout problems.
+- Restoring Field Edge A.
+- Restoring temporary Field Edge canvas-cleanup workarounds.
+- Reopening accepted topology without a new Phone-QC problem.
 
 ## Exact next action
 
-Do **not** automatically choose NPC art or another environment kit just because placeholders remain. The previous project decision explicitly requires discovery before selecting the next substantial proof.
+The largest remaining visual prototype signal is the NPC placeholder layer.
 
-Next step:
+Next action:
 
-1. Merge this continuity sync.
-2. Run one structured discovery round for the next production target.
-3. Compare only the highest-impact candidate directions (e.g. NPC identity, remaining settlement polish/promotion, or another zone) against current milestone goals and blockers.
-4. Choose one small reversible proof.
-5. Only then create the next branch and implement.
+1. Run a short structured discovery round for **NPC identity production**.
+2. Define a minimal proof for one NPC first, not all three.
+3. Prefer an NPC whose visual identity gives the strongest settlement readability gain.
+4. Preserve settlement topology, pocket art, interaction coordinates/radius and gameplay logic.
+5. Isolate → integrate → deploy → Phone QC before expanding to the other NPCs.
 
-## Pass gate for next selection
+## Pass gate for the next proof
 
-- target solves a concrete milestone need;
-- does not reopen locked V2-A / ground / merchant / healer / field-edge decisions;
-- proof can be isolated and Phone-QC tested before expansion;
-- no broad batch generation while a core uncertainty remains.
+- NPC reads clearly at 1.0x phone gameplay scale.
+- Fits the established xianxia painterly/anime visual language.
+- Role can be inferred visually without relying only on a text label.
+- Does not alter interaction radius, gameplay state or accepted settlement composition.
+- Proof is small and reversible.
 
 ## Resume sentence
 
-Resume after `ENV-FIELD-EDGE-KIT-B = PHONE_PASS` on `BUILD de30ae7`. Preserve all accepted V2-A topology, ground/path, Merchant Kit B, Healer Water+Bridge, Healer Activity Kit A and Field Edge Kit B. Do not restore Field Edge A or the temporary Field Edge runtime cleanup workaround. The next action is a structured discovery round to choose the next production proof, not automatic implementation.
+Resume from `BUILD 63d75ba`: Thanh Vân Thôn V2-A whole-map topology, Topology Revision A + Tune A1, is accepted and should remain locked. Preserve all PHONE_PASS environment assets and QC utilities. Next run a short NPC-identity discovery round and prove one NPC before expanding.
