@@ -193,3 +193,14 @@ Before moving to a new chat or pausing major production:
 7. State the exact next action and pass gate.
 
 Current snapshot note: merchant/settlement build `56b9359` is phone-accepted. The reusable environment-design knowledge base is now part of the project, and substantial next map/environment work should use its templates before broad asset production.
+
+## Whole-map Thanh Vân Thôn north-star
+
+- Registry Asset ID: `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1`
+- Role: approved visual/composition north-star for whole-map completion; not a runtime background.
+- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v001.png`
+- Drive file ID: `1WzAg_jBz3J6xiNO3jbmh7fMON6wBueJR`
+- Related canonical design doc: `docs/environment/THANH_VAN_THON_WHOLE_MAP_V1.md`
+- Runtime proof derived from the direction: `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1`
+- Preserve this reference across chats so Work does not regenerate the approved whole-map direction from memory.
+
