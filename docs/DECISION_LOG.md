@@ -71,6 +71,8 @@ Rules:
 | 2026-09-23 | Whole-map Thanh Vân Thôn completion direction is locked as: preserve A1 spine/hero-pocket skeleton; stronger surrounding terrain composition is allowed; rural agriculture + one secondary stream; remove purposeless fence scatter while retaining functional fences; moderate ground realism; natural macro framing with an open playable interior. | Supersedes the earlier assumption that NPC identity is automatically the next production target. North-star asset: `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1`. |
 | 2026-09-23 | `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is the first modular runtime proof for the whole-map direction, merged via PR #104 on `BUILD 1823667`. CI/Pages PASS; Phone QC is still pending. | Do not raise art fidelity, add more edge detail, or move to NPC identity until this proof is evaluated on phone. |
 
+| 2026-09-23 | Whole-map Terrain Proof V1 (`BUILD 1823667`) is `REVISE` after 0.5x hidden-UI Phone QC. The failure is visual treatment, not topology: large rounded/circular edge masks read as vector overlays; stream is too cyan/regular; pond→stream join is synthetic; ground remains too flat. Preserve A1 topology, hero pockets, lower-map stream role and fence cleanup. | Next proof must be a painterly Terrain V2. Do not solve this by reopening topology, restoring fence scatter, or adding generic props. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -93,4 +95,4 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Phone-QC Whole-map Terrain Proof V1 on `BUILD 1823667`. The two-conversation workflow is active; do not hand execution to Work while transfer state is `WAIT_QC`.
+- Current production action: Terrain Proof V1 is REVISE; handoff state is `READY_FOR_WORK` for one painterly Terrain Proof V2.
