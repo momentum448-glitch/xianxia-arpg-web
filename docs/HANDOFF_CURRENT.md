@@ -1,24 +1,24 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK
-Return condition: Work deploys NPC Re-block A and returns a QC link/build for quick Phone QC; return `RETURN_TO_DESIGN` only if implementation reveals a high-impact design ASK.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: user/DESIGN_CHAT performs quick Android Phone QC for NPC Re-block A and records PASS/REVISE. Collision Proof B remains blocked until that gate passes.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified current main before NPC Re-block A: `9027b68143cf96ad7a34e63088c93dbdbf22661a`
+Verified runtime main after NPC Re-block A: `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`
 Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
-Verified live Proof A badge before this docs-only handoff sync: `BUILD 2b3e5cd`
-Completed execution branch: `work/illustrated-world-hybrid-proof-a` (PR #110 merged); north edge refinements PR #111 and #112 merged.
-Active execution branch: `work/npc-reblock-a` (based on `9027b68143cf96ad7a34e63088c93dbdbf22661a`).
-Open relevant execution PR: none (implementation in progress)
+Latest NPC placement runtime: PR #115 merged, branch `work/npc-reblock-a`.
+Verified live NPC Re-block badge before this docs-only handoff sync: `BUILD 7e8eff6`.
+CI run #35999392051 PASS; Pages run #35999455158 PASS.
+Open relevant execution PR: none
 Unrelated old open PR: #4
-Execution ownership accepted from this verified handoff. Runtime writes stay on `work/npc-reblock-a` until PR and QC evidence are ready.
+Runtime changes are complete. This docs-only handoff returns ownership for quick Phone QC.
 
 ## Current objective
 
-Execute one **NPC Re-block A** micro-pass before Collision Proof B. Proof A — Baked Terrain Plate V1 is now PHONE PASS.
+NPC Re-block A is deployed and awaits quick Android Phone QC. Proof A — Baked Terrain Plate V1 is PHONE PASS; do not start Collision Proof B until the new NPC positions pass.
 
 The user and DESIGN_CHAT deliberately changed the settlement production architecture after reviewing Terrain Proof V2 and a stronger whole-map visual target. The new architecture aims for the coherence of one illustrated village while preserving real game collision, occlusion, animation and dynamic actors.
 
@@ -165,7 +165,7 @@ If a suitable painterly terrain source cannot be produced/recovered while respec
 - QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
 - Desktop browser self-check at 0.5x with gameplay UI hidden: painterly ground, routes and lower creek load; houses, near trees and accepted Healer bridge remain separate; hard horizontal plate seam was removed. At 1.0x the hero pockets remain in their accepted positions.
 - Android Phone QC was completed by the user on `BUILD 93c76f4` (docs-only badge over the same functional Proof A runtime lineage). DESIGN_CHAT re-reviewed the supplied 0.5x hidden-UI screenshots and accepts Proof A as **PHONE PASS**: the settlement reads as one authored rural landscape, the baked terrain materially improves cohesion, and no blocker-level seam/duplication/regression is visible.
-- No collision/occlusion, water traversal, combat timing, interaction or A1 topology change. Do not start Proof B before Phone QC.
+- No collision/occlusion, water traversal, interaction-radius/semantics, combat timing or A1 topology change. Do not start Proof B before NPC Re-block A Phone QC.
 
 ## Proof A PASS result
 
@@ -222,6 +222,21 @@ QC gate:
 
 After this micro-pass is PHONE PASS, return to the planned **Proof B — Collision Foundation**.
 
+## NPC Re-block A execution evidence — Phone QC pending
+
+- Runtime: `src/game/npcConfig.ts`; PR #115; runtime commit `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`.
+- Elder anchor: `(490, 7828)`, at the Elder hall entrance/forecourt.
+- Merchant anchor: `(1045, 8082)`, at the merchant stall working edge.
+- Healer anchor: `(490, 8382)`, at the Healer house/herb-work entrance edge.
+- Interaction radius remains `155` for all three. Rendering and nearest-NPC interaction use the same live container position; dialogue/interaction semantics are unchanged.
+- CI #35999392051 PASS; Pages #35999455158 PASS; live badge `BUILD 7e8eff6`.
+- Desktop browser check at 0.5x hidden UI confirms the NPCs belong to their three pockets and no longer read as a central vertical row. At 1.0x, the characters sit immediately in front of their associated house/shop areas.
+- Interaction smoke check: moving within range of the repositioned Merchant and Healer shows the matching `TƯƠNG TÁC Thương nhân` and `TƯƠNG TÁC Dược sĩ` prompts. Code-level shared-anchor check confirms all NPCs move with the same trigger point; Elder retains the same `155` radius.
+- QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
+- Android Phone QC for this new runtime has not yet been performed. Confirm all three locations at 1.0x, staggered pocket placement at 0.5x hidden UI, door/road clearance, and interaction at the visible NPC before marking this micro-pass PASS or starting Proof B.
+
+
+
 ## Planned later proofs — do not execute yet
 
 ### Proof B — Collision Foundation
@@ -263,4 +278,4 @@ Do not repeat:
 
 ## Resume sentence
 
-Resume from verified `main 9027b681` with transfer state `WORK_EXECUTING` on `work/npc-reblock-a`. Implement **NPC Re-block A only**: move Elder / Merchant / Healer to natural entrance/work anchors in their own pockets, move interaction anchors with them, preserve radii and semantics. Deploy and return for quick Phone QC. Do not start Collision Proof B.
+Resume from verified runtime `main 7e8eff6` with transfer state `WAIT_QC`. Review **NPC Re-block A** at https://momentum448-glitch.github.io/xianxia-arpg-web/ (live badge `BUILD 7e8eff6` before this docs-only sync), record Android PASS/REVISE, and keep Collision Proof B blocked until PASS.
