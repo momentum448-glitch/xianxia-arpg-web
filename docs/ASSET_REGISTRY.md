@@ -312,7 +312,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1
 
 - Purpose: Illustrated World Hybrid Proof A, one coherent baked Layer 0 beneath the existing playable village objects.
-- Status: `INTEGRATED` technical candidate; Android Phone QC is pending.
+- Status: `PHONE_PASS`.
 - Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_baked_terrain_plate_v1.png`.
 - Metadata: PNG RGB, 1182 × 1330, 3,604,739 bytes; SHA-256 `d223b8005eed5de278e82f54b8c85eff5b66f742289ca30960f18f0ed4c60c96`.
 - Source direction: approved `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` in Drive; terrain-only painterly generation refined for a lower Healer creek, open route and small-scale vegetation.
@@ -320,7 +320,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Scope: baked earth, routes, muted creek surface, fields, low grass, tiny rocks and peripheral terrain. No house, major tree, bridge, major collision prop or NPC is baked into the bitmap.
 - Gameplay: visual-only; topology, collision, interactions and combat remain unchanged. Collision/occlusion extensions belong to later proof gates.
 - Runtime lineage: PR #110, north-edge follow-up PR #111/#112, runtime commit `2b3e5cd`; CI PASS and Pages run #35994886058 PASS. Desktop self-check at 0.5x hidden UI verified the integrated plate and separate objects; the alpha-band north edge removes the hard seam. The old plains approach north of the plate still needs phone judgment.
-- Next action: ordered Android Phone QC at 1.0x and 0.5x hidden UI; record PASS/REVISE before Proof B.
+- Phone QC: PASS on 2026-09-24 from user Android screenshots at live `BUILD 93c76f4` (code-identical functional Proof A runtime lineage from `2b3e5cd`). Whole-map cohesion, painterly ground continuity and mobile readability passed the Proof A gate.
+- Next action: preserve. Run the approved NPC Re-block A micro-pass before Collision Proof B.
 
 ### ARCH-SETTLEMENT-ILLUSTRATED-WORLD-HYBRID
 
@@ -388,4 +389,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **run ordered Android Phone QC for deployed Illustrated World Hybrid Proof A, record PASS/REVISE with build/screenshots, and keep Proof B blocked until that gate.**
+Current exact next action: **Proof A is PHONE PASS. Work executes NPC Re-block A only, then returns for quick Phone QC before Collision Proof B.**

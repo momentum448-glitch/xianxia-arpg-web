@@ -1,9 +1,9 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: user/DESIGN_CHAT completes Android Phone QC for Illustrated World Hybrid Proof A and records PASS/REVISE. Proof B remains blocked.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys the settlement NPC re-block micro-pass and returns a QC link/build, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
@@ -17,7 +17,7 @@ This documentation handoff advances `main` without runtime changes. Verify the l
 
 ## Current objective
 
-Execute **Illustrated World Hybrid Proof A — Baked Terrain Plate V1**.
+Execute one **NPC Re-block A** micro-pass before Collision Proof B. Proof A — Baked Terrain Plate V1 is now PHONE PASS.
 
 The user and DESIGN_CHAT deliberately changed the settlement production architecture after reviewing Terrain Proof V2 and a stronger whole-map visual target. The new architecture aims for the coherence of one illustrated village while preserving real game collision, occlusion, animation and dynamic actors.
 
@@ -163,12 +163,12 @@ If a suitable painterly terrain source cannot be produced/recovered while respec
 - CI for PR #112: PASS; Pages run [#35994886058](https://github.com/momentum448-glitch/xianxia-arpg-web/actions/runs/35994886058): PASS. Live badge verified `BUILD 2b3e5cd` before this documentation sync.
 - QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
 - Desktop browser self-check at 0.5x with gameplay UI hidden: painterly ground, routes and lower creek load; houses, near trees and accepted Healer bridge remain separate; hard horizontal plate seam was removed. At 1.0x the hero pockets remain in their accepted positions.
-- Android Phone QC has **not** been performed and Proof A is **not** Phone PASS. Inspect 1.0x Healer pond/creek layering, 0.5x whole-map hierarchy and north approach, southern fields, and stable rendering/performance. The pre-existing plains approach north of the plate still has a soft legacy path over pale paper; decide whether that transition is acceptable on phone. Record PASS/REVISE with screenshots and exact build.
+- Android Phone QC was completed by the user on `BUILD 93c76f4` (docs-only badge over the same functional Proof A runtime lineage). DESIGN_CHAT re-reviewed the supplied 0.5x hidden-UI screenshots and accepts Proof A as **PHONE PASS**: the settlement reads as one authored rural landscape, the baked terrain materially improves cohesion, and no blocker-level seam/duplication/regression is visible.
 - No collision/occlusion, water traversal, combat timing, interaction or A1 topology change. Do not start Proof B before Phone QC.
 
-## Proof A PASS gate
+## Proof A PASS result
 
-At Phone QC:
+**PASS.** Phone screenshots satisfy the intended Proof A gate. The following criteria remain the accepted baseline:
 
 - 0.5x + hidden UI reads as one authored rural landscape, not a collage;
 - terrain / creek / fields approach north-star V2 material and atmosphere;
@@ -179,11 +179,53 @@ At Phone QC:
 - gameplay / interaction / combat behavior remains unchanged;
 - Android rendering/performance is stable.
 
+## NPC Re-block A — exact Work brief
+
+Reason:
+
+- current Elder / Merchant / Healer placeholders read too vertically aligned along the central route;
+- they should visually belong to their functional pocket rather than look like route markers.
+
+Locked placement intent:
+
+- **Elder:** move from the central-road alignment to a natural standing point at / just outside the Elder hall entrance/forecourt.
+- **Merchant:** place at the merchant stall/shopfront working edge, visually tied to stall/cart/goods rather than the central road.
+- **Healer:** place at the Healer house entrance / herb-work edge, visually tied to the house/garden/drying area rather than the central road.
+- deliberately stagger all three so they do not form one vertical line.
+
+Runtime rules:
+
+- this user request explicitly permits changing each NPC's world position / interaction anchor;
+- move the interaction anchor with the NPC so visual and interaction positions remain coherent;
+- preserve each existing interaction radius and interaction semantics unless a concrete bug requires otherwise;
+- do not change NPC identity/art in this pass;
+- do not move houses, hero pockets, path topology, terrain plate or accepted environment props;
+- do not start collision/occlusion/water-blocking Proof B yet;
+- keep main route and door approaches unobstructed.
+
+VERIFY in code/runtime instead of guessing:
+
+1. locate the actual current Elder / Merchant / Healer NPC spawn and interaction definitions;
+2. inspect the rendered entrance/forecourt anchors against current A1 pocket offsets;
+3. choose the smallest coordinate changes that attach each NPC to its corresponding pocket;
+4. build/deploy and verify interaction still triggers at the visible NPC.
+
+QC gate:
+
+- at 0.5x, the three NPCs no longer read as a vertical line;
+- each NPC clearly belongs to its own functional pocket;
+- at 1.0x, each NPC stands naturally near the intended entrance/work area;
+- NPCs do not block the main road or doorway;
+- interaction triggers at the visible NPC with the existing radius/behavior;
+- no terrain/topology/combat regression.
+
+After this micro-pass is PHONE PASS, return to the planned **Proof B — Collision Foundation**.
+
 ## Planned later proofs — do not execute yet
 
 ### Proof B — Collision Foundation
 
-After A passes:
+After Proof A **and NPC Re-block A** pass:
 
 - simplified house/tree/rock/fence/water ground-footprint collision;
 - water blocked by default;
@@ -220,4 +262,4 @@ Do not repeat:
 
 ## Resume sentence
 
-Resume with transfer state `WAIT_QC`: Proof A is deployed on runtime `BUILD 2b3e5cd` (a later docs-only sync may advance the displayed badge). Run ordered Android Phone QC and record PASS/REVISE. Do not start Proof B before that gate.
+Resume from verified live `main 93c76f4` with transfer state `READY_FOR_WORK`: Illustrated World Hybrid Proof A is PHONE PASS. Execute **NPC Re-block A only** by moving Elder / Merchant / Healer from the central-line presentation to natural entrance/work anchors in their own pockets, moving interaction anchors with them while preserving interaction radii/semantics. Deploy and return for quick Phone QC. Do not start Collision Proof B yet.
