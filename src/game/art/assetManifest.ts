@@ -26,7 +26,7 @@ export const C4_ASSETS = {
   settlementHealerHerbBedA: 'assets/c4/environment/settlement/env_healer_herb_bed_a.webp',
   settlementHealerDryingPropsA: 'assets/c4/environment/settlement/env_healer_drying_props_a.webp',
   settlementFieldEdgeKitB: 'assets/c4/environment/settlement/env_field_edge_kit_b.webp',
-  settlementTerrainWholeMapV1: 'assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg',
+  settlementTerrainWholeMapV2: 'assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png',
 } as const;
 
 export type C4AssetKey = keyof typeof C4_ASSETS;

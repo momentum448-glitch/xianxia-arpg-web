@@ -71,7 +71,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Locked topology rule: preserve current whole-pocket placement, route rhythm, north threshold and southern residential/agriculture fringe unless a new concrete Phone-QC problem appears.
 - Hero-pocket rule: Elder / Merchant / Healer internal composition remains independently PHONE_PASS and must not be regenerated/rearranged merely to change whole-map layout.
 - Cohesion Pass A additive scatter layer is superseded and should remain disabled.
-- Next action: preserve the accepted topology while Whole-map Terrain Proof V1 is Phone-QC'd. Do not resume the older NPC-next assumption unless the terrain proof is resolved.
+- Next action: preserve the accepted topology while Terrain Proof V2 is integrated and Phone-QC'd. Do not resume the older NPC-next assumption unless the terrain proof is resolved.
 
 
 ### ENV-SETTLEMENT-GROUND-KIT-A
@@ -281,7 +281,21 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Fence cleanup: removes free-standing north-entry/southern decorative fence stamps; keeps functional pocket/property fences.
 - Phone QC result on 2026-09-23: REVISE. Large circular/rounded macro masks read as procedural/vector overlays; stream is too cyan/regular; Healer pond→stream join is synthetic; ground remains too flat; southern fringe does not yet blend into one painterly terrain language.
 - What remains valid: lower-map secondary-stream concept, fence cleanup, and accepted A1 topology/hero-pocket hierarchy.
-- Next action: replace the terrain treatment with one painterly Terrain Proof V2; do not reopen topology or scatter more props as a substitute.
+- V1 is retained as historical REVISE lineage; its SVG is no longer loaded by production.
+- Next action: review Terrain Proof V2 on phone before any further terrain art changes.
+
+
+### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
+
+- Purpose: painterly raster terrain-only underlay replacing V1's geometric SVG treatment while keeping the accepted A1 route and hero pockets intact.
+- Status: `INTEGRATED`; Phone QC pending.
+- Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`.
+- Metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes; SHA-256 `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`.
+- Runtime presentation: image underlay at 1600 × 1800 behind accepted modular art; preloaded through the image loader.
+- Visual scope: worn warm earth, irregular grass/soil edges and one muted jade creek running beneath the accepted Healer water layer toward the east edge. No new object or pocket art.
+- Phone QC: pending on the deployed V2 build. Confirm the pond-to-creek join at 1.0x, whole-map readability at 0.5x with UI hidden, and southern-fringe continuity.
+- Gameplay: visual only; no collision, interaction-radius, hitbox or timing changes.
+- Next action: finish CI/deploy and return the live QC link/build ID.
 
 ## 8. Current critical non-art architecture note
 
@@ -335,4 +349,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **run a structured discovery round to choose the next production target. Do not automatically jump to NPC art, another environment kit, or broad rollout.**
+Current exact next action: **complete the focused Terrain Proof V2 PR, verify CI and Pages deployment, then run Phone QC using HANDOFF_CURRENT.md. Keep the proof visual-only and preserve accepted topology and pocket assets.**
