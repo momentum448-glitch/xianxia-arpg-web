@@ -112,7 +112,7 @@ function insidePolygon(x: number, y: number, vertices: readonly Point[]): boolea
 }
 
 export function isHealerB1Blocked(x: number, y: number): boolean {
-  // Broad phase confines all new collision to this one pocket.
+  // Broad phase confines the accepted B1 water/Healer geometry to its pocket.
   if (x < 60 || x > 770 || y < 8275 || y > 8620) return false;
   const r = HEALER_B1_FOOT_RADIUS;
   for (const shape of HEALER_B1_FOOTPRINTS) {
