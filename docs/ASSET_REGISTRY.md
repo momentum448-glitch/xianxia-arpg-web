@@ -335,7 +335,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: Proof A and NPC Re-block A are passed. Execute Proof B1 — Healer-pocket collision foundation only; occlusion/tree motion remain blocked.
+- Next action: B1/B1.1 collision foundation is PHONE PASS. Execute B2A static grounded-collision expansion only; B2B water expansion and occlusion/tree motion remain blocked.
 
 ## 8. Current critical non-art architecture note
 
@@ -389,4 +389,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **Work executes Proof B1 — Healer-pocket collision foundation only, then returns a QC link/build together with the exact ordered Phone-QC checklist.**
+Current exact next action: **Work executes Proof B2A — static settlement collision expansion only, then returns a QC link/build together with the six-item B2A Phone-QC checklist.**
