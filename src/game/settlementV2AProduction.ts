@@ -17,7 +17,7 @@ export const SETTLEMENT_V2A_TEXTURES = {
   healerHerbBed: 'prod-v2a-healer-herb-bed-a',
   healerDrying: 'prod-v2a-healer-drying-a',
   fieldEdge: 'prod-v2a-field-edge-b',
-  terrainUnderlay: 'prod-v2a-terrain-underlay-v1',
+  terrainUnderlay: 'prod-v2a-terrain-underlay-v2',
 } as const;
 
 export const SETTLEMENT_V2A_PRELOADS = [
@@ -33,10 +33,7 @@ export const SETTLEMENT_V2A_PRELOADS = [
   [SETTLEMENT_V2A_TEXTURES.healerHerbBed, C4_ASSETS.settlementHealerHerbBedA],
   [SETTLEMENT_V2A_TEXTURES.healerDrying, C4_ASSETS.settlementHealerDryingPropsA],
   [SETTLEMENT_V2A_TEXTURES.fieldEdge, C4_ASSETS.settlementFieldEdgeKitB],
-] as const;
-
-export const SETTLEMENT_V2A_SVG_PRELOADS = [
-  [SETTLEMENT_V2A_TEXTURES.terrainUnderlay, C4_ASSETS.settlementTerrainWholeMapV1],
+  [SETTLEMENT_V2A_TEXTURES.terrainUnderlay, C4_ASSETS.settlementTerrainWholeMapV2],
 ] as const;
 
 const GROUND_RUNTIME = {
@@ -280,7 +277,7 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
     ? SETTLEMENT_V2A_TEXTURES.treeRuntime
     : SETTLEMENT_V2A_TEXTURES.tree;
 
-  // Whole-map V1 removes the free-standing entry fences; the natural edge now frames the threshold.
+  // Whole-map terrain proof removes the free-standing entry fences; the natural edge now frames the threshold.
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 835, top + 260, 76, false, 0.96);
   addAsset(scene, tree, 150, top + 330, 178, false, 0.88);
   addAsset(scene, tree, 1460, top + 355, 184, true, 0.86);

@@ -1,15 +1,16 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
 Return condition: Work deploys Terrain Proof V2 and returns a QC link/build, or Work encounters a new high-impact ASK/design ambiguity and marks RETURN_TO_DESIGN.
 
-Snapshot: 2026-09-23
+Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current main: `f987be1c2edf39988534879d32ba7451fb67e671`
-Phone/runtime build: `BUILD 1823667`
-Relevant merged PR: #104 — Thanh Van Thon whole-map terrain proof V1
+Current main: `97516128e2f4938e6ba74810b59bd4acc64ea468`
+Phone/runtime build: V1 Phone-QC lineage `BUILD 1823667`; current code-equivalent Pages redeploy is `BUILD 9751612` (run #166 PASS)
+Relevant merged PRs: #104 — terrain proof V1; #106 — V1 REVISE and Work handoff
+Active execution branch: `work/terrain-proof-v2` (based on verified main `9751612`)
 Open relevant execution PR: none
 Unrelated old open PR: #4
 CI: PASS
@@ -66,6 +67,18 @@ Execute **Whole-map Terrain Proof V2** after Phone QC rejected V1's vector-looki
 - PR: #104
 - Technical gate: PASS
 - Phone gate: REVISE
+
+### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
+
+- Role: reversible whole-map runtime proof
+- Status: `WORK_EXECUTING`; Phone QC pending
+- Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
+- Asset metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes
+- SHA-256: `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`
+- Design: painterly earth/grass terrain underlay with one muted creek flowing under the existing Healer water art toward the east edge
+- Integration: runtime branch `work/terrain-proof-v2`; PR/build pending
+- Technical gate: pending CI + Pages deploy
+- Phone gate: pending; verify pond join, whole-map scale, pocket continuity and southern fringe
 
 ## What the terrain proof intentionally changes
 
@@ -183,4 +196,4 @@ Work executes **Terrain Proof V2** from the brief above, then returns the deploy
 
 ## Resume sentence
 
-Resume from `main f987be1` with transfer state `READY_FOR_WORK`: Terrain Proof V1 on `BUILD 1823667` is REVISE because its SVG/vector terrain treatment reads artificial on phone. Execute one painterly Terrain Proof V2 that preserves A1 topology, hero pockets, fence cleanup and gameplay, then deploy and return for Phone QC.
+Resume from verified `main 9751612` with active branch `work/terrain-proof-v2`: Terrain Proof V1 on `BUILD 1823667` is REVISE because its SVG/vector treatment reads artificial on phone. V2 is integrated as one raster underlay; complete CI/deploy and return the link/build for Phone QC.

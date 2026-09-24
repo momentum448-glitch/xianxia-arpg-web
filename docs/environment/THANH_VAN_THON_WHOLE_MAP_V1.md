@@ -168,6 +168,22 @@ Keep fences that are visibly attached to Elder/Healer yards or a functional fiel
 - no obvious SVG/texture artifact on Android;
 - whole-map still reads clearly with UI hidden at 0.5x.
 
-## 16. Exact next action
+## 16. V1 exact next action (superseded)
 
-Integrate `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` and fence cleanup as one reversible runtime proof, deploy, then Phone QC before adding more edge detail or replacing the proof with higher-fidelity raster art.
+This instruction was completed by V1 and is retained as history. V1 received Phone QC `REVISE`; V2 replaces its terrain treatment.
+
+
+## 17. Terrain Proof V2 execution — 2026-09-24
+
+Asset ID: `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2`
+
+Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
+
+- Painterly raster underlay only; it contains no buildings, NPCs, or gameplay objects.
+- The underlay is drawn beneath accepted modular pocket art; the existing Healer Water+Bridge asset remains canonical and is not regenerated.
+- The single muted jade creek enters beneath the Healer water composition and continues toward the eastern edge through the lower quarter. Its phone-scale pond join remains a required QC check.
+- Ground treatment adds irregular warm-earth, soil-value, and grass-edge variation; it avoids V1's giant rounded SVG masks.
+- The 1182 × 1330 PNG is displayed at the accepted 1600 × 1800 terrain footprint.
+- A1 topology, hero-pocket coordinates, pathfinding, collision, interactions, combat hitboxes, and timing are unchanged.
+- V2 technical status: integrated candidate; CI and production deployment pending in the active handoff.
+- Phone status: pending. Follow the ordered views in §14 and record PASS/REVISE in `HANDOFF_CURRENT.md`.
