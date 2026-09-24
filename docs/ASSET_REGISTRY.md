@@ -309,6 +309,18 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Gameplay: visual only; no collision, interaction-radius, hitbox or timing changes.
 - Next action: preserve as historical/visual evidence. Do not continue polishing it as the final settlement architecture; execute Illustrated World Hybrid Proof A instead.
 
+### ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1
+
+- Purpose: Illustrated World Hybrid Proof A, one coherent baked Layer 0 beneath the existing playable village objects.
+- Status: `INTEGRATED` technical candidate; Phone QC is pending.
+- Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_baked_terrain_plate_v1.png`.
+- Metadata: PNG RGB, 1182 × 1330, 3,604,739 bytes; SHA-256 `d223b8005eed5de278e82f54b8c85eff5b66f742289ca30960f18f0ed4c60c96`.
+- Source direction: approved `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` in Drive; terrain-only painterly generation refined for a lower Healer creek, open route and small-scale vegetation.
+- Runtime presentation: preloaded raster, displayed at 1600 × 1800 behind separate houses, near-player trees, Healer bridge, props, NPCs and actors. Legacy modular path/patch/forecourt overlays are replaced by the plate in the production scene.
+- Scope: baked earth, routes, muted creek surface, fields, low grass, tiny rocks and peripheral terrain. No house, major tree, bridge, major collision prop or NPC is baked into the bitmap.
+- Gameplay: visual-only; topology, collision, interactions and combat remain unchanged. Collision/occlusion extensions belong to later proof gates.
+- Next action: verify deployed scene at 0.5x hidden UI and ordered Android Phone QC; record PASS/REVISE before Proof B.
+
 ### ARCH-SETTLEMENT-ILLUSTRATED-WORLD-HYBRID
 
 - Purpose: production rendering/collision/occlusion architecture for Thanh Vân Thôn.
@@ -375,4 +387,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **run the ordered Phone QC for Terrain Proof V2 from HANDOFF_CURRENT.md, record PASS/REVISE, and preserve the accepted topology, hero pockets and gameplay.**
+Current exact next action: **deploy Illustrated World Hybrid Proof A, inspect its 0.5x hidden-UI scene, then run ordered Android Phone QC and record PASS/REVISE before Proof B.**

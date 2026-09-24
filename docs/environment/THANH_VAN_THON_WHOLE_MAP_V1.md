@@ -187,3 +187,7 @@ Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wh
 - A1 topology, hero-pocket coordinates, pathfinding, collision, interactions, combat hitboxes, and timing are unchanged.
 - V2 technical status: integrated and deployed through PR #107; CI run #303 PASS and GitHub Pages run #167 PASS on runtime code commit `b1a4e9b`.
 - Phone status: pending. Follow the ordered views in §14 on the deployed production link and record PASS/REVISE in `HANDOFF_CURRENT.md`.
+
+## Illustrated World Hybrid Proof A — Baked Terrain Plate V1
+
+The active architecture decision is documented in `THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`. Proof A replaces the historical V2 terrain underlay plus production path/patch/forecourt stamps with `env_settlement_baked_terrain_plate_v1.png` as a single 1600 × 1800 Layer 0 image. The source is a 1182 × 1330 RGB PNG, guided by the approved north-star V2. The main spine, branches, fields, small vegetation and lower creek surface belong to this plate. Buildings, near-player trees, Healer water/bridge and props remain separate runtime sprites. No collision, interaction, occlusion or topology changes are included. CI/Pages and Android Phone QC are separate gates; Proof B waits for the latter.
