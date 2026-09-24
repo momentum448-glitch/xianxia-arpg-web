@@ -104,9 +104,14 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Proof A is PHONE PASS. Handoff is `READY_FOR_WORK` for NPC Re-block A only; Collision Proof B remains blocked until the NPC placement micro-pass passes Phone QC.
+- Current production action: Proof A is PHONE PASS. NPC Re-block A is deployed at `BUILD 7e8eff6` and awaits Android Phone QC; Collision Proof B remains blocked.
 
 
 ## 2026-09-24 — Proof A technical delivery
 
 Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1`) under the accepted independent structures and actors. PR #110 integrated the plate; PR #112 fixed the north-boundary rendering after live inspection (PR #111's renderer gradient had no visible effect). Runtime `BUILD 2b3e5cd`, CI and Pages PASS. Desktop 0.5x hidden-UI check verified a coherent village interior and removed hard boundary seam. Android Phone QC later passed Proof A. The next approved action is the NPC Re-block A micro-pass; Collision Proof B remains gated behind that quick placement QC.
+
+
+## 2026-09-24 — NPC Re-block A runtime delivery
+
+PR #115 moved the existing NPC render/interaction anchors in `src/game/npcConfig.ts` to their A1 pockets: Elder `(490, 7828)`, Merchant `(1045, 8082)`, Healer `(490, 8382)`. All retain their 155-unit interaction radii and existing dialogue behavior. CI and Pages passed; live runtime build is `7e8eff6`. Desktop browser checks at 0.5x and 1.0x verified pocket placement; live interaction smoke tests displayed the matching Merchant and Healer interaction prompts at the new anchors. Android Phone QC of these new positions is pending. Keep Collision Proof B gated until it passes.
