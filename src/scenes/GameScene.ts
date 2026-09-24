@@ -13,7 +13,7 @@ import {
   skillDamageForRealm,
 } from '../game/cultivationConfig';
 import { NPCS, type NpcDefinition } from '../game/npcConfig';
-import { moveWithHealerB1Collision } from '../game/settlementCollisionB1';
+import { moveWithSettlementCollision } from '../game/settlementCollision';
 import { BOSS_GATE, ENCOUNTERS, WORLD_EVENTS, type EncounterDefinition, type WorldEventDefinition } from '../game/regionContentConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
 import { basicAttackCooldownMsForProfile, basicAttackRangeForProfile } from '../game/playerStats';
@@ -500,7 +500,7 @@ CỔ MÔN • PHONG ẤN`, {
       this.facingY = vy;
     }
 
-    const [nextX, nextY] = moveWithHealerB1Collision(
+    const [nextX, nextY] = moveWithSettlementCollision(
       this.player.x, this.player.y,
       vx * speed * delta / 1000, vy * speed * delta / 1000,
       WORLD.edgePadding, WORLD.width, WORLD.height,
