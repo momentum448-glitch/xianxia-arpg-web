@@ -194,6 +194,12 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
       .setOrigin(0.5)
       .setDisplaySize(1600, 1800)
       .setDepth(-8.8);
+    // Fade the northern plate edge into the existing plains paper. Keep the
+    // authored approach path separate above the settlement boundary.
+    scene.add.graphics()
+      .fillGradientStyle(zone.fill, zone.fill, zone.fill, zone.fill, 1, 1, 0, 0)
+      .fillRect(0, top, 1600, 320)
+      .setDepth(-8.7);
   } else {
     throw new Error('Illustrated World Hybrid Proof A terrain plate failed to load');
   }
