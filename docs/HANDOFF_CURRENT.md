@@ -1,22 +1,20 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK_ON_B1_1_BRANCH
-Return condition: Work deploys **B1.1 — bridge/water leak fix** and returns build/QC evidence plus the focused QC checklist. B2 remains blocked until B1.1 Phone PASS.
-
-Active branch: `proof-b1-1-bridge-water-corridor` based on `c694f25b564eaef47a7888cc16420c318bcae304`.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: User reports PASS or REVISE on the three B1.1 Android checks at 1.0x. B2 remains blocked until B1.1 Phone PASS.
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified B1 functional main: `cae8a1ccaf5628ac6794a39d2abc5a3fab4e7cee`
+Verified B1.1 functional main: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`
 Runtime B1 lineage: PR #118 `c3553b7` + foot-anchor fix PR #119 `1e2da44` + bridge-gap tune PR #120 `cae8a1c`.
-Verified functional live badge before this documentation update: `BUILD cae8a1c`.
-Main CI run #36023555367 PASS; Pages run #36023555230 PASS.
+Verified functional live badge before this documentation update: `BUILD ea86424`.
+B1.1 PR #123 merged; main CI run #36028483070 PASS; Pages run #36028482943 PASS.
 Open relevant execution PR: none; unrelated old open PR #4.
 
 ## Current objective
 
-Execute **B1.1 — bridge/water leak fix only**. Android QC passed 6/7 B1 checks; the only failure is that the player can stand in visible water immediately beside the bridge/Healer pond crossing.
+Await **B1.1 focused Android QC** on the deployed bridge/water fix. Android QC had passed 6/7 B1 checks on the prior build; the only reported failure was visible water immediately beside the Healer bridge.
 
 ## B1 Android QC result
 
@@ -59,6 +57,13 @@ Preferred implementation quality:
 - keep the design reusable for later B2 bridge/ford crossings;
 - do not build a generic new physics framework.
 
+
+## B1.1 implementation and Work self-VERIFY
+
+- PR #123 (`ea86424`) connects the local water blocker across the previously open cyan patch and exempts one explicit narrow corridor centered on the visible bridge deck (`[414,8482]` → `[488,8540]`, half-width 18). The reported leak location near `(500,8497)` is blocked by coordinate checks; planks and two-way approach paths remain walkable.
+- House/tree/fence shapes, foot radius 11, substeps, sliding, dodge resolver, NPC positions and dialogue were not modified.
+- Local coordinate checks included both crossing directions, sideways pushes, direct bank approach and the reported leak point. CI and Pages passed on main.
+- Live desktop 1.0x on `BUILD ea86424`: game loaded, player crossed the bridge from its south side, pushing right toward cyan water from the north end stopped movement, and Dược Sư dialogue opened. Android touch/visual margins and dodge remain for Phone QC.
 
 ## B1 implementation and Work self-VERIFY
 
@@ -217,4 +222,4 @@ Only after B2 passes:
 
 ## Resume sentence
 
-Resume from verified current GitHub state with transfer state `READY_FOR_WORK`: Proof B1 passed 6/7 Android checks, with one narrow water leak beside the Healer bridge. Execute **B1.1 — replace the overly broad polygon gap with a narrow explicit bridge walkable corridor**, deploy, and return the build with the three-item focused QC checklist. Do not start B2 until B1.1 Phone PASS.
+Resume from verified `BUILD ea86424` and transfer state `WAIT_QC`: B1.1 bridge corridor is deployed and desktop self-verified. Wait for the user's three focused Android 1.0x checks. On PASS, record B1 Phone PASS and scope B2; on REVISE, diagnose only the failed B1.1 behavior. Do not start B2 before Phone PASS.
