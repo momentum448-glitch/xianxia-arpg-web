@@ -1,7 +1,7 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
 Return condition: Work deploys Illustrated World Hybrid Proof A and returns QC link/build evidence, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
 
@@ -10,6 +10,7 @@ Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified main before this continuity-only handoff branch: `771f5169f76c66ac1b6868172577f8c6e173cd7d`
 Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
 Latest live badge before this handoff: `BUILD 771f516` (docs-only sync over code-identical Terrain V2 runtime)
+Active execution branch: `work/illustrated-world-hybrid-proof-a` (based on `4c48c8d614e2d65b482b3edb86f43b105d73b2ca`)
 Open relevant execution PR: none
 Unrelated old open PR: #4
 Important: this documentation handoff will advance `main` again without runtime changes. Work must verify live `main`, PRs and latest operation state before writing.
