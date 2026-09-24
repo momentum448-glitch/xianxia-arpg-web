@@ -1,21 +1,40 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK_ON_B2A_BRANCH
-Return condition: Work completes and deploys **Proof B2A — static settlement collision expansion**, then returns build/QC evidence and the explicit six-item B2A Phone-QC checklist. B2B and Proof C remain blocked until B2A Phone PASS.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: User reports Android Phone QC PASS or REVISE against the six B2A checks below. B2B and Proof C stay blocked until B2A Phone PASS.
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Active branch: `proof-b2a-static-collision` based on `cf90a4fb9375d4abd7ac3ed7ad2f1dc1ae3ce1bc`.
-Verified B1.1 functional main: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`
-Runtime B1 lineage: PR #118 `c3553b7` + foot-anchor fix PR #119 `1e2da44` + bridge-gap tune PR #120 `cae8a1c`.
-Verified live main before B2A execution: `BUILD cf90a4f` (docs-only handoff update over functional B1.1 runtime `ea86424`).
-B1.1 PR #123 merged; main CI run #36028483070 PASS; Pages run #36028482943 PASS.
-Open relevant execution PR: none; unrelated old open PR #4. Latest main CI #36030758939 PASS; Pages #36030758935 PASS.
+Verified current main: `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
+Merged B2A PRs: #126 runtime expansion → `a29e7d3bfdbd9e7d2577a4786c10e7727255ced2`; #127 Elder fence slope correction → current main `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
+Active B2A execution branch/PR: none. Unrelated open PR: #4.
+Live runtime build before this docs-only handoff update: `BUILD c1d14ab`, [QC link](https://momentum448-glitch.github.io/xianxia-arpg-web/?qc=c1d14ab).
+Main CI run #36035343797 PASS; Deploy Pages run #36035343787 PASS.
+B1.1 functional baseline: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`.
 
 ## Current objective
 
-Execute **Proof B2A — static settlement collision expansion only**. B1/B1.1 are now PHONE PASS. Extend the proven grounded-collision pattern to the remaining important houses, near-player trees, large grounded props and functional fences, while leaving whole-map water expansion and occlusion/tree motion for later gated proofs.
+Return merged **Proof B2A — static settlement collision expansion only** for Android Phone QC at 1.0x with UI visible. Runtime work and deploy are complete; do not make further production changes until the user reports PASS or REVISE.
+
+## Proof B2A — implementation and Work self-QC
+
+- Generalized the accepted B1 resolver into `src/game/settlementCollision.ts`, preserving B1 shapes and movement behavior.
+- Added nine grounded B2A footprints: Elder hall base, Elder trunk and functional fence; Merchant stall, cart and nearby tree trunk; southwest house, southeast tile-roof house and reachable southeast tree trunk. The southwest tree is already fully inside the accepted B1 pond blocker, so no duplicate collider was added.
+- PR #127 corrected the Elder fence line from `[590,7815]→[730,7791]` to `[590,7791]→[730,7815]` so it follows the visible plank slope.
+- Preserved radius 11 at the +31 foot anchor, 5-unit movement substeps, axis sliding/dodge protection, world bounds, B1 water/bridge shapes, NPC anchors/radii and interactions, topology, art and combat. No tiny clutter, crops, flowers, extra B2A water, occlusion, ford or tree motion was added.
+- Shape-center probes block for all nine additions; Elder/Merchant/Healer approach anchors remain clear. Grid-route simulation reaches all three NPCs, both southern house areas and the southern boundary; the central spine remains open.
+- Live desktop check at `BUILD c1d14ab`, 1.0x with UI: scene loaded; player moved south along the open route and back into the Elder pocket; pushing north at the grounded hall/fence edge did not visibly pass through; the Elder interaction opened dialogue. The fence rendering now has the corrected slope. Earlier desktop check on `a29e7d3` also confirmed Elder and Merchant access before the one-line fence correction.
+- **Android Phone QC has not happened.** Do not label B2A PHONE PASS until all six checks below pass on the user's phone.
+- NPC layout/anchors from the accepted re-block remain unchanged: Elder `(490,7828)`, Merchant `(1045,8082)`, Healer `(490,8382)`; interaction radius `155`.
+
+## Current live GitHub state
+
+- Main: `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
+- PR #126 merged the B2A runtime expansion at `a29e7d3`; PR #127 merged the fence-line correction at `c1d14ab`.
+- CI #36035343797 and Pages #36035343787 both completed successfully for current main.
+- No relevant open execution PR; open PR #4 is unrelated.
+- Live game badge was `BUILD c1d14ab` at the QC link above before this documentation-only update.
 
 ## B1 / B1.1 Phone PASS
 
@@ -210,7 +229,7 @@ Use **1.0x**. Only three focused checks are required because the other B1 items 
 
 B1 becomes PHONE PASS when the three B1.1 focused checks above pass on Android. The previously passed house/tree/fence checks remain accepted unless regression is observed.
 
-## Exact Work brief — Proof B2A only
+## Proof B2A — approved implementation scope
 
 B2A expands **static grounded collision** across the rest of Thanh Vân Thôn. It intentionally does **not** expand the creek/water system yet.
 
@@ -305,11 +324,11 @@ Use **1.0x** with UI visible. Work must repeat this checklist next to the return
 B2A is PHONE PASS when all six checks above behave naturally on Android with no route, NPC-interaction, movement-feel or combat regression.
 
 
-## Planned next steps after B1
+## Planned next steps after B2A Phone PASS
 
 ### Proof B2A — Static collision expansion
 
-Current next proof. Expand only houses / near trees / important grounded static props / functional fences across Elder, Merchant and southern pockets. Keep Healer B1 water as-is.
+Current gate is Android Phone QC for merged B2A `c1d14ab`. Do not start B2B before B2A Phone PASS. After PASS, hand ownership back for the next approved proof.
 
 ### Proof B2B — Full water + authored crossings
 
@@ -340,4 +359,4 @@ Only after B2A + B2B pass:
 
 ## Resume sentence
 
-Resume from verified live `main fce1ca2` with transfer state `READY_FOR_WORK`: B1/B1.1 are PHONE PASS. Execute **Proof B2A — static settlement collision expansion only**, preserving Healer water/bridge collision and excluding whole-creek water expansion, ford art, occlusion and tree motion. Deploy and return the build with the six-item B2A Phone-QC checklist above.
+The B2A implementation is merged and deployed at runtime commit `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`; the next action is Android Phone QC at 1.0x using the six-item checklist above. No Work repo writes or B2B/Proof C execution until the user reports PASS or REVISE.
