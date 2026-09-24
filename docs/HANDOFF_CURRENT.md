@@ -1,9 +1,9 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: user/DESIGN_CHAT performs the seven-item Android Phone QC for **Proof B1 — Healer-pocket collision foundation** and records PASS/REVISE. B2 remains blocked until B1 Phone PASS.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **B1.1 — bridge/water leak fix** and returns build/QC evidence plus the focused QC checklist. B2 remains blocked until B1.1 Phone PASS.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
@@ -15,7 +15,49 @@ Open relevant execution PR: none; unrelated old open PR #4.
 
 ## Current objective
 
-Phone QC **Proof B1 — Healer-pocket collision foundation only** on the deployed build. Record PASS/REVISE against all seven checks below. Do not start B2 until this gate passes.
+Execute **B1.1 — bridge/water leak fix only**. Android QC passed 6/7 B1 checks; the only failure is that the player can stand in visible water immediately beside the bridge/Healer pond crossing.
+
+## B1 Android QC result
+
+**REVISE, narrow scope.**
+
+User Android QC on live `BUILD 5ccabed` reports:
+
+- Healer house collision: PASS.
+- Tree trunk/base collision: PASS.
+- Representative fence collision: PASS.
+- General pond/creek bank blocking: PASS.
+- Bridge traversal: functionally passable.
+- Dodge collision: PASS.
+- Healer reachability/interaction: PASS.
+- **Only failure:** a visible cyan water patch immediately beside the wooden bridge remains walkable; the player can stand on water there.
+
+This does **not** invalidate the collision resolver or the other B1 shapes.
+
+Best-supported diagnosis from current code:
+
+- `settlementCollisionB1.ts` models the bridge by leaving a dry geometric gap between the west-pond and east-creek water polygons.
+- That gap is broader / offset beyond the visible plank deck, so some adjacent visible water is unintentionally outside all water blockers.
+
+## Exact Work brief — B1.1 only
+
+Replace the implicit broad "missing water polygon gap" approach with an **explicit bridge walkable corridor**:
+
+1. Keep water blocking continuous across the visible pond/creek body.
+2. Define one narrow walkable bridge corridor aligned to the actual visible plank deck.
+3. The bridge corridor may exempt water collision only inside the visible deck plus minimal foot-radius clearance.
+4. Sideways movement off the plank deck must immediately meet water blocking.
+5. Preserve the current foot-centered radius, substep movement, sliding behavior, dodge protection, house/tree/fence colliders and Healer interaction.
+6. Do not change terrain art, bridge art, NPC positions, topology, combat timing, interaction radius or any unrelated collision.
+7. Work must VERIFY the corridor against the actual runtime/asset, not infer it only from the current comments.
+8. Self-test the exact leak spot shown in Phone QC before deploy.
+
+Preferred implementation quality:
+
+- make the crossing concept explicit in collision data/code rather than encoding it as a large accidental hole between water polygons;
+- keep the design reusable for later B2 bridge/ford crossings;
+- do not build a generic new physics framework.
+
 
 ## B1 implementation and Work self-VERIFY
 
@@ -118,50 +160,32 @@ When Work returns the deployed B1 build, it must give the user **all of these in
 
 Do not return a bare link.
 
-## Anh cần QC — Proof B1
+## Anh cần QC — B1.1 focused retest
 
-Use **1.0x** for this proof. UI may stay visible because interaction must also be tested.
+Use **1.0x**. Only three focused checks are required because the other B1 items already passed.
 
-1. **Healer house**
-   - walk directly into the front/side/back grounded wall areas;
-   - PASS: player stops at the physical base but can still approach the entrance naturally;
-   - FAIL: player walks through the house or is blocked far outside the visible base.
+1. **Previously leaking water patch beside bridge**
+   - walk to the exact cyan-water area shown in the failed QC screenshot;
+   - PASS: player stops at the visible water edge and cannot stand on the water;
+   - FAIL: any part of that same visible water remains freely walkable.
 
-2. **Tree near Healer**
-   - walk around the tree from several directions;
-   - PASS: only trunk/base blocks; player can move through the visual canopy footprint where the ground is clear;
-   - FAIL: a large invisible canopy-sized box blocks movement.
+2. **Bridge deck / side escape**
+   - cross the bridge both directions, then deliberately push sideways off the bridge near both ends and mid-span;
+   - PASS: forward crossing stays smooth, but sideways movement cannot step from the planks into adjacent water;
+   - FAIL: bridge snags, becomes too narrow, or player can leave the deck into water.
 
-3. **Fence**
-   - push diagonally and then parallel along the tested fence;
-   - PASS: cannot pass through it, but movement slides along it without sticky corners;
-   - FAIL: player crosses it or gets trapped/stutters on normal diagonal contact.
+3. **Dodge + regression smoke**
+   - dodge toward the repaired water edge and across the bridge; then approach Dược Sư once;
+   - PASS: dodge does not tunnel into water, bridge remains usable, and Dược Sư interaction still works;
+   - FAIL: dodge bypasses water, crossing breaks, or Healer becomes unreachable.
 
-4. **Pond / creek banks**
-   - try entering water at at least three different bank points;
-   - PASS: blocked near the visible bank with no huge invisible margin;
-   - FAIL: player walks into water or is stopped conspicuously far from the bank.
+**Already accepted unless an obvious regression appears:** house, tree-base and fence collision.
 
-5. **Bridge**
-   - cross the wooden bridge both directions with normal movement;
-   - PASS: clean crossing, no invisible snag or sudden sideways push;
-   - FAIL: bridge is partly blocked or lets the player escape into adjacent water.
-
-6. **Dodge collision**
-   - dodge directly toward house, fence and water;
-   - PASS: dodge never tunnels through blocked geometry;
-   - FAIL: high-speed dodge appears on the other side.
-
-7. **Healer interaction / route regression**
-   - approach Dược Sư after moving around the pocket and trigger interaction;
-   - PASS: NPC remains reachable and interaction works at the visible NPC;
-   - FAIL: new collision blocks the NPC/door/path or interaction no longer matches position.
-
-**Not being judged in B1:** roof/canopy occlusion, tree sway, full-village collision, ford/stepping stones, enemy collision, water VFX.
+**Not being judged:** B2 whole-village collision, ford/stepping-stone crossings, occlusion, tree animation, enemy collision, water VFX.
 
 ## B1 PASS gate
 
-B1 is PASS only when all seven checks above behave naturally on Android and there is no traversal/combat/interaction regression.
+B1 becomes PHONE PASS when the three B1.1 focused checks above pass on Android. The previously passed house/tree/fence checks remain accepted unless regression is observed.
 
 ## Planned next steps after B1
 
@@ -192,4 +216,4 @@ Only after B2 passes:
 
 ## Resume sentence
 
-Resume from verified current GitHub state with transfer state `WAIT_QC`: Proof B1 is deployed on functional runtime `cae8a1c`, awaiting the seven-item Android Phone QC above. Record PASS/REVISE before starting B2.
+Resume from verified current GitHub state with transfer state `READY_FOR_WORK`: Proof B1 passed 6/7 Android checks, with one narrow water leak beside the Healer bridge. Execute **B1.1 — replace the overly broad polygon gap with a narrow explicit bridge walkable corridor**, deploy, and return the build with the three-item focused QC checklist. Do not start B2 until B1.1 Phone PASS.

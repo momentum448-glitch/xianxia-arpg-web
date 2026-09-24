@@ -86,6 +86,8 @@ Rules:
 | 2026-09-24 | Refine Collision Proof B into **B1 Healer-pocket foundation → B2 settlement expansion**. B1 proves one house footprint, one tree trunk/base, representative fence, blocked pond/creek water and the existing bridge before any map-wide collider rollout. | Current player movement is manual coordinate movement, so B1 should add a minimal collision resolver rather than migrate the game to a different physics engine. Prevent dodge tunneling and sticky diagonal contacts. |
 | 2026-09-24 | Every Work delivery that asks for Phone QC must return the QC link/build **together with an explicit short checklist of what the user should test, what PASS/FAIL looks like, and what is out of scope**. | A bare QC link is no longer an acceptable handoff. This rule is also recorded in `AGENTS.md` and `HANDOFF_PROTOCOL.md`. |
 
+| 2026-09-24 | Collision Proof B1 is `REVISE` only for one bridge-adjacent water leak on Android QC: house/tree/fence/general water/dodge/Healer interaction passed, but the player can stand on a visible cyan water patch beside the bridge. | Root cause is the broad implicit gap between water polygons. B1.1 should keep water continuous and use one explicit narrow bridge walkable corridor aligned to visible planks. Do not reopen the rest of B1 or start B2 until this patch passes. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -108,7 +110,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Proof A + NPC Re-block A are PHONE PASS. Handoff is `READY_FOR_WORK` for **Proof B1 — Healer-pocket collision foundation only**.
+- Current production action: Collision B1 passed 6/7 Phone-QC checks and is `READY_FOR_WORK` for **B1.1 bridge/water leak fix only**. B2 remains blocked.
 
 
 ## 2026-09-24 — Proof A technical delivery
