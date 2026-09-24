@@ -3,242 +3,209 @@
 Current owner: DESIGN_CHAT
 Transfer state: READY_FOR_WORK
 Repo-write permission: WORK
-Return condition: Work deploys Illustrated World Hybrid Proof A (Baked Terrain Plate V1) and returns build/QC evidence, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
+Return condition: Work deploys Illustrated World Hybrid Proof A and returns QC link/build evidence, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Main V2 runtime commit: `b1a4e9b076b521891c80100f22603d79443b934b` (PR #107)
-V2 runtime code build: `BUILD b1a4e9b` (PR #107; CI #303 PASS; GitHub Pages #167 PASS). Current live build badge identifies the latest code-identical deployment.
-Relevant merged PRs: #104 — terrain proof V1; #106 — V1 REVISE and Work handoff; #107 — painterly Terrain Proof V2
-Active execution branch: none (V2 merged)
+Verified main before this continuity-only handoff branch: `771f5169f76c66ac1b6868172577f8c6e173cd7d`
+Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
+Latest live badge before this handoff: `BUILD 771f516` (docs-only sync over code-identical Terrain V2 runtime)
 Open relevant execution PR: none
 Unrelated old open PR: #4
-CI: PASS (#303)
-GitHub Pages deploy: PASS (#167; code-identical documentation sync may advance the badge)
+Important: this documentation handoff will advance `main` again without runtime changes. Work must verify live `main`, PRs and latest operation state before writing.
 
 ## Current objective
 
-Execute **Illustrated World Hybrid Proof A — Baked Terrain Plate V1**. The project has intentionally changed production architecture after design review: use one coherent painterly whole-map terrain plate for Layer-0 scenery while keeping major houses, near-player trees, bridges, NPCs and other gameplay/occlusion-critical objects separate.
+Execute **Illustrated World Hybrid Proof A — Baked Terrain Plate V1**.
 
-## Verified completed state
+The user and DESIGN_CHAT deliberately changed the settlement production architecture after reviewing Terrain Proof V2 and a stronger whole-map visual target. The new architecture aims for the coherence of one illustrated village while preserving real game collision, occlusion, animation and dynamic actors.
 
-- Production flow is `CharacterSelect → Production Game`.
-- QC utilities are available in production: zoom `1.0x / 0.8x / 0.65x / 0.5x` and `ẨN UI / HIỆN UI`.
-- Thanh Vân Thôn compact topology, Topology Revision A + Tune A1, remains accepted/locked.
-- Elder / Merchant / Healer internal pocket composition remains accepted and should not be regenerated for this terrain pass.
-- Existing Phone-PASS environment assets remain canonical: houses, Merchant Kit B, Healer Water+Bridge A, Healer Activity Kit A, Field Edge Kit B, Ground/Path P0 and base prop kit.
-- User and DESIGN_CHAT completed a new whole-map discovery round and locked a stronger terrain/environment direction.
-- North-star reference `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1` is durably stored in Drive.
-- `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is integrated in production and deployed through PR #104.
-- Phone QC of V1 at 0.5x + UI hidden is **REVISE**.
-- Terrain Proof V2 is integrated through PR #107 and deployed from runtime code commit `b1a4e9b` (CI #303 PASS; Pages #167 PASS). It remains useful visual evidence, but the final production architecture has now shifted to Illustrated World Hybrid before V2 was promoted to final Phone PASS.
-- Terrain proof changes are visual only; gameplay collision, interaction radius, combat hitbox and timing were not changed.
-
-## Locked whole-map direction
-
-- Preserve the accepted A1 vertical spine and hero-pocket skeleton.
-- Allow strong terrain/environment composition around that skeleton.
-- Village context: humble rural settlement beside agriculture and water.
-- Use one secondary stream that cuts across part of the lower map and exits the village edge.
-- Remove most purposeless free-standing fence scatter.
-- Retain fence only where it has yard/field/property logic.
-- Ground should gain moderate believable variation: worn earth, value variation, grass/soil edges and light cultivation traces.
-- Frame the village with natural macro shapes: meadow/brush/low earth/tree/rock language, not a hard perimeter wall.
-- Keep the playable interior readable/open for portrait mobile.
-- The north-star image is a composition reference, not permission to flatten the game into one background.
-
-## Locked Illustrated World Hybrid architecture
-
-Canonical design doc:
-
-```text
-docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md
-```
-
-Primary visual target:
+## Locked visual target
 
 ### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2
 
-- Status: `REFERENCE_ONLY`; **current preferred north-star**.
-- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`.
-- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`.
-- Role: visual/composition/material target, not a single flattened runtime sprite.
+- Status: `REFERENCE_ONLY`; current preferred visual north-star.
+- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`
+- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`
+- Canonical architecture spec: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
+- Use for terrain/material/atmosphere, stream-field integration and whole-map coherence.
+- Do not treat the image as a pixel-perfect coordinate blueprint when it conflicts with accepted A1 topology.
 
-Locked layer split:
+V1 north-star remains historical only.
 
-- **Bake:** soil, paths, creek/water surface, cultivation ground, low grass/weeds, tiny rocks, ground shadows, distant/off-playable decorative trees/scenery.
-- **Separate static objects:** major houses, near-player trees, bridges, important rocks/fences/gates.
-- **Dynamic:** player, NPCs, enemies, loot, projectiles, gameplay interactables.
-- **Collision:** invisible simplified ground-footprint geometry independent from art pixels.
-- **Occlusion:** Y-depth sorting and selective canopy/roof/eave foreground cutouts.
-- **Future animation:** near-player trees remain separate; canopy may sway lightly. Do not bake important animated trees.
-- **Water:** blocked by default; authored crossings use bridge plus 1–2 ford/stepping-stone locations. No new water gameplay mechanics in the foundation proof.
+## Locked architecture — Illustrated World Hybrid
 
-Topology remains locked to A1. Changing production rendering architecture does not reopen village topology.
+### Bake into Layer 0
 
-## Current proof
+- soil / earth;
+- worn paths;
+- creek / water surface;
+- cultivation / field ground;
+- low grass / weeds;
+- tiny stones / pebbles;
+- low ground shadows;
+- distant or off-playable decorative trees/scenery.
 
-### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1
+### Keep separate as static runtime objects
 
-- Role: reference / composition north-star
-- Status: `REFERENCE_ONLY`
-- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v001.png`
-- Drive file ID: `1WzAg_jBz3J6xiNO3jbmh7fMON6wBueJR`
-- Design doc: `docs/environment/THANH_VAN_THON_WHOLE_MAP_V1.md`
+- major houses / buildings;
+- near-player trees;
+- bridges;
+- large collision-important rocks;
+- functional fences / gates;
+- any static prop that benefits from depth sorting, occlusion, animation or future interaction.
 
-### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
+### Keep dynamic
 
-- Role: runtime proof
-- Status: `REVISE` after Phone QC
-- Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v1.svg`
-- Runtime integration: `src/game/settlementV2AProduction.ts`
-- Preload integration: `src/scenes/ProductionGameScene.ts`
-- Build: `1823667`
-- PR: #104
-- Technical gate: PASS
-- Phone gate: REVISE
+- player;
+- NPCs;
+- enemies;
+- loot;
+- projectiles;
+- gameplay interactables / quest objects.
+
+### Collision philosophy
+
+Collision is independent from art pixels.
+
+- house: ground footprint, not roof silhouette;
+- tree: trunk/base only, not canopy;
+- rock: grounded lower mass;
+- fence: narrow segment/rect/capsule;
+- water: simplified inset polygon.
+
+Do not trace decorative pixels.
+
+### Occlusion philosophy
+
+- prefer Y-depth sorting for separate near objects;
+- use selective foreground canopy / roof / eave / gate-top cutouts where needed;
+- do not build one huge per-pixel mask system;
+- only split objects that materially improve player-in-world depth.
+
+### Tree animation philosophy
+
+- distant/off-playable trees may be baked;
+- important near-player trees remain separate;
+- future first wind proof may use subtle canopy sway (roughly ±0.7°, ±1 px, 2.5–4 s yoyo);
+- do not block Proof A on animation/VFX.
+
+### Water traversal philosophy
+
+- pond and creek blocked by default;
+- authored crossing through bridge plus 1–2 ford / stepping-stone crossings;
+- water collision implementation is **not part of Proof A**;
+- no new slowdown/splash/combat mechanics during the foundation proofs.
+
+## Locked prior state that must survive
+
+- portrait mobile 9:16;
+- V2-A / A1 compact Thanh Vân Thôn topology;
+- Elder / Merchant / Healer functional pocket positions;
+- current route/gameplay semantics;
+- manual `ATK + SKILL + NÉ`;
+- combat hitboxes/timing;
+- NPC interaction semantics;
+- accepted house / Merchant / Healer / Field Edge visual identity where compatible;
+- QC zoom `1.0 / 0.8 / 0.65 / 0.5` and `ẨN UI / HIỆN UI`.
+
+Changing rendering architecture does **not** reopen topology.
+
+## Existing Terrain V2
 
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
 
-- Role: reversible whole-map runtime proof
-- Status: `INTEGRATED`; Phone QC pending
-- Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
-- Asset metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes
-- SHA-256: `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`
-- Design: painterly earth/grass terrain underlay with one muted creek flowing under the existing Healer water art toward the east edge
-- Integration: merged PR #107; main runtime commit `b1a4e9b076b521891c80100f22603d79443b934b`
-- Technical gate: CI run #303 PASS; GitHub Pages run #167 PASS; build `b1a4e9b`
-- Phone gate: pending; verify pond join, whole-map scale, pocket continuity and southern fringe
+- Runtime: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
+- Integrated in PR #107.
+- Runtime commit: `b1a4e9b076b521891c80100f22603d79443b934b`
+- Technical gate: PASS.
+- It demonstrated that painterly terrain is directionally better than V1 SVG.
+- It was **not promoted to final Phone PASS** before the architecture pivot.
+- Preserve as historical/visual evidence; do not keep polishing it as the final solution.
 
-## What the terrain proof intentionally changes
+## Exact next action — Work Proof A only
 
-- more varied/lived-in soil underlay;
-- natural village-edge framing;
-- secondary lower-map stream;
-- light agricultural traces;
-- removal of floating north/south decorative fence stamps.
+Read:
 
-## What it intentionally does not change
+1. `AGENTS.md`
+2. `docs/DISCOVERY_DECISION_PROTOCOL.md`
+3. this file
+4. `docs/ASSET_REGISTRY.md`
+5. `docs/PROJECT_SOURCES.md`
+6. `docs/DECISION_LOG.md`
+7. `docs/PROJECT_CONTEXT.md`
+8. `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
 
-- accepted hero-pocket positions/composition;
-- house/Merchant/Healer/Field Edge canonical art;
-- NPC interaction coordinates/radii;
-- gameplay pathfinding/collision;
-- combat hitboxes/timing;
-- camera gameplay intent.
+Then:
 
-## Phone-QC findings for V1
+1. Verify current `main`, relevant branch/PR state, latest commit and whether any prior operation partially succeeded.
+2. Take execution ownership and create one focused branch.
+3. Produce **Baked Terrain Plate V1**, aligned to the accepted 1600 × 1800 A1 settlement footprint.
+4. Use `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` as the primary visual/material target.
+5. Bake only Layer-0 scenery: terrain, path, creek surface, field/cultivation ground, low vegetation, tiny stones/shadows and distant/off-playable decorative scenery.
+6. Keep major houses, near-player trees, bridges, NPCs and other collision/occlusion-critical objects out of the baked plate.
+7. Do **not** implement new collision or occlusion yet.
+8. Integrate the plate reversibly behind existing static/dynamic runtime objects.
+9. Ensure no baked duplicate of a separate major object is visible.
+10. Build, deploy and verify the real result.
+11. Update `ASSET_REGISTRY`, `HANDOFF_CURRENT`, and affected source/decision records.
+12. Return QC link + build ID + exact runtime asset path/metadata.
+13. Stop. Do not start Collision Proof B until user/DESIGN_CHAT Phone-QC Proof A.
 
-What worked and should be preserved:
+If a suitable painterly terrain source cannot be produced/recovered while respecting A1 and north-star V2, set `RETURN_TO_DESIGN` instead of substituting geometric SVG shapes or generic procedural filler.
 
-- removing the purposeless floating fences improved logic;
-- the overall idea of a secondary stream in the lower half is useful;
-- accepted A1 topology / hero-pocket hierarchy still reads correctly;
-- the stream belongs in the lower map rather than becoming a new central axis.
+## Proof A PASS gate
 
-Why V1 failed:
+At Phone QC:
 
-1. **Macro edge shapes look procedural/vectorial.** Large pale-green circular/rounded masses are visibly geometric and read as overlay masks instead of terrain.
-2. **Stream color/fidelity is mismatched.** The stream is too cyan/clean and visually detached from the painterly village art.
-3. **Water geometry is too regular.** Width and banks feel generated from a broad stroke rather than a natural creek.
-4. **Healer pond → stream join is hard and synthetic.** A rectangular/strip-like transition is visible instead of a believable wet bank/channel.
-5. **Ground still reads too flat.** Despite added variation, the village floor still lacks enough painterly soil, grass-edge and worn-ground language to feel like one continuous place.
-6. **Southern fringe is structurally better, but the underlay art does not yet blend with the accepted field/house assets.**
+- 0.5x + hidden UI reads as one authored rural landscape, not a collage;
+- terrain / creek / fields approach north-star V2 material and atmosphere;
+- houses and accepted pockets sit naturally in the scene rather than appearing pasted onto unrelated ground;
+- there are no obvious seams, giant procedural blobs or flat-paper voids;
+- no major house, near-player tree, bridge or NPC is duplicated into the baked layer;
+- A1 topology and route remain unchanged;
+- gameplay / interaction / combat behavior remains unchanged;
+- Android rendering/performance is stable.
 
-This is an **art-treatment failure, not a topology failure**. Do not reopen A1 topology or accepted hero-pocket placement.
+## Planned later proofs — do not execute yet
 
-## Exact execution brief for Work — Terrain Proof V2
+### Proof B — Collision Foundation
 
-1. Start from verified current `main` and create a focused branch.
-2. Preserve:
-   - A1 topology and all hero-pocket placement;
-   - current stream *role* and lower-map direction concept;
-   - fence cleanup;
-   - all PHONE_PASS houses/pockets/field assets;
-   - gameplay, collision, NPC coordinates/radii and combat logic.
-3. Replace the V1 vector-looking terrain treatment with a painterly terrain layer:
-   - **do not use large circular/elliptical macro masks**;
-   - **do not fake the fix with more scattered props**;
-   - prefer a raster/painterly terrain source or natural irregular decals that visually match the accepted environment art;
-   - if Work cannot access an image-generation/art-production path, return `RETURN_TO_DESIGN` instead of substituting another geometric SVG proof.
-4. Stream V2:
-   - muted jade/earthy water closer to the healer pond palette;
-   - irregular width and meander;
-   - softer, broken natural banks;
-   - blend the Healer pond into the creek with a believable outlet/wet-bank transition;
-   - keep water subordinate to the main spine and hero buildings.
-5. Ground V2:
-   - irregular worn-earth patches, subtle soil value changes and grass/weed edges;
-   - strongest detail around used village spaces, lighter detail in quiet negative space;
-   - no giant tonal blobs that reveal their construction.
-6. Village edge V2:
-   - use natural brush/grass/low earth/rock/tree framing;
-   - avoid a hard perimeter;
-   - do not create a repetitive prop ring.
-7. Integrate one reversible V2 proof only, build, deploy and verify.
-8. Update `ASSET_REGISTRY`, `HANDOFF_CURRENT` and any decision/source records affected by the new asset.
+After A passes:
 
-## V2 PASS gate
+- simplified house/tree/rock/fence/water ground-footprint collision;
+- water blocked by default;
+- bridge + 1–2 ford/stepping-stone authored crossings.
 
-Phone QC must show:
+### Proof C — Occlusion + tree motion
 
-- at 0.5x + UI hidden, no obvious circular/vector terrain masks;
-- whole village reads as one continuous rural landscape;
-- stream looks naturally embedded in the ground and visually matches the healer pond;
-- pond → stream join is believable;
-- stream remains secondary to road/buildings;
-- southern field/residential edge blends into the same terrain language;
-- ground feels materially richer without becoming noisy;
-- no accepted pocket/topology/gameplay regression.
+After B passes:
 
+- one near-road tree with trunk collision + canopy occlusion;
+- one building roof/eave occlusion case;
+- one minimal tree-sway case;
+- Phone QC before expansion.
 
-## Do not repeat blindly
+### Proof D — Expansion / polish
 
-- Do not solve whole-map cohesion by re-enabling Cohesion Pass A scatter props.
-- Do not regenerate accepted hero-pocket assets for terrain problems.
-- Do not flatten the north-star image into a single runtime background.
-- Do not add more fence/trees/rocks merely to fill blank areas before this terrain proof is judged.
-- Do not jump to NPC identity while this proof is unresolved.
-- Do not let DESIGN_CHAT and Work edit the repo concurrently.
+After A–C pass:
 
-## Exact next action
+- scale proven patterns to required objects;
+- restrained wind/water VFX;
+- final edge/agriculture polish.
 
-Work reads `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md` and executes **Proof A — Baked Terrain Plate V1 only**.
+## Failed / superseded paths
 
-Proof A scope:
+Do not repeat:
 
-1. Verify current `main` and existing V2 runtime before writing.
-2. Create one focused branch.
-3. Produce a 1600 × 1800-aligned painterly terrain/background plate using `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` as the visual target.
-4. Bake only Layer-0 content: terrain, path, creek surface, fields/cultivation ground, low vegetation, tiny stones/shadows and distant/off-playable decorative scenery.
-5. Keep major houses, near-player trees, bridges, NPCs and collision/occlusion-critical objects separate.
-6. Do **not** add or redesign collision in Proof A.
-7. Integrate reversibly behind the existing static/dynamic objects.
-8. Build, deploy, verify, update registry/handoff, and return QC link + build ID.
-9. Stop. Do not begin Collision Proof B until DESIGN_CHAT/user accept Proof A.
-
-If Work cannot access/create a suitable painterly terrain source that respects the A1 layout and north-star, return `RETURN_TO_DESIGN` rather than using geometric SVG blobs or generic procedural filler.
-
-## PASS gate
-
-Proof A passes only if:
-
-- 0.5x + hidden UI reads as one authored rural painting rather than a collage;
-- terrain, creek and fields approach the mood/material language of north-star V2;
-- existing houses/pockets sit naturally in the baked terrain instead of looking pasted on;
-- no near-player major house/tree/bridge/NPC is accidentally duplicated into the baked plate;
-- A1 topology and traversal remain unchanged;
-- no new collision/gameplay behavior is introduced;
-- Android/mobile rendering and performance remain stable.
-
-## Two-conversation workflow
-
-- DESIGN_CHAT owns discovery, decisions, Phone-QC interpretation and PASS/REVISE.
-- WORK owns implementation only after transfer state becomes `READY_FOR_WORK`.
-- During `WAIT_QC`, neither Work nor the design chat should broaden production implementation.
-- If Work later finds a new high-impact creative/product ambiguity, it returns with `RETURN_TO_DESIGN`.
-- GitHub + this handoff + registry/decision docs are shared memory.
+- Terrain V1 geometric SVG blobs;
+- scatter-prop cohesion as a substitute for terrain composition;
+- baking every house/tree/NPC into one immutable background;
+- using full visual roof/canopy silhouettes as collision;
+- letting the player walk through all water;
+- implementing all collision/occlusion/VFX layers in one unvalidated mega-pass;
+- reopening A1 topology merely because the art pipeline changed.
 
 ## Resume sentence
 
-Resume from current `main 771f516` with transfer state `READY_FOR_WORK`: design has locked the **Illustrated World Hybrid** architecture and north-star `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2`. Execute **Proof A — Baked Terrain Plate V1 only**, preserve A1 topology and major objects as separate runtime entities, deploy, and return for Phone QC.
+Resume with transfer state `READY_FOR_WORK`: Thanh Vân Thôn now uses the locked **Illustrated World Hybrid** architecture and `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2`. Execute **Proof A — Baked Terrain Plate V1 only**, deploy it, and return for Phone QC before any collision or occlusion work.
