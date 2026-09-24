@@ -1,19 +1,20 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
-Return condition: Work deploys the settlement NPC re-block micro-pass and returns a QC link/build, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
+Return condition: Work deploys NPC Re-block A and returns a QC link/build for quick Phone QC; return `RETURN_TO_DESIGN` only if implementation reveals a high-impact design ASK.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified runtime main after Proof A: `2b3e5cd5ad2b1705ecea34fe064143efb597daf0`
+Verified current main before NPC Re-block A: `9027b68143cf96ad7a34e63088c93dbdbf22661a`
 Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
 Verified live Proof A badge before this docs-only handoff sync: `BUILD 2b3e5cd`
 Completed execution branch: `work/illustrated-world-hybrid-proof-a` (PR #110 merged); north edge refinements PR #111 and #112 merged.
-Open relevant execution PR: none
+Active execution branch: `work/npc-reblock-a` (based on `9027b68143cf96ad7a34e63088c93dbdbf22661a`).
+Open relevant execution PR: none (implementation in progress)
 Unrelated old open PR: #4
-This documentation handoff advances `main` without runtime changes. Verify the live badge and Pages status before any later implementation.
+Execution ownership accepted from this verified handoff. Runtime writes stay on `work/npc-reblock-a` until PR and QC evidence are ready.
 
 ## Current objective
 
@@ -155,7 +156,7 @@ The delivery followed this scope:
 
 If a suitable painterly terrain source cannot be produced/recovered while respecting A1 and north-star V2, set `RETURN_TO_DESIGN` instead of substituting geometric SVG shapes or generic procedural filler.
 
-## Proof A execution evidence — technical delivery, Phone QC pending
+## Proof A execution evidence — technical delivery and Phone PASS
 
 - Runtime asset: `public/assets/c4/environment/settlement/env_settlement_baked_terrain_plate_v1.png`.
 - PNG RGB, 1182 × 1330, 3,604,739 bytes; SHA-256 `d223b8005eed5de278e82f54b8c85eff5b66f742289ca30960f18f0ed4c60c96`. Displayed at 1600 × 1800.
@@ -262,4 +263,4 @@ Do not repeat:
 
 ## Resume sentence
 
-Resume from verified live `main 93c76f4` with transfer state `READY_FOR_WORK`: Illustrated World Hybrid Proof A is PHONE PASS. Execute **NPC Re-block A only** by moving Elder / Merchant / Healer from the central-line presentation to natural entrance/work anchors in their own pockets, moving interaction anchors with them while preserving interaction radii/semantics. Deploy and return for quick Phone QC. Do not start Collision Proof B yet.
+Resume from verified `main 9027b681` with transfer state `WORK_EXECUTING` on `work/npc-reblock-a`. Implement **NPC Re-block A only**: move Elder / Merchant / Healer to natural entrance/work anchors in their own pockets, move interaction anchors with them, preserve radii and semantics. Deploy and return for quick Phone QC. Do not start Collision Proof B.
