@@ -1,24 +1,29 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK_ON_PROOF_B1_BRANCH
-Return condition: Work deploys **Proof B1 — Healer-pocket collision foundation**, returns build/QC evidence plus the required QC checklist, then ownership returns to DESIGN_CHAT for Phone QC.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: user/DESIGN_CHAT performs the seven-item Android Phone QC for **Proof B1 — Healer-pocket collision foundation** and records PASS/REVISE. B2 remains blocked until B1 Phone PASS.
 
-Active branch: `proof-b1-healer-collision` (based on verified main `3ceb183f3a9a436a7e83f2b0f70b40bda3d2366c`)
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified current main before this continuity update: `9eb4c5086f646fcd28a119a2096ddfd13a33361c`
-Functional NPC re-block runtime: PR #115 / `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`
-Phone-reviewed live badge: `BUILD 9eb4c50`
-Open relevant execution PR: none
-Unrelated old open PR: #4
+Verified B1 functional main: `cae8a1ccaf5628ac6794a39d2abc5a3fab4e7cee`
+Runtime B1 lineage: PR #118 `c3553b7` + foot-anchor fix PR #119 `1e2da44` + bridge-gap tune PR #120 `cae8a1c`.
+Verified functional live badge before this documentation update: `BUILD cae8a1c`.
+Main CI run #36023555367 PASS; Pages run #36023555230 PASS.
+Open relevant execution PR: none; unrelated old open PR #4.
 
 ## Current objective
 
-Execute **Proof B1 — Healer-pocket collision foundation only**.
+Phone QC **Proof B1 — Healer-pocket collision foundation only** on the deployed build. Record PASS/REVISE against all seven checks below. Do not start B2 until this gate passes.
 
-Do not expand collision map-wide, add occlusion, animate trees, or add new water/gameplay effects in the same proof.
+## B1 implementation and Work self-VERIFY
+
+- `src/game/settlementCollisionB1.ts`: foot-centered radius 11 at the player artwork's actual contact shadow (control center +31 Y); grounded house base, one tree trunk, narrow fence and three inset local water polygons. The southern bridge planks have an explicit walkable diagonal gap.
+- `GameScene.updatePlayer` moves through at most 5 world units per substep and resolves axes independently, preserving the existing normal/dodge speed, world bounds, combat bodies/timing, NPC anchors/radii and unrelated map areas.
+- Coordinate path checks exercised normal/diagonal contact with house/tree/fence/water, high-speed dodge against blockers, two-way bridge routes, and the Healer approach.
+- Live desktop 1.0x QC on `BUILD cae8a1c`: game loads; bridge crossed south→north and north→south after correcting the foot contact and southern water bank; Healer prompt remains reachable. Live Healer dialogue was triggered on initial B1 runtime, and interaction code was unchanged in the two follow-up fixes.
+- This is **not yet Phone PASS**. Android 1.0x judgment is required for visible bank margins, sticky corners, dodge and overall feel. Prior intermediate runtime builds `c3553b7` and `1e2da44` are superseded by `cae8a1c`.
 
 ## Verified completed / Phone PASS
 
@@ -187,4 +192,4 @@ Only after B2 passes:
 
 ## Resume sentence
 
-Resume from verified current GitHub state with transfer state `READY_FOR_WORK`: NPC Re-block A is PHONE PASS, and the exact next task is **Proof B1 — Healer-pocket collision foundation only**. Deploy it and return the QC link/build **with the seven-item Phone-QC checklist above**.
+Resume from verified current GitHub state with transfer state `WAIT_QC`: Proof B1 is deployed on functional runtime `cae8a1c`, awaiting the seven-item Android Phone QC above. Record PASS/REVISE before starting B2.
