@@ -1,10 +1,11 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
-Repo-write permission: WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
+Repo-write permission: WORK_ON_PROOF_B1_BRANCH
 Return condition: Work deploys **Proof B1 — Healer-pocket collision foundation**, returns build/QC evidence plus the required QC checklist, then ownership returns to DESIGN_CHAT for Phone QC.
 
+Active branch: `proof-b1-healer-collision` (based on verified main `3ceb183f3a9a436a7e83f2b0f70b40bda3d2366c`)
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified current main before this continuity update: `9eb4c5086f646fcd28a119a2096ddfd13a33361c`
