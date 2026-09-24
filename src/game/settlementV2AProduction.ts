@@ -17,7 +17,7 @@ export const SETTLEMENT_V2A_TEXTURES = {
   healerHerbBed: 'prod-v2a-healer-herb-bed-a',
   healerDrying: 'prod-v2a-healer-drying-a',
   fieldEdge: 'prod-v2a-field-edge-b',
-  terrainUnderlay: 'prod-v2a-terrain-underlay-v2',
+  terrainPlate: 'prod-v2a-baked-terrain-plate-v1',
 } as const;
 
 export const SETTLEMENT_V2A_PRELOADS = [
@@ -33,15 +33,8 @@ export const SETTLEMENT_V2A_PRELOADS = [
   [SETTLEMENT_V2A_TEXTURES.healerHerbBed, C4_ASSETS.settlementHealerHerbBedA],
   [SETTLEMENT_V2A_TEXTURES.healerDrying, C4_ASSETS.settlementHealerDryingPropsA],
   [SETTLEMENT_V2A_TEXTURES.fieldEdge, C4_ASSETS.settlementFieldEdgeKitB],
-  [SETTLEMENT_V2A_TEXTURES.terrainUnderlay, C4_ASSETS.settlementTerrainWholeMapV2],
+  [SETTLEMENT_V2A_TEXTURES.terrainPlate, C4_ASSETS.settlementBakedTerrainPlateV1],
 ] as const;
-
-const GROUND_RUNTIME = {
-  pathA: 'c4-settlement-path-a-masked',
-  pathB: 'c4-settlement-path-b-masked',
-  patch: 'c4-settlement-ground-patch-a-masked',
-  forecourt: 'c4-settlement-forecourt-a-masked',
-} as const;
 
 // Topology Revision A moves whole accepted pockets without changing their internal composition.
 // The active village mass is compressed vertically and pulled inward toward the main spine.
@@ -136,26 +129,6 @@ function prepareTreeRuntimeTexture(scene: Phaser.Scene): void {
   target.refresh();
 }
 
-function addGroundImage(
-  scene: Phaser.Scene,
-  texture: string,
-  x: number,
-  y: number,
-  width: number,
-  rotation = 0,
-  flipX = false,
-  alpha = 0.85,
-): Phaser.GameObjects.Image {
-  const image = scene.add.image(x, y, texture)
-    .setOrigin(0.5)
-    .setRotation(rotation)
-    .setAlpha(alpha)
-    .setDepth(-7);
-  const scale = image.width > 0 ? width / image.width : 1;
-  image.setScale(flipX ? -scale : scale, scale);
-  return image;
-}
-
 function addAsset(
   scene: Phaser.Scene,
   texture: string,
@@ -214,63 +187,15 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   removeLegacySettlementArt(scene, zone);
   prepareTreeRuntimeTexture(scene);
 
+  // Proof A bakes only Layer 0. Buildings, near-player trees, bridge and props remain separate.
   scene.add.rectangle(800, top + 900, 1600, 1800, 0xe7dcc2, 1).setDepth(-9.5);
-  if (scene.textures.exists(SETTLEMENT_V2A_TEXTURES.terrainUnderlay)) {
-    scene.add.image(800, top + 900, SETTLEMENT_V2A_TEXTURES.terrainUnderlay)
+  if (scene.textures.exists(SETTLEMENT_V2A_TEXTURES.terrainPlate)) {
+    scene.add.image(800, top + 900, SETTLEMENT_V2A_TEXTURES.terrainPlate)
       .setOrigin(0.5)
       .setDisplaySize(1600, 1800)
       .setDepth(-8.8);
-  }
-
-  const patches = [
-    // Northern threshold wash softens the empty approach without adding a new POI.
-    { x: 800, y: 330, w: 340, r: 0.01, flip: true, alpha: 0.17 },
-    { x: 760, y: 500, w: 390, r: -0.02, flip: false, alpha: 0.22 },
-    { x: 850, y: 810, w: 410, r: 0.03, flip: true, alpha: 0.25 },
-    { x: 760, y: 1115, w: 395, r: -0.03, flip: false, alpha: 0.24 },
-    { x: 835, y: 1435, w: 380, r: 0.03, flip: true, alpha: 0.22 },
-  ] as const;
-  for (const patch of patches) {
-    addGroundImage(scene, GROUND_RUNTIME.patch, patch.x, top + patch.y, patch.w, patch.r, patch.flip, patch.alpha);
-  }
-
-  const pathPieces = [
-    { texture: GROUND_RUNTIME.pathA, x: 820, y: 95, w: 214, r: -0.02, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 790, y: 250, w: 218, r: 0.06, flip: true },
-    { texture: GROUND_RUNTIME.pathA, x: 745, y: 410, w: 220, r: -0.10, flip: true },
-    { texture: GROUND_RUNTIME.pathB, x: 760, y: 570, w: 224, r: -0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathA, x: 820, y: 730, w: 220, r: 0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 835, y: 890, w: 220, r: 0.10, flip: true },
-    { texture: GROUND_RUNTIME.pathA, x: 785, y: 1050, w: 218, r: -0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathB, x: 755, y: 1210, w: 218, r: -0.08, flip: false },
-    { texture: GROUND_RUNTIME.pathA, x: 790, y: 1370, w: 216, r: 0.08, flip: true },
-    { texture: GROUND_RUNTIME.pathB, x: 815, y: 1530, w: 212, r: -0.04, flip: true },
-    { texture: GROUND_RUNTIME.pathA, x: 805, y: 1685, w: 205, r: 0.02, flip: false },
-  ] as const;
-  for (const piece of pathPieces) {
-    addGroundImage(scene, piece.texture, piece.x, top + piece.y, piece.w, piece.r, piece.flip, 0.74);
-  }
-
-  const branches = [
-    // A1: make the three hero-pocket branches read clearly at 0.5x without becoming roads of equal rank.
-    { texture: GROUND_RUNTIME.pathA, x: 625, y: 575, w: 248, r: 1.18, flip: true, alpha: 0.80 },
-    { texture: GROUND_RUNTIME.pathB, x: 945, y: 820, w: 225, r: -1.16, flip: false, alpha: 0.80 },
-    { texture: GROUND_RUNTIME.pathA, x: 625, y: 1145, w: 248, r: 1.15, flip: false, alpha: 0.84 },
-    { texture: GROUND_RUNTIME.pathB, x: 995, y: 1430, w: 200, r: -1.15, flip: true, alpha: 0.64 },
-  ] as const;
-  for (const branch of branches) {
-    addGroundImage(scene, branch.texture, branch.x, top + branch.y, branch.w, branch.r, branch.flip, branch.alpha);
-  }
-
-  const forecourts = [
-    { x: 800, y: 390, w: 245, r: 0.02, flip: true, alpha: 0.22 },
-    { x: 470, y: 605, w: 295, r: -0.04, flip: false, alpha: 0.62 },
-    { x: 1060, y: 915, w: 320, r: 0.04, flip: true, alpha: 0.72 },
-    { x: 470, y: 1190, w: 310, r: -0.03, flip: true, alpha: 0.70 },
-    { x: 1065, y: 1525, w: 275, r: 0.04, flip: false, alpha: 0.44 },
-  ] as const;
-  for (const forecourt of forecourts) {
-    addGroundImage(scene, GROUND_RUNTIME.forecourt, forecourt.x, top + forecourt.y, forecourt.w, forecourt.r, forecourt.flip, forecourt.alpha);
+  } else {
+    throw new Error('Illustrated World Hybrid Proof A terrain plate failed to load');
   }
 
   const tree = scene.textures.exists(SETTLEMENT_V2A_TEXTURES.treeRuntime)
