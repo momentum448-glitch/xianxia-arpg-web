@@ -1,9 +1,9 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: DESIGN_CHAT completes Phone QC for Terrain Proof V2 on the deployed build and records PASS/REVISE. Work resumes only if explicitly transferred back or a new high-impact design ambiguity appears.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys Illustrated World Hybrid Proof A (Baked Terrain Plate V1) and returns build/QC evidence, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
@@ -18,7 +18,7 @@ GitHub Pages deploy: PASS (#167; code-identical documentation sync may advance t
 
 ## Current objective
 
-Complete Phone QC of deployed **Whole-map Terrain Proof V2** after V1's vector-looking terrain treatment was revised. Preserve the accepted map skeleton, good V1 structural choices, painterly raster treatment and visual-only gameplay scope.
+Execute **Illustrated World Hybrid Proof A — Baked Terrain Plate V1**. The project has intentionally changed production architecture after design review: use one coherent painterly whole-map terrain plate for Layer-0 scenery while keeping major houses, near-player trees, bridges, NPCs and other gameplay/occlusion-critical objects separate.
 
 ## Verified completed state
 
@@ -31,7 +31,7 @@ Complete Phone QC of deployed **Whole-map Terrain Proof V2** after V1's vector-l
 - North-star reference `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1` is durably stored in Drive.
 - `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is integrated in production and deployed through PR #104.
 - Phone QC of V1 at 0.5x + UI hidden is **REVISE**.
-- Terrain Proof V2 is integrated through PR #107 and deployed from runtime code commit `b1a4e9b` (CI #303 PASS; Pages #167 PASS); Phone QC remains pending.
+- Terrain Proof V2 is integrated through PR #107 and deployed from runtime code commit `b1a4e9b` (CI #303 PASS; Pages #167 PASS). It remains useful visual evidence, but the final production architecture has now shifted to Illustrated World Hybrid before V2 was promoted to final Phone PASS.
 - Terrain proof changes are visual only; gameplay collision, interaction radius, combat hitbox and timing were not changed.
 
 ## Locked whole-map direction
@@ -46,6 +46,35 @@ Complete Phone QC of deployed **Whole-map Terrain Proof V2** after V1's vector-l
 - Frame the village with natural macro shapes: meadow/brush/low earth/tree/rock language, not a hard perimeter wall.
 - Keep the playable interior readable/open for portrait mobile.
 - The north-star image is a composition reference, not permission to flatten the game into one background.
+
+## Locked Illustrated World Hybrid architecture
+
+Canonical design doc:
+
+```text
+docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md
+```
+
+Primary visual target:
+
+### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2
+
+- Status: `REFERENCE_ONLY`; **current preferred north-star**.
+- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`.
+- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`.
+- Role: visual/composition/material target, not a single flattened runtime sprite.
+
+Locked layer split:
+
+- **Bake:** soil, paths, creek/water surface, cultivation ground, low grass/weeds, tiny rocks, ground shadows, distant/off-playable decorative trees/scenery.
+- **Separate static objects:** major houses, near-player trees, bridges, important rocks/fences/gates.
+- **Dynamic:** player, NPCs, enemies, loot, projectiles, gameplay interactables.
+- **Collision:** invisible simplified ground-footprint geometry independent from art pixels.
+- **Occlusion:** Y-depth sorting and selective canopy/roof/eave foreground cutouts.
+- **Future animation:** near-player trees remain separate; canopy may sway lightly. Do not bake important animated trees.
+- **Water:** blocked by default; authored crossings use bridge plus 1–2 ford/stepping-stone locations. No new water gameplay mechanics in the foundation proof.
+
+Topology remains locked to A1. Changing production rendering architecture does not reopen village topology.
 
 ## Current proof
 
@@ -174,18 +203,33 @@ Phone QC must show:
 
 ## Exact next action
 
-Run Phone QC of Terrain Proof V2 on the current live build at https://momentum448-glitch.github.io/xianxia-arpg-web/. The build badge identifies the latest deploy; its runtime contains the V2 code from PR #107. Record PASS/REVISE in this handoff. Keep implementation locked during `WAIT_QC`.
+Work reads `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md` and executes **Proof A — Baked Terrain Plate V1 only**.
+
+Proof A scope:
+
+1. Verify current `main` and existing V2 runtime before writing.
+2. Create one focused branch.
+3. Produce a 1600 × 1800-aligned painterly terrain/background plate using `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` as the visual target.
+4. Bake only Layer-0 content: terrain, path, creek surface, fields/cultivation ground, low vegetation, tiny stones/shadows and distant/off-playable decorative scenery.
+5. Keep major houses, near-player trees, bridges, NPCs and collision/occlusion-critical objects separate.
+6. Do **not** add or redesign collision in Proof A.
+7. Integrate reversibly behind the existing static/dynamic objects.
+8. Build, deploy, verify, update registry/handoff, and return QC link + build ID.
+9. Stop. Do not begin Collision Proof B until DESIGN_CHAT/user accept Proof A.
+
+If Work cannot access/create a suitable painterly terrain source that respects the A1 layout and north-star, return `RETURN_TO_DESIGN` rather than using geometric SVG blobs or generic procedural filler.
 
 ## PASS gate
 
-- village feels naturally enclosed without a fence perimeter;
-- stream makes the map more alive but remains subordinate to the route/hero pockets;
-- ground no longer reads like a flat blank sheet;
-- stream/water joins do not look broken at 1.0x;
-- southern residential + agricultural fringe reads coherently;
-- accepted hero-pocket hierarchy remains intact;
-- no runtime/mobile rendering artifact;
-- no gameplay or interaction regression.
+Proof A passes only if:
+
+- 0.5x + hidden UI reads as one authored rural painting rather than a collage;
+- terrain, creek and fields approach the mood/material language of north-star V2;
+- existing houses/pockets sit naturally in the baked terrain instead of looking pasted on;
+- no near-player major house/tree/bridge/NPC is accidentally duplicated into the baked plate;
+- A1 topology and traversal remain unchanged;
+- no new collision/gameplay behavior is introduced;
+- Android/mobile rendering and performance remain stable.
 
 ## Two-conversation workflow
 
@@ -197,4 +241,4 @@ Run Phone QC of Terrain Proof V2 on the current live build at https://momentum44
 
 ## Resume sentence
 
-Resume with transfer state `WAIT_QC`: Terrain Proof V2 is deployed from runtime commit `b1a4e9b` as `BUILD b1a4e9b` (CI #303 PASS; Pages #167 PASS). Phone QC is pending; record PASS/REVISE against the gate above.
+Resume from current `main 771f516` with transfer state `READY_FOR_WORK`: design has locked the **Illustrated World Hybrid** architecture and north-star `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2`. Execute **Proof A — Baked Terrain Plate V1 only**, preserve A1 topology and major objects as separate runtime entities, deploy, and return for Phone QC.
