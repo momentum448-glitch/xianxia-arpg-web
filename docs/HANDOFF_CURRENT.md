@@ -1,24 +1,24 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK
-Return condition: Work deploys Terrain Proof V2 and returns a QC link/build, or Work encounters a new high-impact ASK/design ambiguity and marks RETURN_TO_DESIGN.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: DESIGN_CHAT completes Phone QC for Terrain Proof V2 on the deployed build and records PASS/REVISE. Work resumes only if explicitly transferred back or a new high-impact design ambiguity appears.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Current main: `97516128e2f4938e6ba74810b59bd4acc64ea468`
-Phone/runtime build: V1 Phone-QC lineage `BUILD 1823667`; current code-equivalent Pages redeploy is `BUILD 9751612` (run #166 PASS)
-Relevant merged PRs: #104 — terrain proof V1; #106 — V1 REVISE and Work handoff
-Active execution branch: `work/terrain-proof-v2` (based on verified main `9751612`)
+Main V2 runtime commit: `b1a4e9b076b521891c80100f22603d79443b934b` (PR #107)
+V2 runtime code build: `BUILD b1a4e9b` (PR #107; CI #303 PASS; GitHub Pages #167 PASS). Current live build badge identifies the latest code-identical deployment.
+Relevant merged PRs: #104 — terrain proof V1; #106 — V1 REVISE and Work handoff; #107 — painterly Terrain Proof V2
+Active execution branch: none (V2 merged)
 Open relevant execution PR: none
 Unrelated old open PR: #4
-CI: PASS
-GitHub Pages deploy: PASS
+CI: PASS (#303)
+GitHub Pages deploy: PASS (#167; code-identical documentation sync may advance the badge)
 
 ## Current objective
 
-Execute **Whole-map Terrain Proof V2** after Phone QC rejected V1's vector-looking terrain treatment. Preserve the accepted map skeleton and good V1 structural choices, but replace the terrain treatment with a painterly, natural, mobile-readable result.
+Complete Phone QC of deployed **Whole-map Terrain Proof V2** after V1's vector-looking terrain treatment was revised. Preserve the accepted map skeleton, good V1 structural choices, painterly raster treatment and visual-only gameplay scope.
 
 ## Verified completed state
 
@@ -31,6 +31,7 @@ Execute **Whole-map Terrain Proof V2** after Phone QC rejected V1's vector-looki
 - North-star reference `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V1` is durably stored in Drive.
 - `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1` is integrated in production and deployed through PR #104.
 - Phone QC of V1 at 0.5x + UI hidden is **REVISE**.
+- Terrain Proof V2 is integrated through PR #107 and deployed from runtime code commit `b1a4e9b` (CI #303 PASS; Pages #167 PASS); Phone QC remains pending.
 - Terrain proof changes are visual only; gameplay collision, interaction radius, combat hitbox and timing were not changed.
 
 ## Locked whole-map direction
@@ -71,13 +72,13 @@ Execute **Whole-map Terrain Proof V2** after Phone QC rejected V1's vector-looki
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
 
 - Role: reversible whole-map runtime proof
-- Status: `WORK_EXECUTING`; Phone QC pending
+- Status: `INTEGRATED`; Phone QC pending
 - Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
 - Asset metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes
 - SHA-256: `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`
 - Design: painterly earth/grass terrain underlay with one muted creek flowing under the existing Healer water art toward the east edge
-- Integration: runtime branch `work/terrain-proof-v2`; PR/build pending
-- Technical gate: pending CI + Pages deploy
+- Integration: merged PR #107; main runtime commit `b1a4e9b076b521891c80100f22603d79443b934b`
+- Technical gate: CI run #303 PASS; GitHub Pages run #167 PASS; build `b1a4e9b`
 - Phone gate: pending; verify pond join, whole-map scale, pocket continuity and southern fringe
 
 ## What the terrain proof intentionally changes
@@ -173,7 +174,7 @@ Phone QC must show:
 
 ## Exact next action
 
-Work executes **Terrain Proof V2** from the brief above, then returns the deployed build/link for Phone QC. Do not broaden scope beyond terrain/water/edge treatment.
+Run Phone QC of Terrain Proof V2 on the current live build at https://momentum448-glitch.github.io/xianxia-arpg-web/. The build badge identifies the latest deploy; its runtime contains the V2 code from PR #107. Record PASS/REVISE in this handoff. Keep implementation locked during `WAIT_QC`.
 
 ## PASS gate
 
@@ -196,4 +197,4 @@ Work executes **Terrain Proof V2** from the brief above, then returns the deploy
 
 ## Resume sentence
 
-Resume from verified `main 9751612` with active branch `work/terrain-proof-v2`: Terrain Proof V1 on `BUILD 1823667` is REVISE because its SVG/vector treatment reads artificial on phone. V2 is integrated as one raster underlay; complete CI/deploy and return the link/build for Phone QC.
+Resume with transfer state `WAIT_QC`: Terrain Proof V2 is deployed from runtime commit `b1a4e9b` as `BUILD b1a4e9b` (CI #303 PASS; Pages #167 PASS). Phone QC is pending; record PASS/REVISE against the gate above.

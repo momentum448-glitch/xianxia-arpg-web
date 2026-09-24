@@ -185,5 +185,5 @@ Runtime file: `public/assets/c4/environment/settlement/env_settlement_terrain_wh
 - Ground treatment adds irregular warm-earth, soil-value, and grass-edge variation; it avoids V1's giant rounded SVG masks.
 - The 1182 × 1330 PNG is displayed at the accepted 1600 × 1800 terrain footprint.
 - A1 topology, hero-pocket coordinates, pathfinding, collision, interactions, combat hitboxes, and timing are unchanged.
-- V2 technical status: integrated candidate; CI and production deployment pending in the active handoff.
-- Phone status: pending. Follow the ordered views in §14 and record PASS/REVISE in `HANDOFF_CURRENT.md`.
+- V2 technical status: integrated and deployed through PR #107; CI run #303 PASS and GitHub Pages run #167 PASS on runtime code commit `b1a4e9b`.
+- Phone status: pending. Follow the ordered views in §14 on the deployed production link and record PASS/REVISE in `HANDOFF_CURRENT.md`.

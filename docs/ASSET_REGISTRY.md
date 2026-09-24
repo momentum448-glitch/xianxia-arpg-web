@@ -293,9 +293,10 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes; SHA-256 `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`.
 - Runtime presentation: image underlay at 1600 × 1800 behind accepted modular art; preloaded through the image loader.
 - Visual scope: worn warm earth, irregular grass/soil edges and one muted jade creek running beneath the accepted Healer water layer toward the east edge. No new object or pocket art.
-- Phone QC: pending on the deployed V2 build. Confirm the pond-to-creek join at 1.0x, whole-map readability at 0.5x with UI hidden, and southern-fringe continuity.
+- Runtime lineage: merged PR #107; CI run #303 PASS; GitHub Pages run #167 PASS on V2 code commit `b1a4e9b`.
+- Phone QC: pending. Confirm the pond-to-creek join at 1.0x, whole-map readability at 0.5x with UI hidden, and southern-fringe continuity.
 - Gameplay: visual only; no collision, interaction-radius, hitbox or timing changes.
-- Next action: finish CI/deploy and return the live QC link/build ID.
+- Next action: run Phone QC from `docs/HANDOFF_CURRENT.md`; record PASS/REVISE before any further terrain changes.
 
 ## 8. Current critical non-art architecture note
 
@@ -349,4 +350,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **complete the focused Terrain Proof V2 PR, verify CI and Pages deployment, then run Phone QC using HANDOFF_CURRENT.md. Keep the proof visual-only and preserve accepted topology and pocket assets.**
+Current exact next action: **run the ordered Phone QC for Terrain Proof V2 from HANDOFF_CURRENT.md, record PASS/REVISE, and preserve the accepted topology, hero pockets and gameplay.**
