@@ -206,6 +206,7 @@ Collision rule:
 - water collider is inset slightly from the visible bank;
 - avoid pixel-perfect shoreline tracing;
 - bridge/ford areas create explicit walkable gaps/crossings.
+- **Bridge crossing representation rule:** prefer continuous blocked water plus an explicit narrow walkable corridor aligned to the visible bridge deck. Do not represent a bridge by leaving a broad accidental hole between water polygons, because adjacent visible water can become walkable.
 
 ## 7. Occlusion rule
 
@@ -312,6 +313,7 @@ B1 PASS gate:
 - representative fence does not allow obvious pass-through and does not create sticky corner behavior;
 - pond/creek cannot be entered at blocked banks;
 - bridge can be crossed in both directions without invisible snags;
+- the player cannot step sideways from the visible bridge deck onto adjacent visible water;
 - normal diagonal movement and dodge do not tunnel through obstacles;
 - Healer NPC remains reachable and interaction still triggers normally;
 - no A1 topology, art, NPC, combat timing or interaction-radius regression.
