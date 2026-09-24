@@ -13,6 +13,7 @@ import {
   skillDamageForRealm,
 } from '../game/cultivationConfig';
 import { NPCS, type NpcDefinition } from '../game/npcConfig';
+import { moveWithHealerB1Collision } from '../game/settlementCollisionB1';
 import { BOSS_GATE, ENCOUNTERS, WORLD_EVENTS, type EncounterDefinition, type WorldEventDefinition } from '../game/regionContentConfig';
 import { createPlayerProfile, type PlayerGender, type PlayerProfile } from '../game/playerProfile';
 import { basicAttackCooldownMsForProfile, basicAttackRangeForProfile } from '../game/playerStats';
@@ -499,16 +500,12 @@ CỔ MÔN • PHONG ẤN`, {
       this.facingY = vy;
     }
 
-    this.player.x = Phaser.Math.Clamp(
-      this.player.x + vx * speed * delta / 1000,
-      WORLD.edgePadding,
-      WORLD.width - WORLD.edgePadding,
+    const [nextX, nextY] = moveWithHealerB1Collision(
+      this.player.x, this.player.y,
+      vx * speed * delta / 1000, vy * speed * delta / 1000,
+      WORLD.edgePadding, WORLD.width, WORLD.height,
     );
-    this.player.y = Phaser.Math.Clamp(
-      this.player.y + vy * speed * delta / 1000,
-      WORLD.edgePadding,
-      WORLD.height - WORLD.edgePadding,
-    );
+    this.player.setPosition(nextX, nextY);
 
     this.player.setStrokeStyle(0, 0x000000, 0);
   }
