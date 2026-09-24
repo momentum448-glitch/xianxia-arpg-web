@@ -318,18 +318,30 @@ B1 PASS gate:
 - Healer NPC remains reachable and interaction still triggers normally;
 - no A1 topology, art, NPC, combat timing or interaction-radius regression.
 
-#### Proof B2 — Settlement collision expansion
+#### Proof B2A — Static settlement collision expansion
 
 Only after B1 Phone PASS:
 
-- apply the proven collider pattern to the remaining required Elder / Merchant / southern-pocket buildings, near trees, large rocks and functional fences;
-- extend water blocking across the authored creek;
-- add 1–2 **visually authored** ford / stepping-stone crossings where composition supports them; do not create invisible walkable water gaps with no visual cue;
-- Phone QC the full settlement route before Proof C.
+- apply the proven grounded-collider pattern to required Elder / Merchant / southern-pocket buildings;
+- add reachable near-player tree trunk/base collision;
+- add only visually substantial large grounded props and functional fences;
+- preserve accepted Healer B1 water/bridge collision;
+- do not expand creek water, add crossings, occlusion or tree motion yet;
+- Phone QC the full settlement route.
+
+#### Proof B2B — Full water + authored crossings
+
+Only after B2A Phone PASS:
+
+- extend blocked water across the authored creek outside the Healer B1 pocket;
+- add one visually authored ford / stepping-stone crossing and prove it first;
+- add a second crossing only if route/composition evidence supports it;
+- all walkable water exceptions must have a visible crossing cue;
+- Phone QC before Proof C.
 
 ### Proof C — Occlusion + tree motion
 
-Only after Proof B1 + B2 collision foundation passes:
+Only after Proof B1 + B2A + B2B collision foundation passes:
 
 - prove one near-road tree with trunk collision + canopy occlusion;
 - prove one building roof/eave occlusion case;
@@ -374,4 +386,4 @@ Work must deploy B1 and return:
 - a short self-check result;
 - the exact ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.
 
-Do not expand collision to the whole settlement or begin occlusion/tree motion until B1 passes.
+B1/B1.1 are now Phone PASS. Next execute B2A static collision expansion only. Do not begin B2B water expansion or Proof C occlusion/tree motion until their prior gates pass.
