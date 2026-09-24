@@ -14,6 +14,15 @@ export const HEALER_B1_FOOT_RADIUS = 11;
 const FOOT_OFFSET_Y = 31;
 const STEP_LENGTH = 5;
 
+// The bridge is a separate walkable crossing through otherwise continuous
+// water. Endpoints follow the actual plank deck in the 440 × 247 runtime
+// placement at (445, 8510); only the small foot contact disk may overhang.
+export const HEALER_B1_BRIDGE = {
+  from: [414, 8482] as Point,
+  to: [488, 8540] as Point,
+  halfWidth: 18,
+} as const;
+
 // Only the grounded lower mass of the house blocks; the roof and front forecourt do not.
 export const HEALER_B1_FOOTPRINTS: readonly Footprint[] = [
   { kind: 'box', left: 366, right: 566, top: 8298, bottom: 8337 },
@@ -34,13 +43,19 @@ export const HEALER_B1_FOOTPRINTS: readonly Footprint[] = [
     [390, 8499], [386, 8517], [400, 8532], [420, 8545],
     [396, 8577], [324, 8593], [254, 8574], [224, 8544],
   ] },
-  // The short adjacent creek east of the bridge. The dry diagonal gap
-  // between the two water polygons follows the visible planks from
-  // roughly (418, 8482) to (483, 8536), with room for the player's feet.
+  // The short adjacent creek east of the bridge.
   { kind: 'water', vertices: [
     [474, 8469], [506, 8448], [556, 8435], [622, 8442],
     [651, 8460], [640, 8488], [603, 8506], [548, 8519],
     [525, 8530], [515, 8514], [512, 8498],
+  ] },
+  // Join pond and creek under the bridge. Previously their missing space
+  // included visible cyan water just east of the northern planks. The bridge
+  // corridor below, rather than this polygon's absence, now opens the path.
+  { kind: 'water', vertices: [
+    [382, 8475], [418, 8458], [463, 8454], [506, 8448],
+    [532, 8463], [531, 8493], [552, 8521], [524, 8540],
+    [474, 8541], [421, 8535], [392, 8525], [380, 8500],
   ] },
 ];
 
@@ -83,11 +98,14 @@ export function isHealerB1Blocked(x: number, y: number): boolean {
     } else if (shape.kind === 'segment') {
       if (segmentDistanceSquared(x, y, shape.from, shape.to)
         < (r + shape.halfWidth) ** 2) return true;
-    } else if (insidePolygon(x, y, shape.vertices)
-      || shape.vertices.some((point, index) => segmentDistanceSquared(
-        x, y, point, shape.vertices[(index + 1) % shape.vertices.length],
-      ) < r * r)) {
-      return true;
+    } else {
+      const touchesWater = insidePolygon(x, y, shape.vertices)
+        || shape.vertices.some((point, index) => segmentDistanceSquared(
+          x, y, point, shape.vertices[(index + 1) % shape.vertices.length],
+        ) < r * r);
+      if (touchesWater && segmentDistanceSquared(
+        x, y, HEALER_B1_BRIDGE.from, HEALER_B1_BRIDGE.to,
+      ) > HEALER_B1_BRIDGE.halfWidth ** 2) return true;
     }
   }
   return false;

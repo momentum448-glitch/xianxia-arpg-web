@@ -1,10 +1,11 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
-Repo-write permission: WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
+Repo-write permission: WORK_ON_B1_1_BRANCH
 Return condition: Work deploys **B1.1 — bridge/water leak fix** and returns build/QC evidence plus the focused QC checklist. B2 remains blocked until B1.1 Phone PASS.
 
+Active branch: `proof-b1-1-bridge-water-corridor` based on `c694f25b564eaef47a7888cc16420c318bcae304`.
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified B1 functional main: `cae8a1ccaf5628ac6794a39d2abc5a3fab4e7cee`
