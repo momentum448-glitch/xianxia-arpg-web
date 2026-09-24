@@ -1,9 +1,9 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: User reports PASS or REVISE on the three B1.1 Android checks at 1.0x. B2 remains blocked until B1.1 Phone PASS.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **Proof B2A — static settlement collision expansion** and returns the build/QC evidence plus the explicit B2A Phone-QC checklist. B2B and Proof C remain blocked until B2A Phone PASS.
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified B1.1 functional main: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`
@@ -14,11 +14,27 @@ Open relevant execution PR: none; unrelated old open PR #4.
 
 ## Current objective
 
-Await **B1.1 focused Android QC** on the deployed bridge/water fix. Android QC had passed 6/7 B1 checks on the prior build; the only reported failure was visible water immediately beside the Healer bridge.
+Execute **Proof B2A — static settlement collision expansion only**. B1/B1.1 are now PHONE PASS. Extend the proven grounded-collision pattern to the remaining important houses, near-player trees, large grounded props and functional fences, while leaving whole-map water expansion and occlusion/tree motion for later gated proofs.
 
-## B1 Android QC result
+## B1 / B1.1 Phone PASS
 
-**REVISE, narrow scope.**
+User Android QC reports the focused B1.1 retest PASS on live `BUILD fce1ca2` (docs-only badge over functional B1.1 runtime `ea86424`).
+
+Accepted B1 behavior:
+
+- Healer house blocks at the grounded footprint without oversized invisible walls.
+- Tree collision is trunk/base-only.
+- Representative fence blocks without unacceptable sticky behavior.
+- Healer pond/creek banks block water traversal.
+- Explicit bridge corridor aligns to the visible plank deck and does not leak into adjacent visible water.
+- Normal movement and dodge do not tunnel through tested B1 geometry.
+- Dược Sư remains reachable and interaction remains correct.
+
+B1 is now the canonical collision pattern for expansion. Preserve its foot radius, foot-anchor convention, movement substeps and axis-slide behavior unless B2A exposes a concrete regression.
+
+## Historical B1 Android QC result
+
+**Historical REVISE, superseded by B1.1 PHONE PASS.**
 
 User Android QC on live `BUILD 5ccabed` reports:
 
@@ -193,20 +209,121 @@ Use **1.0x**. Only three focused checks are required because the other B1 items 
 
 B1 becomes PHONE PASS when the three B1.1 focused checks above pass on Android. The previously passed house/tree/fence checks remain accepted unless regression is observed.
 
+## Exact Work brief — Proof B2A only
+
+B2A expands **static grounded collision** across the rest of Thanh Vân Thôn. It intentionally does **not** expand the creek/water system yet.
+
+### Technical direction
+
+- Reuse the proven manual-movement collision resolver from B1.
+- It is acceptable and preferred to generalize `settlementCollisionB1.ts` into a settlement-wide data-driven collision module if this can be done without changing proven movement behavior.
+- Keep the player foot collision small and centered at the visual feet.
+- Keep max movement substeps / anti-tunneling behavior equivalent to B1.
+- Preserve diagonal sliding.
+- Do not migrate to Arcade/Matter physics.
+- Do not change enemy movement/pathfinding in this proof.
+
+### Static collision scope
+
+Work must VERIFY exact runtime coordinates and art footprints, then add only grounded collision for:
+
+1. **Elder pocket**
+   - Elder hall grounded base;
+   - reachable near-player tree trunk/base;
+   - functional fence segment(s) that plausibly intersect movement.
+
+2. **Merchant pocket**
+   - merchant stall/shop grounded footprint;
+   - merchant cart grounded footprint if reachable;
+   - nearby tree trunk/base;
+   - any truly blocking sign/large prop only if it materially occupies the route.
+   - Do not make tiny goods piles or decorative clutter into annoying micro-colliders unless visibly necessary.
+
+3. **Southern residential / field fringe**
+   - southwest house grounded base;
+   - southeast tile-roof house grounded base;
+   - reachable near-player trees;
+   - large rock/grounded obstacle only when visually substantial;
+   - no collision on low crops/flowers/field texture.
+
+4. **Existing Healer B1**
+   - preserve all accepted B1 collision exactly unless refactoring requires an equivalent representation;
+   - no new water geometry outside the accepted B1 area in B2A.
+
+### B2A guardrails
+
+- collision follows ground contact, not roof/canopy/sprite bounds;
+- doorway / shopfront / NPC approach lanes remain reachable;
+- main spine and branch paths stay open;
+- no collision on baked terrain texture, low grass, flowers, small pebbles or low field rows;
+- avoid a forest of tiny colliders;
+- do not add ford/stepping-stone crossings yet;
+- do not implement occlusion, Y-depth behavior or tree animation yet;
+- do not change art, topology, NPC anchors/radii, combat timing or interaction semantics.
+
+## Anh cần QC — Proof B2A
+
+Use **1.0x** with UI visible. Work must repeat this checklist next to the returned QC link/build.
+
+1. **Elder hall + Elder NPC**
+   - push into the hall from front/side/back and circle the nearby tree/fence;
+   - PASS: grounded base/trunk/fence block naturally, entrance and Elder remain reachable;
+   - FAIL: roof/canopy-sized invisible wall, doorway blocked, or player clips through the grounded base.
+
+2. **Merchant area**
+   - walk around stall, cart and nearby tree, including diagonal pushes;
+   - PASS: large grounded objects block where expected, but the shopfront and Merchant interaction remain accessible;
+   - FAIL: tiny goods clutter creates invisible bumps, cart/stall can be crossed, or shop access is blocked.
+
+3. **Southern houses**
+   - circle both southwest and southeast houses;
+   - PASS: grounded house bases block naturally while surrounding paths remain open;
+   - FAIL: player walks through houses or is kept far away by oversized rectangles.
+
+4. **Trees / large static props**
+   - test several newly-collidable trees and any large rock/prop included by Work;
+   - PASS: only trunk/base or grounded mass blocks; canopy/visual overhang remains traversable where ground is clear;
+   - FAIL: large invisible canopy boxes or excessive micro-collision.
+
+5. **Diagonal slide + dodge**
+   - move diagonally along house/fence edges and dodge directly toward several new colliders;
+   - PASS: player slides instead of sticking and never tunnels through;
+   - FAIL: sticky corners, jitter, or dodge appears on the far side.
+
+6. **Full village route + all 3 NPCs**
+   - travel Elder → Merchant → Healer → southern fringe and approach each NPC;
+   - PASS: route remains open and all three interactions are reachable;
+   - FAIL: any new collision accidentally closes a branch, blocks an NPC, or creates a dead pocket.
+
+**Already accepted unless regression appears:** Healer B1 water/bridge behavior.
+
+**Not being judged in B2A:** whole-creek water blocking, ford/stepping-stone art, occlusion/going behind roofs/canopies, tree sway, enemy collision/pathfinding, water VFX.
+
+## B2A PASS gate
+
+B2A is PHONE PASS when all six checks above behave naturally on Android with no route, NPC-interaction, movement-feel or combat regression.
+
+
 ## Planned next steps after B1
 
-### Proof B2 — Settlement collision expansion
+### Proof B2A — Static collision expansion
 
-Only after B1 Phone PASS:
+Current next proof. Expand only houses / near trees / important grounded static props / functional fences across Elder, Merchant and southern pockets. Keep Healer B1 water as-is.
 
-- extend proven grounded colliders to required Elder / Merchant / southern-pocket houses, near trees, large rocks and functional fences;
-- extend blocked water along the authored creek;
-- create 1–2 **visually authored** ford / stepping-stone crossings before making those spots walkable;
-- Phone QC the full settlement route.
+### Proof B2B — Full water + authored crossings
+
+Only after B2A Phone PASS:
+
+- extend blocked water along the authored creek outside the Healer B1 pocket;
+- add one first **visually authored** ford / stepping-stone crossing and prove it on phone;
+- add a second crossing only if the route/composition benefits from it;
+- preserve the explicit-crossing rule: visible water remains blocked except where a visible bridge/ford communicates traversability.
+
+Phone QC B2B before Proof C.
 
 ### Proof C — Occlusion + one tree-motion proof
 
-Only after B2 passes:
+Only after B2A + B2B pass:
 
 - one near-road tree: trunk collision + canopy occlusion + subtle wind sway;
 - one building roof/eave occlusion case;
@@ -222,4 +339,4 @@ Only after B2 passes:
 
 ## Resume sentence
 
-Resume from verified `BUILD ea86424` and transfer state `WAIT_QC`: B1.1 bridge corridor is deployed and desktop self-verified. Wait for the user's three focused Android 1.0x checks. On PASS, record B1 Phone PASS and scope B2; on REVISE, diagnose only the failed B1.1 behavior. Do not start B2 before Phone PASS.
+Resume from verified live `main fce1ca2` with transfer state `READY_FOR_WORK`: B1/B1.1 are PHONE PASS. Execute **Proof B2A — static settlement collision expansion only**, preserving Healer water/bridge collision and excluding whole-creek water expansion, ford art, occlusion and tree motion. Deploy and return the build with the six-item B2A Phone-QC checklist above.
