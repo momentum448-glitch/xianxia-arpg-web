@@ -101,4 +101,9 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Terrain Proof V1 is REVISE; handoff state is `READY_FOR_WORK` for one painterly Terrain Proof V2.
+- Current production action: Illustrated World Hybrid Proof A is deployed at runtime `2b3e5cd` and awaits Android Phone QC; handoff state is `WAIT_QC`. Proof B is blocked.
+
+
+## 2026-09-24 — Proof A technical delivery
+
+Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1`) under the accepted independent structures and actors. PR #110 integrated the plate; PR #112 fixed the north-boundary rendering after live inspection (PR #111's renderer gradient had no visible effect). Runtime `BUILD 2b3e5cd`, CI and Pages PASS. Desktop 0.5x hidden-UI check verified a coherent village interior and removed hard boundary seam. Android Phone QC is outstanding; no Phone PASS or permission to begin Proof B is inferred from deployment.

@@ -1,19 +1,19 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK
-Return condition: Work deploys Illustrated World Hybrid Proof A and returns QC link/build evidence, or returns a new high-impact ASK with `RETURN_TO_DESIGN`.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: user/DESIGN_CHAT completes Android Phone QC for Illustrated World Hybrid Proof A and records PASS/REVISE. Proof B remains blocked.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified main before this continuity-only handoff branch: `771f5169f76c66ac1b6868172577f8c6e173cd7d`
+Verified runtime main after Proof A: `2b3e5cd5ad2b1705ecea34fe064143efb597daf0`
 Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
-Latest live badge before this handoff: `BUILD 771f516` (docs-only sync over code-identical Terrain V2 runtime)
-Active execution branch: `work/illustrated-world-hybrid-proof-a` (based on `4c48c8d614e2d65b482b3edb86f43b105d73b2ca`)
+Verified live Proof A badge before this docs-only handoff sync: `BUILD 2b3e5cd`
+Completed execution branch: `work/illustrated-world-hybrid-proof-a` (PR #110 merged); north edge refinements PR #111 and #112 merged.
 Open relevant execution PR: none
 Unrelated old open PR: #4
-Important: this documentation handoff will advance `main` again without runtime changes. Work must verify live `main`, PRs and latest operation state before writing.
+This documentation handoff advances `main` without runtime changes. Verify the live badge and Pages status before any later implementation.
 
 ## Current objective
 
@@ -124,7 +124,7 @@ Changing rendering architecture does **not** reopen topology.
 - It was **not promoted to final Phone PASS** before the architecture pivot.
 - Preserve as historical/visual evidence; do not keep polishing it as the final solution.
 
-## Exact next action — Work Proof A only
+## Completed execution scope — Work Proof A only
 
 Read:
 
@@ -137,7 +137,7 @@ Read:
 7. `docs/PROJECT_CONTEXT.md`
 8. `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
 
-Then:
+The delivery followed this scope:
 
 1. Verify current `main`, relevant branch/PR state, latest commit and whether any prior operation partially succeeded.
 2. Take execution ownership and create one focused branch.
@@ -154,6 +154,17 @@ Then:
 13. Stop. Do not start Collision Proof B until user/DESIGN_CHAT Phone-QC Proof A.
 
 If a suitable painterly terrain source cannot be produced/recovered while respecting A1 and north-star V2, set `RETURN_TO_DESIGN` instead of substituting geometric SVG shapes or generic procedural filler.
+
+## Proof A execution evidence — technical delivery, Phone QC pending
+
+- Runtime asset: `public/assets/c4/environment/settlement/env_settlement_baked_terrain_plate_v1.png`.
+- PNG RGB, 1182 × 1330, 3,604,739 bytes; SHA-256 `d223b8005eed5de278e82f54b8c85eff5b66f742289ca30960f18f0ed4c60c96`. Displayed at 1600 × 1800.
+- Runtime lineage: PR #110 integrated the plate, PR #111 tried a renderer gradient, PR #112 replaced that ineffective gradient with compatible alpha bands at the north edge. Runtime `main` commit `2b3e5cd5ad2b1705ecea34fe064143efb597daf0`.
+- CI for PR #112: PASS; Pages run [#35994886058](https://github.com/momentum448-glitch/xianxia-arpg-web/actions/runs/35994886058): PASS. Live badge verified `BUILD 2b3e5cd` before this documentation sync.
+- QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
+- Desktop browser self-check at 0.5x with gameplay UI hidden: painterly ground, routes and lower creek load; houses, near trees and accepted Healer bridge remain separate; hard horizontal plate seam was removed. At 1.0x the hero pockets remain in their accepted positions.
+- Android Phone QC has **not** been performed and Proof A is **not** Phone PASS. Inspect 1.0x Healer pond/creek layering, 0.5x whole-map hierarchy and north approach, southern fields, and stable rendering/performance. The pre-existing plains approach north of the plate still has a soft legacy path over pale paper; decide whether that transition is acceptable on phone. Record PASS/REVISE with screenshots and exact build.
+- No collision/occlusion, water traversal, combat timing, interaction or A1 topology change. Do not start Proof B before Phone QC.
 
 ## Proof A PASS gate
 
@@ -209,4 +220,4 @@ Do not repeat:
 
 ## Resume sentence
 
-Resume with transfer state `READY_FOR_WORK`: Thanh Vân Thôn now uses the locked **Illustrated World Hybrid** architecture and `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2`. Execute **Proof A — Baked Terrain Plate V1 only**, deploy it, and return for Phone QC before any collision or occlusion work.
+Resume with transfer state `WAIT_QC`: Proof A is deployed on runtime `BUILD 2b3e5cd` (a later docs-only sync may advance the displayed badge). Run ordered Android Phone QC and record PASS/REVISE. Do not start Proof B before that gate.
