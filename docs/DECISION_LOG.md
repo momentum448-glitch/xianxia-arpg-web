@@ -79,6 +79,9 @@ Rules:
 | 2026-09-24 | Pond/creek water is blocked by default through simplified inset collision polygons. Authored traversal uses bridge plus 1–2 ford/stepping-stone crossings. | First terrain proof does not add water gameplay effects; collision is a later gated proof. |
 | 2026-09-24 | Production sequence is gated: Proof A Baked Terrain Plate → Proof B Collision Foundation → Proof C Occlusion + one tree-motion case → Proof D expansion/polish. | Work must stop after each proof for Phone QC; do not implement all layers in one broad change. |
 
+| 2026-09-24 | Illustrated World Hybrid Proof A / `ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1` is `PHONE_PASS` after Android QC on live `BUILD 93c76f4` (docs-only badge over functional runtime lineage `2b3e5cd`). | The baked Layer-0 approach now becomes the accepted Thanh Vân Thôn terrain baseline. Preserve it while later collision/occlusion proofs are developed. |
+| 2026-09-24 | Before Collision Proof B, perform one NPC placement micro-pass: Elder near Elder-hall entrance/forecourt, Merchant at the stall/shopfront work edge, Healer at the Healer-house/herb-work entrance edge. Stagger them so they no longer read as one vertical line. | User explicitly requested the position change. Move each NPC's interaction anchor with the visible NPC; preserve interaction radius/semantics. Do not change NPC art, topology, terrain, combat or begin collision work in the same pass. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -101,9 +104,9 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Illustrated World Hybrid Proof A is deployed at runtime `2b3e5cd` and awaits Android Phone QC; handoff state is `WAIT_QC`. Proof B is blocked.
+- Current production action: Proof A is PHONE PASS. Handoff is `READY_FOR_WORK` for NPC Re-block A only; Collision Proof B remains blocked until the NPC placement micro-pass passes Phone QC.
 
 
 ## 2026-09-24 — Proof A technical delivery
 
-Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1`) under the accepted independent structures and actors. PR #110 integrated the plate; PR #112 fixed the north-boundary rendering after live inspection (PR #111's renderer gradient had no visible effect). Runtime `BUILD 2b3e5cd`, CI and Pages PASS. Desktop 0.5x hidden-UI check verified a coherent village interior and removed hard boundary seam. Android Phone QC is outstanding; no Phone PASS or permission to begin Proof B is inferred from deployment.
+Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1`) under the accepted independent structures and actors. PR #110 integrated the plate; PR #112 fixed the north-boundary rendering after live inspection (PR #111's renderer gradient had no visible effect). Runtime `BUILD 2b3e5cd`, CI and Pages PASS. Desktop 0.5x hidden-UI check verified a coherent village interior and removed hard boundary seam. Android Phone QC later passed Proof A. The next approved action is the NPC Re-block A micro-pass; Collision Proof B remains gated behind that quick placement QC.
