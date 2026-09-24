@@ -68,7 +68,7 @@ export const SETTLEMENT_B2A_FOOTPRINTS: readonly Footprint[] = [
   // Elder tree runtime ground anchor: (270, 7815), display width 185.
   { kind: 'circle', x: 270, y: 7808, radius: 21 },
   // Elder functional fence, runtime anchor (660, 7815), width 195, unflipped.
-  { kind: 'segment', from: [590, 7815], to: [730, 7791], halfWidth: 7 },
+  { kind: 'segment', from: [590, 7791], to: [730, 7815], halfWidth: 7 },
 
   // Merchant stall runtime ground anchor: (1060, 8050), display width 270.
   { kind: 'box', left: 990, right: 1130, top: 8019, bottom: 8045 },
