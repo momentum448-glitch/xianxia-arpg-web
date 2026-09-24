@@ -1,16 +1,17 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
-Repo-write permission: WORK
-Return condition: Work deploys **Proof B2A — static settlement collision expansion** and returns the build/QC evidence plus the explicit B2A Phone-QC checklist. B2B and Proof C remain blocked until B2A Phone PASS.
+Current owner: WORK
+Transfer state: WORK_EXECUTING
+Repo-write permission: WORK_ON_B2A_BRANCH
+Return condition: Work completes and deploys **Proof B2A — static settlement collision expansion**, then returns build/QC evidence and the explicit six-item B2A Phone-QC checklist. B2B and Proof C remain blocked until B2A Phone PASS.
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
+Active branch: `proof-b2a-static-collision` based on `cf90a4fb9375d4abd7ac3ed7ad2f1dc1ae3ce1bc`.
 Verified B1.1 functional main: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`
 Runtime B1 lineage: PR #118 `c3553b7` + foot-anchor fix PR #119 `1e2da44` + bridge-gap tune PR #120 `cae8a1c`.
-Verified functional live badge before this documentation update: `BUILD ea86424`.
+Verified live main before B2A execution: `BUILD cf90a4f` (docs-only handoff update over functional B1.1 runtime `ea86424`).
 B1.1 PR #123 merged; main CI run #36028483070 PASS; Pages run #36028482943 PASS.
-Open relevant execution PR: none; unrelated old open PR #4.
+Open relevant execution PR: none; unrelated old open PR #4. Latest main CI #36030758939 PASS; Pages #36030758935 PASS.
 
 ## Current objective
 

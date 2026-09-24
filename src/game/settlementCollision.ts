@@ -1,5 +1,5 @@
-// Proof B1: grounded collision in the Healer pocket only. World coordinates are
-// aligned with settlementV2AProduction (settlement top = 7200).
+// Settlement collision: accepted B1 Healer pocket plus gated B2A grounded static footprints.
+// World coordinates align with settlementV2AProduction (settlement top = 7200).
 // Art remains separate; none of these shapes alter combat or NPC hit checks.
 type Point = readonly [number, number];
 type Footprint =
@@ -59,6 +59,34 @@ export const HEALER_B1_FOOTPRINTS: readonly Footprint[] = [
   ] },
 ];
 
+// B2A uses only visually grounded shapes from the active V2A placements.
+// House boxes sit on the lower base; tree circles cover trunk contact only.
+// Fence follows its narrow authored plank line. No B2A water or crop collision is added.
+export const SETTLEMENT_B2A_FOOTPRINTS: readonly Footprint[] = [
+  // Elder hall runtime anchor: (470, 7775), display width 315.
+  { kind: 'box', left: 370, right: 570, top: 7723, bottom: 7762 },
+  // Elder tree runtime ground anchor: (270, 7815), display width 185.
+  { kind: 'circle', x: 270, y: 7808, radius: 21 },
+  // Elder functional fence, runtime anchor (660, 7815), width 195, unflipped.
+  { kind: 'segment', from: [590, 7815], to: [730, 7791], halfWidth: 7 },
+
+  // Merchant stall runtime ground anchor: (1060, 8050), display width 270.
+  { kind: 'box', left: 990, right: 1130, top: 8019, bottom: 8045 },
+  // Merchant cart runtime ground anchor: (1310, 8060), display width 180.
+  { kind: 'box', left: 1240, right: 1380, top: 8034, bottom: 8059 },
+  // Merchant-side reachable tree ground anchor: (1340, 7860), width 165.
+  { kind: 'circle', x: 1340, y: 7853, radius: 19 },
+
+  // Southwest thatch house runtime anchor: (295, 8765), display width 292.
+  { kind: 'box', left: 195, right: 395, top: 8713, bottom: 8752 },
+  // Southeast tile house runtime anchor: (1275, 8685), display width 310.
+  { kind: 'box', left: 1170, right: 1380, top: 8633, bottom: 8672 },
+  // Southeast reachable tree ground anchor: (1230, 8525), width 168.
+  { kind: 'circle', x: 1230, y: 8518, radius: 19 },
+  // The southwest tree anchor lies fully inside the accepted B1 pond blocker;
+  // adding another footprint there would duplicate the already-tested water collision.
+];
+
 function segmentDistanceSquared(px: number, py: number, from: Point, to: Point): number {
   const dx = to[0] - from[0];
   const dy = to[1] - from[1];
@@ -84,7 +112,7 @@ function insidePolygon(x: number, y: number, vertices: readonly Point[]): boolea
 }
 
 export function isHealerB1Blocked(x: number, y: number): boolean {
-  // Broad phase confines all new collision to this one pocket.
+  // Broad phase confines the accepted B1 water/Healer geometry to its pocket.
   if (x < 60 || x > 770 || y < 8275 || y > 8620) return false;
   const r = HEALER_B1_FOOT_RADIUS;
   for (const shape of HEALER_B1_FOOTPRINTS) {
@@ -111,7 +139,27 @@ export function isHealerB1Blocked(x: number, y: number): boolean {
   return false;
 }
 
-export function moveWithHealerB1Collision(
+export function isSettlementBlocked(x: number, y: number): boolean {
+  if (isHealerB1Blocked(x, y)) return true;
+
+  const r = HEALER_B1_FOOT_RADIUS;
+  for (const shape of SETTLEMENT_B2A_FOOTPRINTS) {
+    if (shape.kind === 'box') {
+      const closestX = Math.max(shape.left, Math.min(x, shape.right));
+      const closestY = Math.max(shape.top, Math.min(y, shape.bottom));
+      if ((x - closestX) ** 2 + (y - closestY) ** 2 < r * r) return true;
+    } else if (shape.kind === 'circle') {
+      if ((x - shape.x) ** 2 + (y - shape.y) ** 2
+        < (r + shape.radius) ** 2) return true;
+    } else if (shape.kind === 'segment') {
+      if (segmentDistanceSquared(x, y, shape.from, shape.to)
+        < (r + shape.halfWidth) ** 2) return true;
+    }
+  }
+  return false;
+}
+
+export function moveWithSettlementCollision(
   x: number, y: number, dx: number, dy: number,
   edgePadding: number, worldWidth: number, worldHeight: number,
 ): Point {
@@ -126,15 +174,15 @@ export function moveWithHealerB1Collision(
   for (let step = 0; step < steps; step += 1) {
     const nextX = clampX(x + stepX);
     const nextY = clampY(y + stepY);
-    if (!isHealerB1Blocked(nextX, nextY + FOOT_OFFSET_Y)) {
+    if (!isSettlementBlocked(nextX, nextY + FOOT_OFFSET_Y)) {
       x = nextX;
       y = nextY;
       continue;
     }
     // Resolve each axis independently so diagonal movement slides along
     // a house wall, fence, or bank instead of stopping on first contact.
-    if (!isHealerB1Blocked(nextX, y + FOOT_OFFSET_Y)) x = nextX;
-    if (!isHealerB1Blocked(x, nextY + FOOT_OFFSET_Y)) y = nextY;
+    if (!isSettlementBlocked(nextX, y + FOOT_OFFSET_Y)) x = nextX;
+    if (!isSettlementBlocked(x, nextY + FOOT_OFFSET_Y)) y = nextY;
   }
   return [x, y];
 }
