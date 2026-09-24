@@ -88,6 +88,9 @@ Rules:
 
 | 2026-09-24 | Collision Proof B1 is `REVISE` only for one bridge-adjacent water leak on Android QC: house/tree/fence/general water/dodge/Healer interaction passed, but the player can stand on a visible cyan water patch beside the bridge. | Root cause is the broad implicit gap between water polygons. B1.1 should keep water continuous and use one explicit narrow bridge walkable corridor aligned to visible planks. Do not reopen the rest of B1 or start B2 until this patch passes. |
 
+| 2026-09-24 | Collision Proof B1/B1.1 is `PHONE_PASS` after Android retest on live `BUILD fce1ca2` (functional B1.1 runtime `ea86424`). The explicit bridge corridor fixed the prior visible-water leak without breaking bridge traversal, dodge or Healer interaction. | Preserve B1 foot-radius/foot-anchor/substep/axis-slide behavior as the canonical collision foundation. |
+| 2026-09-24 | Split settlement expansion into **B2A static grounded collision → B2B full water + authored crossings → Proof C occlusion/tree motion**. | B2A covers houses, reachable tree trunks, large grounded props and functional fences only. B2B later expands creek blocking and visually authored ford/stepping-stone crossings. This keeps each Phone-QC proof narrow and reversible. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -110,7 +113,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Collision B1 passed 6/7 Phone-QC checks and is `READY_FOR_WORK` for **B1.1 bridge/water leak fix only**. B2 remains blocked.
+- Current production action: B1/B1.1 are PHONE PASS. Handoff is `READY_FOR_WORK` for **Proof B2A — static settlement collision expansion only**.
 
 
 ## 2026-09-24 — Proof A technical delivery
