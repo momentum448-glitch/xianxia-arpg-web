@@ -135,6 +135,20 @@ Examples:
 - no `HOUSE TEX MISS`;
 - phone screenshot/playtest confirms no black block.
 
+### I1. QC return checklist
+
+Whenever Work returns a deployed build/link for user Phone QC, it must include a short, concrete checklist in the same message.
+
+The checklist must say:
+
+- **where / at what zoom** to test;
+- **what action** the user should perform;
+- **what PASS looks like**;
+- **what obvious failure to report**;
+- **what is intentionally not being judged in this proof**.
+
+Prefer 3–7 ordered checks. Do not give the user only a URL/build ID and make them infer the validation target from old handoff text.
+
 ### J. Documents known to be stale
 
 If a source file contains superseded wording, name it so the next chat does not accidentally use it as current truth.
@@ -198,6 +212,7 @@ At handoff time:
 9. Correct stale source docs when practical.
 10. Commit the documentation update to a focused branch/PR or include it in the current work PR when appropriate.
 11. Tell the user the handoff is ready and identify the exact resume point.
+12. If the next return point is Phone QC, ensure `HANDOFF_CURRENT.md` contains the exact QC checklist that Work must repeat next to the QC link/build.
 
 ## 6. New-chat startup procedure
 

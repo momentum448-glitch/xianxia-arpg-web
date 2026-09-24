@@ -321,7 +321,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Gameplay: visual-only; topology, collision, interactions and combat remain unchanged. Collision/occlusion extensions belong to later proof gates.
 - Runtime lineage: PR #110, north-edge follow-up PR #111/#112, runtime commit `2b3e5cd`; CI PASS and Pages run #35994886058 PASS. Desktop self-check at 0.5x hidden UI verified the integrated plate and separate objects; the alpha-band north edge removes the hard seam. The old plains approach north of the plate still needs phone judgment.
 - Phone QC: PASS on 2026-09-24 from user Android screenshots at live `BUILD 93c76f4` (code-identical functional Proof A runtime lineage from `2b3e5cd`). Whole-map cohesion, painterly ground continuity and mobile readability passed the Proof A gate.
-- Next action: preserve terrain as-is. Run Android Phone QC for deployed NPC Re-block A before Collision Proof B.
+- Next action: preserve terrain as-is. NPC Re-block A has passed; proceed to the gated Proof B1 collision foundation without changing this asset.
 
 ### ARCH-SETTLEMENT-ILLUSTRATED-WORLD-HYBRID
 
@@ -335,7 +335,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: Proof A — Baked Terrain Plate V1. Collision/occlusion expansion waits for later proof gates.
+- Next action: Proof A and NPC Re-block A are passed. Execute Proof B1 — Healer-pocket collision foundation only; occlusion/tree motion remain blocked.
 
 ## 8. Current critical non-art architecture note
 
@@ -389,4 +389,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **complete quick Android Phone QC for deployed NPC Re-block A, record PASS/REVISE, and keep Collision Proof B blocked until PASS.**
+Current exact next action: **Work executes Proof B1 — Healer-pocket collision foundation only, then returns a QC link/build together with the exact ordered Phone-QC checklist.**

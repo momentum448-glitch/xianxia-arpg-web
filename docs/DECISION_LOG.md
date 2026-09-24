@@ -82,6 +82,10 @@ Rules:
 | 2026-09-24 | Illustrated World Hybrid Proof A / `ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1` is `PHONE_PASS` after Android QC on live `BUILD 93c76f4` (docs-only badge over functional runtime lineage `2b3e5cd`). | The baked Layer-0 approach now becomes the accepted Thanh Vân Thôn terrain baseline. Preserve it while later collision/occlusion proofs are developed. |
 | 2026-09-24 | Before Collision Proof B, perform one NPC placement micro-pass: Elder near Elder-hall entrance/forecourt, Merchant at the stall/shopfront work edge, Healer at the Healer-house/herb-work entrance edge. Stagger them so they no longer read as one vertical line. | User explicitly requested the position change. Move each NPC's interaction anchor with the visible NPC; preserve interaction radius/semantics. Do not change NPC art, topology, terrain, combat or begin collision work in the same pass. |
 
+| 2026-09-24 | NPC Re-block A is `PHONE_PASS` from Android QC on live `BUILD 9eb4c50` (runtime placement lineage PR #115 / `7e8eff6`). Elder, Merchant and Healer now read as belonging to their own functional pockets rather than one central vertical row. | Preserve these positions/interaction anchors unless a later concrete interaction or collision problem appears. |
+| 2026-09-24 | Refine Collision Proof B into **B1 Healer-pocket foundation → B2 settlement expansion**. B1 proves one house footprint, one tree trunk/base, representative fence, blocked pond/creek water and the existing bridge before any map-wide collider rollout. | Current player movement is manual coordinate movement, so B1 should add a minimal collision resolver rather than migrate the game to a different physics engine. Prevent dodge tunneling and sticky diagonal contacts. |
+| 2026-09-24 | Every Work delivery that asks for Phone QC must return the QC link/build **together with an explicit short checklist of what the user should test, what PASS/FAIL looks like, and what is out of scope**. | A bare QC link is no longer an acceptable handoff. This rule is also recorded in `AGENTS.md` and `HANDOFF_PROTOCOL.md`. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -104,7 +108,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Proof A is PHONE PASS. NPC Re-block A is deployed at `BUILD 7e8eff6` and awaits Android Phone QC; Collision Proof B remains blocked.
+- Current production action: Proof A + NPC Re-block A are PHONE PASS. Handoff is `READY_FOR_WORK` for **Proof B1 — Healer-pocket collision foundation only**.
 
 
 ## 2026-09-24 — Proof A technical delivery
@@ -114,4 +118,4 @@ Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEME
 
 ## 2026-09-24 — NPC Re-block A runtime delivery
 
-PR #115 moved the existing NPC render/interaction anchors in `src/game/npcConfig.ts` to their A1 pockets: Elder `(490, 7828)`, Merchant `(1045, 8082)`, Healer `(490, 8382)`. All retain their 155-unit interaction radii and existing dialogue behavior. CI and Pages passed; live runtime build is `7e8eff6`. Desktop browser checks at 0.5x and 1.0x verified pocket placement; live interaction smoke tests displayed the matching Merchant and Healer interaction prompts at the new anchors. Android Phone QC of these new positions is pending. Keep Collision Proof B gated until it passes.
+PR #115 moved the existing NPC render/interaction anchors in `src/game/npcConfig.ts` to their A1 pockets: Elder `(490, 7828)`, Merchant `(1045, 8082)`, Healer `(490, 8382)`. All retain their 155-unit interaction radii and existing dialogue behavior. CI and Pages passed; live runtime build is `7e8eff6`. Desktop browser checks at 0.5x and 1.0x verified pocket placement; live interaction smoke tests displayed the matching Merchant and Healer interaction prompts at the new anchors. Android Phone QC later passed these positions on live `BUILD 9eb4c50`. Preserve the NPC re-block and proceed only to Collision Proof B1.

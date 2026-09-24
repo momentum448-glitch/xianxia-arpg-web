@@ -151,7 +151,8 @@ A Work conversation is the execution shop. It owns:
 - self-resolving VERIFY items with evidence;
 - checking for partial success before retrying;
 - updating handoff/registry/decision docs when execution changes durable state;
-- returning a deployed build or other concrete evidence for Phone QC.
+- returning a deployed build or other concrete evidence for Phone QC;
+- whenever returning a QC link/build, also telling the user **exactly what to QC now**: ordered actions/areas/zoom level, expected PASS behavior, obvious FAIL symptoms, and what is intentionally out of scope. Never return a bare QC link.
 
 Work must **not** silently reopen creative/product decisions that are already locked. If execution reveals a new high-impact ambiguity that belongs to ASK, Work must stop at that boundary and return the question to the DESIGN / DECISION OWNER.
 

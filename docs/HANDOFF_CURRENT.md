@@ -1,281 +1,189 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: user/DESIGN_CHAT performs quick Android Phone QC for NPC Re-block A and records PASS/REVISE. Collision Proof B remains blocked until that gate passes.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **Proof B1 — Healer-pocket collision foundation**, returns build/QC evidence plus the required QC checklist, then ownership returns to DESIGN_CHAT for Phone QC.
 
 Snapshot: 2026-09-24
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified runtime main after NPC Re-block A: `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`
-Latest functional terrain runtime lineage: PR #107 / `b1a4e9b076b521891c80100f22603d79443b934b`
-Latest NPC placement runtime: PR #115 merged, branch `work/npc-reblock-a`.
-Verified live NPC Re-block badge before this docs-only handoff sync: `BUILD 7e8eff6`.
-CI run #35999392051 PASS; Pages run #35999455158 PASS.
+Verified current main before this continuity update: `9eb4c5086f646fcd28a119a2096ddfd13a33361c`
+Functional NPC re-block runtime: PR #115 / `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`
+Phone-reviewed live badge: `BUILD 9eb4c50`
 Open relevant execution PR: none
 Unrelated old open PR: #4
-Runtime changes are complete. This docs-only handoff returns ownership for quick Phone QC.
 
 ## Current objective
 
-NPC Re-block A is deployed and awaits quick Android Phone QC. Proof A — Baked Terrain Plate V1 is PHONE PASS; do not start Collision Proof B until the new NPC positions pass.
+Execute **Proof B1 — Healer-pocket collision foundation only**.
 
-The user and DESIGN_CHAT deliberately changed the settlement production architecture after reviewing Terrain Proof V2 and a stronger whole-map visual target. The new architecture aims for the coherence of one illustrated village while preserving real game collision, occlusion, animation and dynamic actors.
+Do not expand collision map-wide, add occlusion, animate trees, or add new water/gameplay effects in the same proof.
 
-## Locked visual target
+## Verified completed / Phone PASS
 
-### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2
+- Illustrated World Hybrid Proof A / `ENV-SETTLEMENT-BAKED-TERRAIN-PLATE-V1`: PHONE PASS.
+- A1 compact settlement topology: PHONE PASS and remains locked.
+- NPC Re-block A: **PHONE PASS** from user Android screenshots on live `BUILD 9eb4c50`.
+  - Elder runtime anchor: `(490, 7828)`.
+  - Merchant runtime anchor: `(1045, 8082)`.
+  - Healer runtime anchor: `(490, 8382)`.
+  - Existing interaction radius `155` and dialogue/interaction semantics remain accepted.
+- Current NPC arrangement no longer reads as one vertical line; each NPC belongs to its own functional pocket.
 
-- Status: `REFERENCE_ONLY`; current preferred visual north-star.
-- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`
-- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`
-- Canonical architecture spec: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
-- Use for terrain/material/atmosphere, stream-field integration and whole-map coherence.
-- Do not treat the image as a pixel-perfect coordinate blueprint when it conflicts with accepted A1 topology.
+## Important verified technical fact
 
-V1 north-star remains historical only.
+Current player locomotion is **manual coordinate movement** in `GameScene.updatePlayer`:
 
-## Locked architecture — Illustrated World Hybrid
+- normal move speed: `250`;
+- dodge speed: `520` for `150 ms`;
+- player position is currently updated directly and clamped to world bounds;
+- the project is not currently using Arcade/Matter colliders for player movement.
 
-### Bake into Layer 0
+Proof B1 should therefore prove a small custom/world collision resolver around candidate movement. Do **not** migrate the whole game to a new physics engine in this proof.
 
-- soil / earth;
-- worn paths;
-- creek / water surface;
-- cultivation / field ground;
-- low grass / weeds;
-- tiny stones / pebbles;
-- low ground shadows;
-- distant or off-playable decorative trees/scenery.
+## Proof B1 scope
 
-### Keep separate as static runtime objects
+Use the Healer pocket because it contains several representative collision problems in one compact area.
 
-- major houses / buildings;
-- near-player trees;
-- bridges;
-- large collision-important rocks;
-- functional fences / gates;
-- any static prop that benefits from depth sorting, occlusion, animation or future interaction.
+Implement only the minimum needed to prove:
 
-### Keep dynamic
+1. **Healer house footprint**
+   - collider follows the grounded building footprint, not roof art;
+   - player can approach the entrance naturally.
 
-- player;
-- NPCs;
-- enemies;
-- loot;
-- projectiles;
-- gameplay interactables / quest objects.
+2. **One reachable near-player tree**
+   - collision only around trunk/base;
+   - canopy footprint must not become an invisible wall.
 
-### Collision philosophy
+3. **One representative fence segment**
+   - block obvious pass-through;
+   - keep collider narrow and grounded.
 
-Collision is independent from art pixels.
+4. **Healer pond + adjacent creek water**
+   - simplified inset blocked geometry;
+   - do not pixel-trace every shoreline ripple/rock;
+   - player cannot walk into blocked water.
 
-- house: ground footprint, not roof silhouette;
-- tree: trunk/base only, not canopy;
-- rock: grounded lower mass;
-- fence: narrow segment/rect/capsule;
-- water: simplified inset polygon.
+5. **Existing wooden bridge**
+   - bridge remains the authored walkable gap/crossing;
+   - crossing must work both directions without snagging.
 
-Do not trace decorative pixels.
+## Movement/collision requirements
 
-### Occlusion philosophy
+- use a small **foot-centered** player collision shape, not the full `58 × 78` player control rectangle;
+- keep axis/shape resolution smooth enough that the player can slide along walls/banks during diagonal movement;
+- **dodge must not tunnel through** house/fence/water collision;
+- use movement substeps, swept checks, or another minimal equivalent if required;
+- preserve world-bound clamping;
+- collision affects player traversal only for this proof;
+- do not change combat hitboxes, attack timing, enemy movement, NPC interaction radii, A1 topology or visual art.
 
-- prefer Y-depth sorting for separate near objects;
-- use selective foreground canopy / roof / eave / gate-top cutouts where needed;
-- do not build one huge per-pixel mask system;
-- only split objects that materially improve player-in-world depth.
+## Out of scope for B1
 
-### Tree animation philosophy
+Do not implement yet:
 
-- distant/off-playable trees may be baked;
-- important near-player trees remain separate;
-- future first wind proof may use subtle canopy sway (roughly ±0.7°, ±1 px, 2.5–4 s yoyo);
-- do not block Proof A on animation/VFX.
+- whole-settlement collision expansion;
+- authored ford/stepping-stone art/crossing;
+- roof/tree occlusion;
+- tree wind animation;
+- water slowdown/splash/damage;
+- new terrain/house/NPC art;
+- enemy collision/pathfinding changes.
 
-### Water traversal philosophy
+Those belong to later gates.
 
-- pond and creek blocked by default;
-- authored crossing through bridge plus 1–2 ford / stepping-stone crossings;
-- water collision implementation is **not part of Proof A**;
-- no new slowdown/splash/combat mechanics during the foundation proofs.
+## Work self-VERIFY before returning
 
-## Locked prior state that must survive
+- inspect actual Healer house/tree/fence/water/bridge world coordinates from current runtime data;
+- test normal movement and diagonal movement against every B1 collider;
+- test dodge into house, fence and water to ensure no tunneling;
+- cross bridge both directions with normal movement;
+- verify Healer remains reachable and interaction still triggers;
+- build + deploy + verify the live badge.
 
-- portrait mobile 9:16;
-- V2-A / A1 compact Thanh Vân Thôn topology;
-- Elder / Merchant / Healer functional pocket positions;
-- current route/gameplay semantics;
-- manual `ATK + SKILL + NÉ`;
-- combat hitboxes/timing;
-- NPC interaction semantics;
-- accepted house / Merchant / Healer / Field Edge visual identity where compatible;
-- QC zoom `1.0 / 0.8 / 0.65 / 0.5` and `ẨN UI / HIỆN UI`.
+## Required Work return format
 
-Changing rendering architecture does **not** reopen topology.
+When Work returns the deployed B1 build, it must give the user **all of these in the same message**:
 
-## Existing Terrain V2
+1. QC link;
+2. build ID;
+3. concise implementation summary;
+4. **“Anh cần QC:” checklist below, repeated explicitly.**
 
-### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
+Do not return a bare link.
 
-- Runtime: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`
-- Integrated in PR #107.
-- Runtime commit: `b1a4e9b076b521891c80100f22603d79443b934b`
-- Technical gate: PASS.
-- It demonstrated that painterly terrain is directionally better than V1 SVG.
-- It was **not promoted to final Phone PASS** before the architecture pivot.
-- Preserve as historical/visual evidence; do not keep polishing it as the final solution.
+## Anh cần QC — Proof B1
 
-## Completed execution scope — Work Proof A only
+Use **1.0x** for this proof. UI may stay visible because interaction must also be tested.
 
-Read:
+1. **Healer house**
+   - walk directly into the front/side/back grounded wall areas;
+   - PASS: player stops at the physical base but can still approach the entrance naturally;
+   - FAIL: player walks through the house or is blocked far outside the visible base.
 
-1. `AGENTS.md`
-2. `docs/DISCOVERY_DECISION_PROTOCOL.md`
-3. this file
-4. `docs/ASSET_REGISTRY.md`
-5. `docs/PROJECT_SOURCES.md`
-6. `docs/DECISION_LOG.md`
-7. `docs/PROJECT_CONTEXT.md`
-8. `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
+2. **Tree near Healer**
+   - walk around the tree from several directions;
+   - PASS: only trunk/base blocks; player can move through the visual canopy footprint where the ground is clear;
+   - FAIL: a large invisible canopy-sized box blocks movement.
 
-The delivery followed this scope:
+3. **Fence**
+   - push diagonally and then parallel along the tested fence;
+   - PASS: cannot pass through it, but movement slides along it without sticky corners;
+   - FAIL: player crosses it or gets trapped/stutters on normal diagonal contact.
 
-1. Verify current `main`, relevant branch/PR state, latest commit and whether any prior operation partially succeeded.
-2. Take execution ownership and create one focused branch.
-3. Produce **Baked Terrain Plate V1**, aligned to the accepted 1600 × 1800 A1 settlement footprint.
-4. Use `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` as the primary visual/material target.
-5. Bake only Layer-0 scenery: terrain, path, creek surface, field/cultivation ground, low vegetation, tiny stones/shadows and distant/off-playable decorative scenery.
-6. Keep major houses, near-player trees, bridges, NPCs and other collision/occlusion-critical objects out of the baked plate.
-7. Do **not** implement new collision or occlusion yet.
-8. Integrate the plate reversibly behind existing static/dynamic runtime objects.
-9. Ensure no baked duplicate of a separate major object is visible.
-10. Build, deploy and verify the real result.
-11. Update `ASSET_REGISTRY`, `HANDOFF_CURRENT`, and affected source/decision records.
-12. Return QC link + build ID + exact runtime asset path/metadata.
-13. Stop. Do not start Collision Proof B until user/DESIGN_CHAT Phone-QC Proof A.
+4. **Pond / creek banks**
+   - try entering water at at least three different bank points;
+   - PASS: blocked near the visible bank with no huge invisible margin;
+   - FAIL: player walks into water or is stopped conspicuously far from the bank.
 
-If a suitable painterly terrain source cannot be produced/recovered while respecting A1 and north-star V2, set `RETURN_TO_DESIGN` instead of substituting geometric SVG shapes or generic procedural filler.
+5. **Bridge**
+   - cross the wooden bridge both directions with normal movement;
+   - PASS: clean crossing, no invisible snag or sudden sideways push;
+   - FAIL: bridge is partly blocked or lets the player escape into adjacent water.
 
-## Proof A execution evidence — technical delivery and Phone PASS
+6. **Dodge collision**
+   - dodge directly toward house, fence and water;
+   - PASS: dodge never tunnels through blocked geometry;
+   - FAIL: high-speed dodge appears on the other side.
 
-- Runtime asset: `public/assets/c4/environment/settlement/env_settlement_baked_terrain_plate_v1.png`.
-- PNG RGB, 1182 × 1330, 3,604,739 bytes; SHA-256 `d223b8005eed5de278e82f54b8c85eff5b66f742289ca30960f18f0ed4c60c96`. Displayed at 1600 × 1800.
-- Runtime lineage: PR #110 integrated the plate, PR #111 tried a renderer gradient, PR #112 replaced that ineffective gradient with compatible alpha bands at the north edge. Runtime `main` commit `2b3e5cd5ad2b1705ecea34fe064143efb597daf0`.
-- CI for PR #112: PASS; Pages run [#35994886058](https://github.com/momentum448-glitch/xianxia-arpg-web/actions/runs/35994886058): PASS. Live badge verified `BUILD 2b3e5cd` before this documentation sync.
-- QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
-- Desktop browser self-check at 0.5x with gameplay UI hidden: painterly ground, routes and lower creek load; houses, near trees and accepted Healer bridge remain separate; hard horizontal plate seam was removed. At 1.0x the hero pockets remain in their accepted positions.
-- Android Phone QC was completed by the user on `BUILD 93c76f4` (docs-only badge over the same functional Proof A runtime lineage). DESIGN_CHAT re-reviewed the supplied 0.5x hidden-UI screenshots and accepts Proof A as **PHONE PASS**: the settlement reads as one authored rural landscape, the baked terrain materially improves cohesion, and no blocker-level seam/duplication/regression is visible.
-- No collision/occlusion, water traversal, interaction-radius/semantics, combat timing or A1 topology change. Do not start Proof B before NPC Re-block A Phone QC.
+7. **Healer interaction / route regression**
+   - approach Dược Sư after moving around the pocket and trigger interaction;
+   - PASS: NPC remains reachable and interaction works at the visible NPC;
+   - FAIL: new collision blocks the NPC/door/path or interaction no longer matches position.
 
-## Proof A PASS result
+**Not being judged in B1:** roof/canopy occlusion, tree sway, full-village collision, ford/stepping stones, enemy collision, water VFX.
 
-**PASS.** Phone screenshots satisfy the intended Proof A gate. The following criteria remain the accepted baseline:
+## B1 PASS gate
 
-- 0.5x + hidden UI reads as one authored rural landscape, not a collage;
-- terrain / creek / fields approach north-star V2 material and atmosphere;
-- houses and accepted pockets sit naturally in the scene rather than appearing pasted onto unrelated ground;
-- there are no obvious seams, giant procedural blobs or flat-paper voids;
-- no major house, near-player tree, bridge or NPC is duplicated into the baked layer;
-- A1 topology and route remain unchanged;
-- gameplay / interaction / combat behavior remains unchanged;
-- Android rendering/performance is stable.
+B1 is PASS only when all seven checks above behave naturally on Android and there is no traversal/combat/interaction regression.
 
-## NPC Re-block A — exact Work brief
+## Planned next steps after B1
 
-Reason:
+### Proof B2 — Settlement collision expansion
 
-- current Elder / Merchant / Healer placeholders read too vertically aligned along the central route;
-- they should visually belong to their functional pocket rather than look like route markers.
+Only after B1 Phone PASS:
 
-Locked placement intent:
+- extend proven grounded colliders to required Elder / Merchant / southern-pocket houses, near trees, large rocks and functional fences;
+- extend blocked water along the authored creek;
+- create 1–2 **visually authored** ford / stepping-stone crossings before making those spots walkable;
+- Phone QC the full settlement route.
 
-- **Elder:** move from the central-road alignment to a natural standing point at / just outside the Elder hall entrance/forecourt.
-- **Merchant:** place at the merchant stall/shopfront working edge, visually tied to stall/cart/goods rather than the central road.
-- **Healer:** place at the Healer house entrance / herb-work edge, visually tied to the house/garden/drying area rather than the central road.
-- deliberately stagger all three so they do not form one vertical line.
+### Proof C — Occlusion + one tree-motion proof
 
-Runtime rules:
+Only after B2 passes:
 
-- this user request explicitly permits changing each NPC's world position / interaction anchor;
-- move the interaction anchor with the NPC so visual and interaction positions remain coherent;
-- preserve each existing interaction radius and interaction semantics unless a concrete bug requires otherwise;
-- do not change NPC identity/art in this pass;
-- do not move houses, hero pockets, path topology, terrain plate or accepted environment props;
-- do not start collision/occlusion/water-blocking Proof B yet;
-- keep main route and door approaches unobstructed.
-
-VERIFY in code/runtime instead of guessing:
-
-1. locate the actual current Elder / Merchant / Healer NPC spawn and interaction definitions;
-2. inspect the rendered entrance/forecourt anchors against current A1 pocket offsets;
-3. choose the smallest coordinate changes that attach each NPC to its corresponding pocket;
-4. build/deploy and verify interaction still triggers at the visible NPC.
-
-QC gate:
-
-- at 0.5x, the three NPCs no longer read as a vertical line;
-- each NPC clearly belongs to its own functional pocket;
-- at 1.0x, each NPC stands naturally near the intended entrance/work area;
-- NPCs do not block the main road or doorway;
-- interaction triggers at the visible NPC with the existing radius/behavior;
-- no terrain/topology/combat regression.
-
-After this micro-pass is PHONE PASS, return to the planned **Proof B — Collision Foundation**.
-
-## NPC Re-block A execution evidence — Phone QC pending
-
-- Runtime: `src/game/npcConfig.ts`; PR #115; runtime commit `7e8eff66ae5ff01733242fb3ac221f0b9f4645eb`.
-- Elder anchor: `(490, 7828)`, at the Elder hall entrance/forecourt.
-- Merchant anchor: `(1045, 8082)`, at the merchant stall working edge.
-- Healer anchor: `(490, 8382)`, at the Healer house/herb-work entrance edge.
-- Interaction radius remains `155` for all three. Rendering and nearest-NPC interaction use the same live container position; dialogue/interaction semantics are unchanged.
-- CI #35999392051 PASS; Pages #35999455158 PASS; live badge `BUILD 7e8eff6`.
-- Desktop browser check at 0.5x hidden UI confirms the NPCs belong to their three pockets and no longer read as a central vertical row. At 1.0x, the characters sit immediately in front of their associated house/shop areas.
-- Interaction smoke check: moving within range of the repositioned Merchant and Healer shows the matching `TƯƠNG TÁC Thương nhân` and `TƯƠNG TÁC Dược sĩ` prompts. Code-level shared-anchor check confirms all NPCs move with the same trigger point; Elder retains the same `155` radius.
-- QC URL: https://momentum448-glitch.github.io/xianxia-arpg-web/
-- Android Phone QC for this new runtime has not yet been performed. Confirm all three locations at 1.0x, staggered pocket placement at 0.5x hidden UI, door/road clearance, and interaction at the visible NPC before marking this micro-pass PASS or starting Proof B.
-
-
-
-## Planned later proofs — do not execute yet
-
-### Proof B — Collision Foundation
-
-After Proof A **and NPC Re-block A** pass:
-
-- simplified house/tree/rock/fence/water ground-footprint collision;
-- water blocked by default;
-- bridge + 1–2 ford/stepping-stone authored crossings.
-
-### Proof C — Occlusion + tree motion
-
-After B passes:
-
-- one near-road tree with trunk collision + canopy occlusion;
+- one near-road tree: trunk collision + canopy occlusion + subtle wind sway;
 - one building roof/eave occlusion case;
-- one minimal tree-sway case;
 - Phone QC before expansion.
 
-### Proof D — Expansion / polish
+## Do not repeat blindly
 
-After A–C pass:
-
-- scale proven patterns to required objects;
-- restrained wind/water VFX;
-- final edge/agriculture polish.
-
-## Failed / superseded paths
-
-Do not repeat:
-
-- Terrain V1 geometric SVG blobs;
-- scatter-prop cohesion as a substitute for terrain composition;
-- baking every house/tree/NPC into one immutable background;
-- using full visual roof/canopy silhouettes as collision;
-- letting the player walk through all water;
-- implementing all collision/occlusion/VFX layers in one unvalidated mega-pass;
-- reopening A1 topology merely because the art pipeline changed.
+- no full visual silhouette collision for houses/trees;
+- no global physics-engine migration for this proof;
+- no giant invisible water rectangles;
+- no whole-map collision mega-pass before B1 validation;
+- no collision changes bundled with occlusion/VFX/art changes.
 
 ## Resume sentence
 
-Resume from verified runtime `main 7e8eff6` with transfer state `WAIT_QC`. Review **NPC Re-block A** at https://momentum448-glitch.github.io/xianxia-arpg-web/ (live badge `BUILD 7e8eff6` before this docs-only sync), record Android PASS/REVISE, and keep Collision Proof B blocked until PASS.
+Resume from verified current GitHub state with transfer state `READY_FOR_WORK`: NPC Re-block A is PHONE PASS, and the exact next task is **Proof B1 — Healer-pocket collision foundation only**. Deploy it and return the QC link/build **with the seven-item Phone-QC checklist above**.

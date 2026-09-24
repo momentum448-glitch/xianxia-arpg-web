@@ -279,17 +279,55 @@ PASS gate:
 
 ### Proof B — Collision Foundation
 
-Only after Proof A passes:
+Proof B is deliberately split so the new movement/collision architecture is proven in one compact zone before map-wide rollout.
 
-- add/clean house/tree/rock/fence/water colliders;
-- use ground footprints;
-- block creek/pond by default;
-- implement one bridge crossing + at least one authored ford/stepping-stone crossing;
-- verify no invisible-box frustration.
+#### Proof B1 — Healer-pocket collision foundation
+
+Question:
+
+> Can the current manually-moved player collide naturally with grounded world geometry, including water and the existing bridge, without changing combat feel or creating invisible-box frustration?
+
+Scope:
+
+- Healer house ground footprint;
+- one reachable near-player tree trunk/base;
+- one representative fence segment if it intersects plausible player movement;
+- Healer pond / adjacent creek water as simplified blocked geometry;
+- the existing wooden bridge as the authored walkable crossing through the blocked water.
+
+Implementation constraints:
+
+- current player movement is direct coordinate movement in `GameScene.updatePlayer`, not Phaser Arcade/Matter physics;
+- keep the proof minimal: add a collision resolver around candidate player movement rather than migrating the project to a new physics engine;
+- use a small foot-centered player collision shape, not the full 58 × 78 visual/control rectangle;
+- resolve movement so the player can slide along walls/banks rather than sticking on every diagonal contact;
+- prevent high-speed dodge tunneling through thin obstacles using movement substeps, swept checks, or an equivalent minimal method;
+- collision geometry follows grounded footprints and slightly inset water banks, not roof/canopy/art silhouettes;
+- do not add occlusion, tree motion, new water VFX, damage, slowdown or combat changes.
+
+B1 PASS gate:
+
+- house walls/base block movement while the entrance approach remains reachable;
+- tree blocks only at trunk/base, not the canopy footprint;
+- representative fence does not allow obvious pass-through and does not create sticky corner behavior;
+- pond/creek cannot be entered at blocked banks;
+- bridge can be crossed in both directions without invisible snags;
+- normal diagonal movement and dodge do not tunnel through obstacles;
+- Healer NPC remains reachable and interaction still triggers normally;
+- no A1 topology, art, NPC, combat timing or interaction-radius regression.
+
+#### Proof B2 — Settlement collision expansion
+
+Only after B1 Phone PASS:
+
+- apply the proven collider pattern to the remaining required Elder / Merchant / southern-pocket buildings, near trees, large rocks and functional fences;
+- extend water blocking across the authored creek;
+- add 1–2 **visually authored** ford / stepping-stone crossings where composition supports them; do not create invisible walkable water gaps with no visual cue;
+- Phone QC the full settlement route before Proof C.
 
 ### Proof C — Occlusion + tree motion
 
-Only after collision foundation passes:
+Only after Proof B1 + B2 collision foundation passes:
 
 - prove one near-road tree with trunk collision + canopy occlusion;
 - prove one building roof/eave occlusion case;
@@ -322,14 +360,16 @@ Do not:
 
 ## 12. Immediate next action
 
-Transfer to Work as `READY_FOR_WORK`.
+Proof A and NPC Re-block A are Phone PASS.
 
-Work executes **Proof A — Baked Terrain Plate V1 only**, then deploys and returns:
+Transfer to Work as `READY_FOR_WORK` for **Proof B1 — Healer-pocket collision foundation only**.
+
+Work must deploy B1 and return:
 
 - QC link;
 - build ID;
-- exact asset path/metadata;
-- 0.5x hidden-UI capture if Work can self-capture;
-- note whether the north-star V2 could be used directly as reference during asset creation.
+- exact code/data paths for the collision implementation;
+- a short self-check result;
+- the exact ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.
 
-Do not start Collision Proof B until DESIGN_CHAT + user accept Proof A.
+Do not expand collision to the whole settlement or begin occlusion/tree motion until B1 passes.
