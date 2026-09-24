@@ -9,6 +9,9 @@ type Footprint =
   | { kind: 'water'; vertices: readonly Point[] };
 
 export const HEALER_B1_FOOT_RADIUS = 11;
+// The player container is centered on the control rectangle. Its visible
+// contact shadow/feet sit 31 units below that center (actorVisuals.ts).
+const FOOT_OFFSET_Y = 31;
 const STEP_LENGTH = 5;
 
 // Only the grounded lower mass of the house blocks; the roof and front forecourt do not.
@@ -105,15 +108,15 @@ export function moveWithHealerB1Collision(
   for (let step = 0; step < steps; step += 1) {
     const nextX = clampX(x + stepX);
     const nextY = clampY(y + stepY);
-    if (!isHealerB1Blocked(nextX, nextY)) {
+    if (!isHealerB1Blocked(nextX, nextY + FOOT_OFFSET_Y)) {
       x = nextX;
       y = nextY;
       continue;
     }
     // Resolve each axis independently so diagonal movement slides along
     // a house wall, fence, or bank instead of stopping on first contact.
-    if (!isHealerB1Blocked(nextX, y)) x = nextX;
-    if (!isHealerB1Blocked(x, nextY)) y = nextY;
+    if (!isHealerB1Blocked(nextX, y + FOOT_OFFSET_Y)) x = nextX;
+    if (!isHealerB1Blocked(x, nextY + FOOT_OFFSET_Y)) y = nextY;
   }
   return [x, y];
 }
