@@ -204,3 +204,15 @@ Current snapshot note: merchant/settlement build `56b9359` is phone-accepted. Th
 - Runtime proof derived from the direction: `ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1`
 - Preserve this reference across chats so Work does not regenerate the approved whole-map direction from memory.
 
+
+## Whole-map Thanh Vân Thôn north-star V2 / Illustrated World Hybrid
+
+- Registry Asset ID: `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2`
+- Role: current preferred visual/composition/material target.
+- Drive path: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`
+- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`
+- Architecture: `ARCH-SETTLEMENT-ILLUSTRATED-WORLD-HYBRID`
+- Canonical spec: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`
+- Important distinction: this image is a north-star/master-art reference. Runtime should bake Layer-0 scenery while keeping major houses, near-player animated/occluding trees, bridges, NPCs and collision-critical objects separate.
+- This supersedes V1 as the active visual north-star. Preserve V1 only for historical continuity.
+

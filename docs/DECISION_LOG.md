@@ -73,6 +73,12 @@ Rules:
 
 | 2026-09-23 | Whole-map Terrain Proof V1 (`BUILD 1823667`) is `REVISE` after 0.5x hidden-UI Phone QC. The failure is visual treatment, not topology: large rounded/circular edge masks read as vector overlays; stream is too cyan/regular; pond→stream join is synthetic; ground remains too flat. Preserve A1 topology, hero pockets, lower-map stream role and fence cleanup. | Next proof must be a painterly Terrain V2. Do not solve this by reopening topology, restoring fence scatter, or adding generic props. |
 
+| 2026-09-24 | Adopt **Illustrated World Hybrid** for Thanh Vân Thôn. Use a coherent baked whole-map terrain plate for Layer-0 scenery, but keep major buildings, near-player trees, bridges, NPCs and collision/occlusion-critical objects separate. Collision is invisible simplified ground-footprint geometry independent from art pixels. | Supersedes the assumption that the final settlement should remain primarily a modular sprite collage, while avoiding the opposite mistake of flattening every object into one immutable background. Canonical spec: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`. |
+| 2026-09-24 | `ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2` becomes the preferred visual target. It defines painterly terrain/material/atmosphere, stream/field integration and village-edge richness, but does not override locked A1 gameplay topology pixel-for-pixel. | Drive: `TVT_WHOLE_MAP_NORTH_STAR_v002.png`, ID `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`. V1 remains historical reference. |
+| 2026-09-24 | Near-player trees remain separate so player occlusion and future wind sway are possible. Use Y-depth sorting and selective canopy/roof/eave foreground cutouts rather than a global per-pixel occlusion mask. | Bake only distant/off-playable decorative trees. Initial tree motion may use minimal canopy sway; do not block the architecture proof on VFX. |
+| 2026-09-24 | Pond/creek water is blocked by default through simplified inset collision polygons. Authored traversal uses bridge plus 1–2 ford/stepping-stone crossings. | First terrain proof does not add water gameplay effects; collision is a later gated proof. |
+| 2026-09-24 | Production sequence is gated: Proof A Baked Terrain Plate → Proof B Collision Foundation → Proof C Occlusion + one tree-motion case → Proof D expansion/polish. | Work must stop after each proof for Phone QC; do not implement all layers in one broad change. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -85,7 +91,7 @@ Rules:
 - Equipped skill: Trảm Kích / Cleave.
 - First breakthrough: 50 Linh Khí + 3 Tinh Hoa + 3 Kiếp Ảnh.
 - MVP realms: Luyện Khí → Trúc Cơ.
-- Settlement art: modular-hybrid painterly environment with organic paths.
+- Settlement art: **Illustrated World Hybrid** — coherent baked terrain plate + separate major/near-player objects + invisible footprint collision + selective occlusion.
 - Merchant world-scale widths: 270 / 180 / 135 / 60 for stall / cart / goods / sign.
 - Thanh Vân Thôn: poor frontier village, light hub, clear spine + branches, compact 1600 × 1800 playable slice with larger-village illusion, modest water/agriculture terrain.
 - Environment design: use `docs/environment/` knowledge base + map/zone/asset-kit templates before substantial new environment production.

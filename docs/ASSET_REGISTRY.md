@@ -269,6 +269,17 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Map design doc: `docs/environment/THANH_VAN_THON_WHOLE_MAP_V1.md`.
 - Next action: preserve as the visual target while runtime terrain is iterated modularly.
 
+### ENV-SETTLEMENT-WHOLEMAP-NORTHSTAR-V2
+
+- Purpose: primary visual/composition/material target for the new Illustrated World Hybrid production architecture.
+- Status: `REFERENCE_ONLY`; preferred north-star, superseding V1 as the active visual target.
+- Durable source: `/Google Drive/ARPG Asset Pipeline/00_INBOX/TVT_WHOLE_MAP_NORTH_STAR_v002.png`.
+- Drive file ID: `1DSycLIlv2Y1prvkcvhElOs_Apc12dd4A`.
+- Visual intent: one coherent painterly rural xianxia village; richer natural terrain, stronger stream/pond integration, believable edge vegetation/rocks/fields, and unified atmosphere.
+- Runtime rule: reference only. Do not flatten every house/tree/NPC into one immutable background.
+- Canonical architecture doc: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`.
+- Next action: Work uses this as the target for Proof A — Baked Terrain Plate V1.
+
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V1
 
 - Purpose: first reversible runtime proof for whole-map completion: more believable soil variation, natural village-edge framing, lower-map stream, light agricultural traces and fence cleanup.
@@ -288,7 +299,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ENV-SETTLEMENT-TERRAIN-UNDERLAY-V2
 
 - Purpose: painterly raster terrain-only underlay replacing V1's geometric SVG treatment while keeping the accepted A1 route and hero pockets intact.
-- Status: `INTEGRATED`; Phone QC pending.
+- Status: `INTEGRATED`; not promoted to final Phone PASS because the production architecture shifted to Illustrated World Hybrid after design review.
 - Canonical runtime asset: `public/assets/c4/environment/settlement/env_settlement_terrain_wholemap_v2.png`.
 - Metadata: PNG RGB, 1182 × 1330, 2,709,928 bytes; SHA-256 `a466cb2731c80c80bcf42294cce91ee49921e625e40a12da42c00f9b402818d0`.
 - Runtime presentation: image underlay at 1600 × 1800 behind accepted modular art; preloaded through the image loader.
@@ -296,7 +307,21 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Runtime lineage: merged PR #107; CI run #303 PASS; GitHub Pages run #167 PASS on V2 code commit `b1a4e9b`.
 - Phone QC: pending. Confirm the pond-to-creek join at 1.0x, whole-map readability at 0.5x with UI hidden, and southern-fringe continuity.
 - Gameplay: visual only; no collision, interaction-radius, hitbox or timing changes.
-- Next action: run Phone QC from `docs/HANDOFF_CURRENT.md`; record PASS/REVISE before any further terrain changes.
+- Next action: preserve as historical/visual evidence. Do not continue polishing it as the final settlement architecture; execute Illustrated World Hybrid Proof A instead.
+
+### ARCH-SETTLEMENT-ILLUSTRATED-WORLD-HYBRID
+
+- Purpose: production rendering/collision/occlusion architecture for Thanh Vân Thôn.
+- Status: `DESIGN_PASS`.
+- Canonical spec: `docs/environment/THANH_VAN_THON_ILLUSTRATED_WORLD_HYBRID.md`.
+- Baked Layer 0: soil, paths, creek surface, fields/cultivation ground, low vegetation, tiny rocks/shadows, distant/off-playable scenery.
+- Separate static layer: major buildings, near-player trees, bridges and collision/occlusion-critical props.
+- Dynamic layer: player/NPC/enemy/loot/projectile/interactable.
+- Collision: simplified invisible ground footprints; never full roof/canopy silhouettes.
+- Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
+- Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
+- Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
+- Next action: Proof A — Baked Terrain Plate V1. Collision/occlusion expansion waits for later proof gates.
 
 ## 8. Current critical non-art architecture note
 
