@@ -91,6 +91,8 @@ Rules:
 | 2026-09-24 | Collision Proof B1/B1.1 is `PHONE_PASS` after Android retest on live `BUILD fce1ca2` (functional B1.1 runtime `ea86424`). The explicit bridge corridor fixed the prior visible-water leak without breaking bridge traversal, dodge or Healer interaction. | Preserve B1 foot-radius/foot-anchor/substep/axis-slide behavior as the canonical collision foundation. |
 | 2026-09-24 | Split settlement expansion into **B2A static grounded collision → B2B full water + authored crossings → Proof C occlusion/tree motion**. | B2A covers houses, reachable tree trunks, large grounded props and functional fences only. B2B later expands creek blocking and visually authored ford/stepping-stone crossings. This keeps each Phone-QC proof narrow and reversible. |
 
+| 2026-09-26 | B2A Android QC is `REVISE` only for two Merchant-pocket issues: the large goods pile is walk-through, and one decorative `rockGrass` sits in the main route. | B2A.1 adds a grounded collider to the large goods pile and removes the route rock without replacement. Preserve the rest of B2A; B2B stays blocked until this focused patch passes. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -113,7 +115,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B1/B1.1 are PHONE PASS. Handoff is `READY_FOR_WORK` for **Proof B2A — static settlement collision expansion only**.
+- Current production action: B2A is narrowly REVISE and handoff is `READY_FOR_WORK` for **B2A.1 — Merchant goods collision + route-rock cleanup only**.
 
 
 ## 2026-09-24 — Proof A technical delivery

@@ -1,10 +1,10 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: User reports Android Phone QC PASS or REVISE against the six B2A checks below. B2B and Proof C stay blocked until B2A Phone PASS.
-Snapshot: 2026-09-24
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **B2A.1 — Merchant goods collision + route-rock cleanup** and returns build/QC evidence plus the focused checklist below. B2B and Proof C remain blocked until B2A.1 Phone PASS.
+Snapshot: 2026-09-26
 Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified current main: `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
 Merged B2A PRs: #126 runtime expansion → `a29e7d3bfdbd9e7d2577a4786c10e7727255ced2`; #127 Elder fence slope correction → current main `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
@@ -15,7 +15,68 @@ B1.1 functional baseline: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`.
 
 ## Current objective
 
-Return merged **Proof B2A — static settlement collision expansion only** for Android Phone QC at 1.0x with UI visible. Runtime work and deploy are complete; do not make further production changes until the user reports PASS or REVISE.
+Execute **B2A.1 — Merchant goods collision + route-rock cleanup only**. Android Phone QC accepted the rest of B2A; two concrete issues remain in the Merchant pocket.
+
+## B2A Android QC result
+
+**REVISE, narrow scope.**
+
+User Phone QC on live `BUILD c02cec7` reports only two remaining issues:
+
+1. the large Merchant goods pile is visually substantial but can be walked through;
+2. one decorative `rockGrass` prop sits in the main movement lane between Elder / Merchant and reads as an arbitrary obstacle in the road.
+
+All other tested B2A behavior is accepted unless the patch introduces a regression.
+
+Verified runtime facts:
+
+- Merchant goods render as `merchantGoods` at approximately `(1175, 8100)`, display width `135`.
+- No B2A collider currently covers that goods pile.
+- The route rock is the Merchant-pocket `rockGrass` at approximately `(840, 8090)`, display width `118`.
+
+## Exact Work brief — B2A.1 only
+
+1. Add one **grounded collision footprint** for the large Merchant goods pile.
+   - fit only the visible lower grounded mass;
+   - do not use the full sprite rectangle;
+   - keep player able to slide around it naturally;
+   - preserve access to Merchant, stall and cart.
+
+2. Remove the single Merchant `rockGrass` prop at `(840, 8090)` from runtime composition.
+   - do not replace it with another object in the route;
+   - do not add a collider where the removed rock was;
+   - preserve nearby lantern, stall, cart, goods, NPC and terrain.
+
+3. Preserve all accepted B1/B2A collision geometry, player foot radius, movement substeps, diagonal sliding, dodge protection, NPC anchors/radii, combat timing and topology.
+
+4. Do not start B2B water expansion, ford art, occlusion or tree motion.
+
+## Anh cần QC — B2A.1
+
+Use **1.0x**, UI visible.
+
+1. **Merchant goods**
+   - walk directly into the large goods pile from multiple sides and try diagonal movement / dodge;
+   - PASS: player cannot walk through the grounded pile, but can slide around it without an oversized invisible box;
+   - FAIL: player still clips through, gets blocked far outside the visible pile, or sticks on corners.
+
+2. **Main route where the rock was**
+   - walk Elder ↔ Merchant through the former rock location;
+   - PASS: the decorative rock is gone and the route reads cleaner / remains fully open;
+   - FAIL: the rock remains, a replacement obstruction appears, or an invisible collider remains behind.
+
+3. **Merchant interaction regression**
+   - circle stall/cart/goods and approach Thương Nhân;
+   - PASS: Merchant remains reachable and interaction works normally;
+   - FAIL: the new goods collider blocks the NPC/shopfront or changes interaction behavior.
+
+**Already accepted unless regression appears:** Elder, southern houses, tree-base/fence collision, Healer B1 water/bridge, diagonal/dodge behavior elsewhere.
+
+**Not being judged:** B2B full-creek collision, ford/stepping stones, occlusion, tree sway, enemy collision/pathfinding, water VFX.
+
+## B2A.1 PASS gate
+
+If these three checks pass on Android, mark **B2A = PHONE_PASS** and advance to B2B.
 
 ## Proof B2A — implementation and Work self-QC
 
@@ -359,4 +420,4 @@ Only after B2A + B2B pass:
 
 ## Resume sentence
 
-The B2A implementation is merged and deployed at runtime commit `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`; the next action is Android Phone QC at 1.0x using the six-item checklist above. No Work repo writes or B2B/Proof C execution until the user reports PASS or REVISE.
+Resume from verified live `main c02cec7` with transfer state `READY_FOR_WORK`: B2A Phone QC found only two Merchant-pocket issues. Execute **B2A.1 only**: add a grounded collider to the large Merchant goods pile at about `(1175,8100)`, remove the decorative route `rockGrass` at about `(840,8090)`, deploy, and return the build with the three-item focused QC checklist above. Do not start B2B or Proof C.
