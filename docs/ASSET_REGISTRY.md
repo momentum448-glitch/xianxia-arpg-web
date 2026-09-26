@@ -160,8 +160,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - `public/assets/c4/environment/settlement/env_lanternpost_village_a.png`
 - Phone QC: tree/fence/rock-grass/lantern accepted in the current settlement visual language.
 - Composition rule: do not repeat the same `tree + fence + rock + lantern` formula at every house. Vary density, scale, flip and role.
-- B2A.1: removed only the Merchant route rock placement at `(840,8090)`; the canonical rock asset and all other placements remain unchanged. Phone QC of route cleanup pending.
-- Next action: preserve the kit and verify the cleared route on phone.
+- B2A.1: removed only the Merchant route rock placement at `(840,8090)`; the canonical rock asset and all other placements remain unchanged. Android Phone QC PASS.
+- Next action: preserve the kit and cleared route.
 
 ## 6. Merchant area / Lục Chưởng Quầy
 
@@ -184,8 +184,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - sign → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
 - Phone QC: scale, transparency, trade identity and route readability passed.
 - Composition companion decision: lower tile-roof house at `x=1210, settlement top+1090` removed in the accepted proof composition; grounding wash remains.
-- B2A.1 runtime: PR #130 adds one grounded capsule beneath the large goods pile; all four artwork binaries, scales and placements are unchanged. Collision TECH/INTEGRATED; Phone QC pending.
-- Next action: QC goods contact/slide/dodge and Merchant reachability; preserve accepted art.
+- B2A.1 runtime: PR #130 adds one grounded capsule beneath the large goods pile; all four artwork binaries, scales and placements are unchanged. Collision PHONE_PASS from Android QC.
+- Next action: preserve accepted art and grounded goods collision.
 
 ## 7. Healer / agriculture
 
@@ -337,7 +337,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: B1/B1.1 collision foundation is PHONE PASS. Execute B2A static grounded-collision expansion only; B2B water expansion and occlusion/tree motion remain blocked.
+- Next action: B1/B1.1 + B2A/B2A.1 collision are PHONE PASS. Execute B2B1 full-creek collision only; B2B2 crossing art and occlusion/tree motion remain blocked.
 
 ## 8. Current critical non-art architecture note
 
@@ -391,4 +391,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **WAIT_QC for merged B2A.1 (PR #130): goods collision, cleared route and Merchant interaction. B2B and Proof C remain gated.**
+Current exact next action: **Work executes B2B1 — full-creek collision audit/expansion only, preserving the existing Healer bridge as the sole crossing for this proof, then returns the QC link/build with the five-item B2B1 checklist.**
