@@ -389,4 +389,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **Work executes Proof B2A — static settlement collision expansion only, then returns a QC link/build together with the six-item B2A Phone-QC checklist.**
+Current exact next action: **Work executes B2A.1 — add grounded collision to the large Merchant goods pile and remove the Merchant route rock, then returns a QC link/build with the three-item focused checklist.**
