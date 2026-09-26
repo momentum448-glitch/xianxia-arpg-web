@@ -93,6 +93,9 @@ Rules:
 
 | 2026-09-26 | B2A Android QC is `REVISE` only for two Merchant-pocket issues: the large goods pile is walk-through, and one decorative `rockGrass` sits in the main route. | B2A.1 adds a grounded collider to the large goods pile and removes the route rock without replacement. Preserve the rest of B2A; B2B stays blocked until this focused patch passes. |
 
+| 2026-09-26 | B2A/B2A.1 static settlement collision is `PHONE_PASS` after Android QC of PR #130 runtime `b9cd497` / live handoff lineage `920ae9f`. | Merchant goods grounded collision, route-rock cleanup, Elder/Merchant/southern house/tree/fence collision and accepted Healer B1 behavior now form the locked static-collision baseline. |
+| 2026-09-26 | Split B2B into **B2B1 full-creek collision only → B2B2 one visually authored crossing**. | B2B1 must not invent invisible ford gaps or new art. If blocking all remaining water disconnects an accepted route, Work returns to design. B2B2 later proves one visible ford/stepping-stone crossing before Proof C. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -115,7 +118,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2A.1 is merged in PR #130; handoff is `WAIT_QC` for goods collision, cleared route and Merchant interaction. B2B remains blocked.
+- Current production action: B2A/B2A.1 are PHONE PASS. Handoff is `READY_FOR_WORK` for **B2B1 — full-creek collision audit/expansion only**; B2B2 crossing art and Proof C remain gated.
 
 
 ## 2026-09-24 — Proof A technical delivery
