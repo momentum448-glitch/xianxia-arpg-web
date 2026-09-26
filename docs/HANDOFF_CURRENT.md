@@ -1,7 +1,7 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
 Return condition: Work deploys **Proof B2B1 — full-creek collision audit/expansion only** and returns the build/QC link with the exact focused Phone-QC checklist below. B2B2 crossing art and Proof C remain blocked until B2B1 Phone PASS.
 Snapshot: 2026-09-26
@@ -9,7 +9,7 @@ Repository: `momentum448-glitch/xianxia-arpg-web`
 Verified current main before this continuity update: `920ae9fabf5f881f62eacf5cfb49b0e9cdde51cc`
 B2A.1 functional runtime: PR #130 / `b9cd497b6df5fb2176983f7019e81dd3c5c7e083`
 B2A.1 docs handoff: PR #131 / `920ae9f`
-Open relevant execution PR: none
+Execution branch: `work/b2b1-creek-collision`; PR pending. Verified baseline: `cc7792c282db650f9da14bbbecabd8def9f029bf` (PR #132).
 Unrelated open PR: #4
 
 ## Phone PASS just recorded
