@@ -160,7 +160,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - `public/assets/c4/environment/settlement/env_lanternpost_village_a.png`
 - Phone QC: tree/fence/rock-grass/lantern accepted in the current settlement visual language.
 - Composition rule: do not repeat the same `tree + fence + rock + lantern` formula at every house. Vary density, scale, flip and role.
-- Next action: preserve current deployment during V2-A completion.
+- B2A.1: removed only the Merchant route rock placement at `(840,8090)`; the canonical rock asset and all other placements remain unchanged. Phone QC of route cleanup pending.
+- Next action: preserve the kit and verify the cleared route on phone.
 
 ## 6. Merchant area / Lục Chưởng Quầy
 
@@ -183,7 +184,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
   - sign → `1_ta2f0wNJD6hH2eJgqtIlqJiBYumJco4`
 - Phone QC: scale, transparency, trade identity and route readability passed.
 - Composition companion decision: lower tile-roof house at `x=1210, settlement top+1090` removed in the accepted proof composition; grounding wash remains.
-- Next action: preserve. Do not generate a new merchant kit unless explicitly revised.
+- B2A.1 runtime: PR #130 adds one grounded capsule beneath the large goods pile; all four artwork binaries, scales and placements are unchanged. Collision TECH/INTEGRATED; Phone QC pending.
+- Next action: QC goods contact/slide/dodge and Merchant reachability; preserve accepted art.
 
 ## 7. Healer / agriculture
 
@@ -389,4 +391,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **Work executes B2A.1 — add grounded collision to the large Merchant goods pile and remove the Merchant route rock, then returns a QC link/build with the three-item focused checklist.**
+Current exact next action: **WAIT_QC for merged B2A.1 (PR #130): goods collision, cleared route and Merchant interaction. B2B and Proof C remain gated.**

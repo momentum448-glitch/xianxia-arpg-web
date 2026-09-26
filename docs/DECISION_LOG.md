@@ -115,7 +115,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2A is narrowly REVISE and handoff is `READY_FOR_WORK` for **B2A.1 — Merchant goods collision + route-rock cleanup only**.
+- Current production action: B2A.1 is merged in PR #130; handoff is `WAIT_QC` for goods collision, cleared route and Merchant interaction. B2B remains blocked.
 
 
 ## 2026-09-24 — Proof A technical delivery
@@ -126,3 +126,7 @@ Illustrated World Hybrid Proof A uses a terrain-only raster plate (`ENV-SETTLEME
 ## 2026-09-24 — NPC Re-block A runtime delivery
 
 PR #115 moved the existing NPC render/interaction anchors in `src/game/npcConfig.ts` to their A1 pockets: Elder `(490, 7828)`, Merchant `(1045, 8082)`, Healer `(490, 8382)`. All retain their 155-unit interaction radii and existing dialogue behavior. CI and Pages passed; live runtime build is `7e8eff6`. Desktop browser checks at 0.5x and 1.0x verified pocket placement; live interaction smoke tests displayed the matching Merchant and Healer interaction prompts at the new anchors. Android Phone QC later passed these positions on live `BUILD 9eb4c50`. Preserve the NPC re-block and proceed only to Collision Proof B1.
+
+## 2026-09-26 — B2A.1 runtime delivery
+
+PR #130 adds one rounded grounded goods footprint and removes only the Merchant route rock. Existing collision geometry, movement resolver, NPC anchors/radii, accepted assets and combat are preserved. Local build and focused coordinate checks PASS; Android Phone QC remains the final gate. No new creative/product decision was introduced.
