@@ -74,6 +74,10 @@ export const SETTLEMENT_B2A_FOOTPRINTS: readonly Footprint[] = [
   { kind: 'box', left: 990, right: 1130, top: 8019, bottom: 8045 },
   // Merchant cart runtime ground anchor: (1310, 8060), display width 180.
   { kind: 'box', left: 1240, right: 1380, top: 8034, bottom: 8059 },
+  // B2A.1 goods at (1175, 8100), width 135, bottom-center origin.
+  // Inset capsule covers the lower crates/baskets, excluding upper stacks
+  // and transparent/shadow margins; rounded ends preserve natural sliding.
+  { kind: 'segment', from: [1132, 8076], to: [1218, 8076], halfWidth: 12 },
   // Merchant-side reachable tree ground anchor: (1340, 7860), width 165.
   { kind: 'circle', x: 1340, y: 7853, radius: 19 },
 

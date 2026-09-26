@@ -1,14 +1,14 @@
 # Current Project Handoff
 
-Current owner: DESIGN_CHAT
-Transfer state: READY_FOR_WORK
+Current owner: WORK
+Transfer state: WORK_EXECUTING
 Repo-write permission: WORK
 Return condition: Work deploys **B2A.1 — Merchant goods collision + route-rock cleanup** and returns build/QC evidence plus the focused checklist below. B2B and Proof C remain blocked until B2A.1 Phone PASS.
 Snapshot: 2026-09-26
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified current main: `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
+Verified execution baseline: `9ef377f8408efa9676a308b79d6ed3ca7ce38aec` (merged PR #129).
 Merged B2A PRs: #126 runtime expansion → `a29e7d3bfdbd9e7d2577a4786c10e7727255ced2`; #127 Elder fence slope correction → current main `c1d14ab74b043d4225dc5d18a4ca7cb0cdd77d1b`.
-Active B2A execution branch/PR: none. Unrelated open PR: #4.
+Active execution branch: `work/b2a1-merchant-collision`; PR pending. Unrelated open PR: #4.
 Live runtime build before this docs-only handoff update: `BUILD c1d14ab`, [QC link](https://momentum448-glitch.github.io/xianxia-arpg-web/?qc=c1d14ab).
 Main CI run #36035343797 PASS; Deploy Pages run #36035343787 PASS.
 B1.1 functional baseline: `ea86424f582e9ddf585d5cfdbfc6ceffe3cc7203`.

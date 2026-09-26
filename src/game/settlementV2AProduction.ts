@@ -228,7 +228,6 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantGoods, 1325 + merchant.dx, top + 975 + merchant.dy, 135);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.merchantCart, 1460 + merchant.dx, top + 935 + merchant.dy, 180);
   addAsset(scene, tree, 1490 + merchant.dx, top + 735 + merchant.dy, 165, false, 0.86);
-  addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 990 + merchant.dx, top + 965 + merchant.dy, 118, true, 0.84);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 990 + merchant.dx, top + 845 + merchant.dy, 72, false, 0.94);
 
   const healer = TOPOLOGY_REVISION_A.healer;
