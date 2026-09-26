@@ -329,19 +329,30 @@ Only after B1 Phone PASS:
 - do not expand creek water, add crossings, occlusion or tree motion yet;
 - Phone QC the full settlement route.
 
-#### Proof B2B — Full water + authored crossings
+#### Proof B2B1 — Full-creek collision
 
 Only after B2A Phone PASS:
 
 - extend blocked water across the authored creek outside the Healer B1 pocket;
-- add one visually authored ford / stepping-stone crossing and prove it first;
-- add a second crossing only if route/composition evidence supports it;
-- all walkable water exceptions must have a visible crossing cue;
-- Phone QC before Proof C.
+- preserve the accepted Healer bridge as the only crossing in this proof;
+- verify that the accepted route remains connected before implementation;
+- do not add invisible ford gaps or new crossing art;
+- if route connectivity requires a new visual crossing, return to design rather than inventing one;
+- Phone QC water blocking / bank feel / route connectivity.
+
+#### Proof B2B2 — One authored crossing
+
+Only after B2B1 Phone PASS:
+
+- choose one useful non-bridge crossing from actual route/composition evidence;
+- add one visually authored ford / stepping-stone crossing;
+- make only that clearly visible crossing walkable through the blocked creek;
+- Phone QC before deciding whether a second crossing is actually needed;
+- do not add a second crossing merely to satisfy a nominal count.
 
 ### Proof C — Occlusion + tree motion
 
-Only after Proof B1 + B2A + B2B collision foundation passes:
+Only after Proof B1 + B2A + B2B1 + B2B2 collision foundation passes:
 
 - prove one near-road tree with trunk collision + canopy occlusion;
 - prove one building roof/eave occlusion case;
@@ -386,4 +397,4 @@ Work must deploy B1 and return:
 - a short self-check result;
 - the exact ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.
 
-B1/B1.1 are now Phone PASS. Next execute B2A static collision expansion only. Do not begin B2B water expansion or Proof C occlusion/tree motion until their prior gates pass.
+B1/B1.1 and B2A/B2A.1 are now Phone PASS. Next execute B2B1 full-creek collision only. B2B2 crossing art and Proof C remain gated.
