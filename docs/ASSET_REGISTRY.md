@@ -391,4 +391,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **Work executes B2B1 — full-creek collision audit/expansion only, preserving the existing Healer bridge as the sole crossing for this proof, then returns the QC link/build with the five-item B2B1 checklist.**
+Current exact next action: **WAIT_QC on deployed B2B1 `cc9c796` (PR #133): full creek, dry route, bridge, slide/dodge and false positives. B2B2/Proof C remain gated.**

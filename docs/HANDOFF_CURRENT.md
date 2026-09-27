@@ -1,15 +1,15 @@
 # Current Project Handoff
 
-Current owner: WORK
-Transfer state: WORK_EXECUTING
-Repo-write permission: WORK
-Return condition: Work deploys **Proof B2B1 — full-creek collision audit/expansion only** and returns the build/QC link with the exact focused Phone-QC checklist below. B2B2 crossing art and Proof C remain blocked until B2B1 Phone PASS.
+Current owner: DESIGN_CHAT
+Transfer state: WAIT_QC
+Repo-write permission: NONE_WHILE_WAITING_QC
+Return condition: Android Phone QC of the five B2B1 checks below. B2B2 crossing art and Proof C remain blocked until B2B1 Phone PASS.
 Snapshot: 2026-09-26
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified current main before this continuity update: `920ae9fabf5f881f62eacf5cfb49b0e9cdde51cc`
+B2B1 execution baseline: `cc7792c282db650f9da14bbbecabd8def9f029bf` (PR #132 handoff)
 B2A.1 functional runtime: PR #130 / `b9cd497b6df5fb2176983f7019e81dd3c5c7e083`
 B2A.1 docs handoff: PR #131 / `920ae9f`
-Execution branch: `work/b2b1-creek-collision`; PR pending. Verified baseline: `cc7792c282db650f9da14bbbecabd8def9f029bf` (PR #132).
+B2B1 execution PR: #133 merged; runtime commit `cc9c7962ec019fbd5f25db153dede79482d2307c`. Main CI #36327151343 and Pages #36327151349 PASS. Live badge `BUILD cc9c796` verified at https://momentum448-glitch.github.io/xianxia-arpg-web/?qc=cc9c796.
 Unrelated open PR: #4
 
 ## Phone PASS just recorded
@@ -34,13 +34,22 @@ Preserve:
 
 ## Current objective
 
-Execute **Proof B2B1 — full-creek collision audit/expansion only**.
+Proof B2B1 is deployed. Android Phone QC of five focused checks below is the next gate.
 
 Question:
 
 > Can all remaining visible creek/water in the Thanh Vân Thôn playable slice be blocked consistently, using the proven simplified-water approach, while preserving the accepted route and existing Healer bridge?
 
 This proof adds **water collision only**. It does not add stepping-stone/ford art yet.
+
+## B2B1 implementation and Work VERIFY
+
+- Canonical runtime: `src/game/settlementCollision.ts`, PR #133, functional commit `cc9c796`.
+- Three simplified inset polygons cover the remaining creek: western map-edge inlet; exposed branch southeast of Dược Sư; eastern bend and southeast outlet. No art changed.
+- The visible, painted dry road around `x≈855` remains open. Grid connectivity from the spawn reaches all three NPCs, both southern residential areas and the southern exit without a new crossing. The Dược Sư bridge remains the only authored water crossing for this proof.
+- Accepted B1/B2A shapes, bridge corridor and movement resolver are unchanged. Five bank contacts stop a 78-unit dodge and permit diagonal slide. Two-way bridge crossing passed; 4,331 sampled B1 bridge-area points match the baseline, including the prior water-leak spot. No old blocked point became walkable in a 5-unit sample grid.
+- TypeScript/Vite local build, PR/main CI and Pages PASS. Live `cc9c796` loads the village, water, bridge and visible dry central road at 1.0x/0.5x; Android movement feel remains pending.
+- Android Phone QC pending. Do not label B2B1 PHONE_PASS yet.
 
 ## Exact Work brief — B2B1 only
 
@@ -170,4 +179,4 @@ Only after B2B2 passes:
 
 ## Resume sentence
 
-Resume from verified live `main 920ae9f` with transfer state `READY_FOR_WORK`: **B2A is PHONE_PASS**. Execute **B2B1 full-creek collision audit/expansion only**. Preserve the existing Healer bridge as the sole crossing for this proof, verify route connectivity before coding, deploy, and return the build with the five-item B2B1 Phone-QC checklist. If full blocking requires a new visual crossing to preserve the accepted route, return `RETURN_TO_DESIGN` instead of inventing an invisible gap.
+Resume from live functional B2B1 `cc9c796` with `WAIT_QC`: obtain Android results of the five listed checks. If all pass, record B2B1 PHONE_PASS and return to design for B2B2 crossing selection. If any fail, revise only the evidenced bank/route issue. Do not begin B2B2 or Proof C while Phone QC is pending.
