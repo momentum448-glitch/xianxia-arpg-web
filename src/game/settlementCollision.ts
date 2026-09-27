@@ -1,4 +1,4 @@
-// Settlement collision: accepted B1 Healer pocket plus gated B2A grounded static footprints.
+// Settlement collision: accepted B1/B2A footprints plus B2B1 creek expansion.
 // World coordinates align with settlementV2AProduction (settlement top = 7200).
 // Art remains separate; none of these shapes alter combat or NPC hit checks.
 type Point = readonly [number, number];
@@ -91,6 +91,34 @@ export const SETTLEMENT_B2A_FOOTPRINTS: readonly Footprint[] = [
   // adding another footprint there would duplicate the already-tested water collision.
 ];
 
+// B2B1: remaining visible water, verified against the 1600 × 1800 baked
+// terrain plate and the separate Healer water/bridge layer. Bank polygons
+// are slightly inset; the player's existing foot radius supplies clearance.
+// The painted dry road between the central and eastern reaches stays dry
+// ground, not a water exemption or an invisible ford. No new crossing here.
+export const SETTLEMENT_B2B1_WATER: readonly (readonly Point[])[] = [
+  // Western map-edge inlet, overlapping the accepted B1 inlet at x=96.
+  [
+    [-20, 8298], [40, 8308], [100, 8322], [112, 8328],
+    [112, 8372], [50, 8347], [-20, 8330],
+  ],
+  // Exposed creek southeast of the Healer layer, west of the dry road.
+  [
+    [590, 8552], [625, 8538], [646, 8518], [680, 8535],
+    [734, 8554], [782, 8573], [798, 8597], [798, 8612],
+    [745, 8598], [690, 8580], [642, 8566], [600, 8562],
+  ],
+  // Eastern bend and southeast outlet. Extend beyond the world edge so
+  // world clamping cannot leave a walkable seam at the end of the creek.
+  [
+    [923, 8597], [1000, 8576], [1100, 8545], [1200, 8512],
+    [1275, 8478], [1350, 8465], [1410, 8485], [1500, 8533],
+    [1620, 8568], [1620, 8618], [1510, 8592], [1420, 8554],
+    [1350, 8526], [1300, 8537], [1220, 8565], [1140, 8583],
+    [1070, 8606], [1000, 8630], [937, 8626],
+  ],
+];
+
 function segmentDistanceSquared(px: number, py: number, from: Point, to: Point): number {
   const dx = to[0] - from[0];
   const dy = to[1] - from[1];
@@ -147,6 +175,12 @@ export function isSettlementBlocked(x: number, y: number): boolean {
   if (isHealerB1Blocked(x, y)) return true;
 
   const r = HEALER_B1_FOOT_RADIUS;
+  if (y >= 8280 && y <= 8650 && SETTLEMENT_B2B1_WATER.some((vertices) =>
+    insidePolygon(x, y, vertices)
+      || vertices.some((point, index) => segmentDistanceSquared(
+        x, y, point, vertices[(index + 1) % vertices.length],
+      ) < r * r))) return true;
+
   for (const shape of SETTLEMENT_B2A_FOOTPRINTS) {
     if (shape.kind === 'box') {
       const closestX = Math.max(shape.left, Math.min(x, shape.right));
