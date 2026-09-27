@@ -1,103 +1,131 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: NONE_WHILE_WAITING_QC
-Return condition: Android Phone QC of the five B2B1 checks below. B2B2 crossing art and Proof C remain blocked until B2B1 Phone PASS.
-Snapshot: 2026-09-26
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **Proof B2B2 — one authored stepping-stone crossing only** and returns build/QC evidence with the focused checklist below. Proof C remains blocked until B2B2 Phone PASS.
+Snapshot: 2026-09-27
 Repository: `momentum448-glitch/xianxia-arpg-web`
-B2B1 execution baseline: `cc7792c282db650f9da14bbbecabd8def9f029bf` (PR #132 handoff)
-B2A.1 functional runtime: PR #130 / `b9cd497b6df5fb2176983f7019e81dd3c5c7e083`
-B2A.1 docs handoff: PR #131 / `920ae9f`
-B2B1 execution PR: #133 merged; runtime commit `cc9c7962ec019fbd5f25db153dede79482d2307c`. Main CI #36327151343 and Pages #36327151349 PASS. Live badge `BUILD cc9c796` verified at https://momentum448-glitch.github.io/xianxia-arpg-web/?qc=cc9c796.
+Verified current main before this continuity update: `82dc68e72489cf99495eaf2fa52456662b2846c5`
+B2B1 functional runtime: PR #133 / `cc9c7962ec019fbd5f25db153dede79482d2307c`
+B2B1 handoff/docs: PR #134 / `82dc68e`
+Open relevant execution PR: none
 Unrelated open PR: #4
 
 ## Phone PASS just recorded
 
-User Android QC reports all three B2A.1 checks PASS:
+User Android QC reports all five B2B1 checks PASS.
 
-- Merchant goods pile blocks at the grounded mass and does not create an oversized invisible box.
-- The removed Merchant-route `rockGrass` is gone with no invisible collider left behind.
-- Merchant remains reachable and interaction behaves normally.
+Therefore **B2B1 = PHONE_PASS**.
 
-Therefore **B2A = PHONE_PASS**.
+Accepted water baseline now includes:
 
-Preserve:
+- Healer B1 pond/creek + explicit wooden-bridge corridor;
+- western map-edge inlet blocking;
+- exposed creek southeast of Healer blocking;
+- eastern bend / southeast outlet blocking;
+- preserved dry central route;
+- normal diagonal slide / dodge protection;
+- full Elder → Merchant → Healer → southern route connectivity.
 
-- all accepted B1/B1.1 Healer collision;
-- all accepted Elder / Merchant / southern static B2A collision;
-- Merchant goods capsule added in PR #130;
-- removal of only the Merchant route rock at about `(840,8090)`;
-- player foot radius 11 at control center +31 Y;
-- 5-unit movement substeps, axis sliding, dodge protection, world bounds;
-- NPC anchors/radii and combat timing.
+Preserve all B1/B2A/B2B1 geometry unless a new concrete QC regression appears.
 
 ## Current objective
 
-Proof B2B1 is deployed. Android Phone QC of five focused checks below is the next gate.
+Execute **Proof B2B2 — one visually authored stepping-stone crossing only**.
 
 Question:
 
-> Can all remaining visible creek/water in the Thanh Vân Thôn playable slice be blocked consistently, using the proven simplified-water approach, while preserving the accepted route and existing Healer bridge?
+> Can one small, clearly readable shallow stepping-stone crossing create an intentional second water crossing without making the creek look artificial, opening walkable water beside the stones, or disturbing the accepted route?
 
-This proof adds **water collision only**. It does not add stepping-stone/ford art yet.
+## Locked design choice
 
-## B2B1 implementation and Work VERIFY
+Use **stepping stones**, not a second bridge and not an invisible ford.
 
-- Canonical runtime: `src/game/settlementCollision.ts`, PR #133, functional commit `cc9c796`.
-- Three simplified inset polygons cover the remaining creek: western map-edge inlet; exposed branch southeast of Dược Sư; eastern bend and southeast outlet. No art changed.
-- The visible, painted dry road around `x≈855` remains open. Grid connectivity from the spawn reaches all three NPCs, both southern residential areas and the southern exit without a new crossing. The Dược Sư bridge remains the only authored water crossing for this proof.
-- Accepted B1/B2A shapes, bridge corridor and movement resolver are unchanged. Five bank contacts stop a 78-unit dodge and permit diagonal slide. Two-way bridge crossing passed; 4,331 sampled B1 bridge-area points match the baseline, including the prior water-leak spot. No old blocked point became walkable in a 5-unit sample grid.
-- TypeScript/Vite local build, PR/main CI and Pages PASS. Live `cc9c796` loads the village, water, bridge and visible dry central road at 1.0x/0.5x; Android movement feel remains pending.
-- Android Phone QC pending. Do not label B2B1 PHONE_PASS yet.
+Preferred crossing zone:
 
-## Exact Work brief — B2B1 only
+- eastern / southeast creek bend;
+- target center approximately **(1200, 8550)** world coordinates;
+- practical verification band approximately **x 1160–1235, y 8505–8590**;
+- this should visually connect the main village side to the southern-east field / house pocket.
 
-1. VERIFY the actual visible water body from the current baked terrain plate and current runtime composition.
-   - do not infer the creek only from old docs;
-   - inspect the accepted live composition / asset and existing B1 water geometry.
+Why this location:
 
-2. Extend simplified inset water collision to the remaining reachable visible creek/water outside the accepted Healer B1 pocket.
-   - water is blocked by default;
-   - use a small number of readable polygons/segments, not pixel tracing;
-   - bank collision should sit close to the visible water edge without creating large invisible margins.
+- B2B1 proved the map does not need a second crossing for basic connectivity, so this is an optional authored shortcut;
+- it gives the southeast pocket a more natural relation to the village;
+- it is visually distinct from the existing Healer wooden bridge;
+- it fits the humble rural/agricultural tone better than a second constructed bridge.
 
-3. Preserve the accepted Healer B1 water + explicit bridge corridor exactly unless refactoring produces demonstrably equivalent geometry.
+## Asset target
 
-4. Preserve all B2A static colliders and B2A.1 Merchant changes exactly.
+Asset ID: `ENV-CREEK-STEPPING-STONES-A`
 
-5. Keep the existing Healer bridge as the **only authored crossing for B2B1**.
-   - do not create invisible ford gaps;
-   - do not add stepping stones, new bridge art or new crossing sprites in this proof.
+Role:
 
-6. Before implementation, VERIFY route connectivity with full water blocking.
-   - if the accepted Elder → Merchant → Healer → southern route remains reachable through existing dry ground / bridge, proceed;
-   - if full water blocking disconnects an accepted required route and a new visual crossing is necessary, **RETURN_TO_DESIGN** instead of leaving an invisible walkable-water gap or inventing new crossing art.
+- one compact transparent crossing prop;
+- 4–6 irregular flat stones;
+- low profile, worn, muted warm-gray / earth-stained stone;
+- painterly match to the current terrain plate;
+- no bright white stones, shrine styling, ornate masonry or hero-landmark treatment;
+- readable at 1.0x but subordinate at 0.5x.
 
-7. Preserve movement feel.
-   - normal diagonal movement must slide along banks;
-   - dodge must not tunnel through water;
-   - no sticky sawtooth shoreline made from excessive micro-polygons.
+Target runtime path:
 
-8. Do not change:
-   - terrain art;
-   - houses/trees/props/NPC positions;
-   - interaction radii/semantics;
-   - combat hitboxes/timing;
-   - enemy collision/pathfinding;
-   - occlusion / Y-depth behavior;
+`public/assets/c4/environment/settlement/env_creek_stepping_stones_a.png`
+
+If Work generates a new source/binary, record exact metadata/checksum and update `ASSET_REGISTRY.md`. Runtime GitHub file becomes source of truth.
+
+## Exact Work brief — B2B2 only
+
+1. VERIFY the target creek section against the live baked plate / B2B1 water polygons before fixing final coordinates.
+   - use the target band above as design intent;
+   - small coordinate adjustment is allowed to align with the visible banks;
+   - do not relocate the crossing to another pocket without returning to design.
+
+2. Create or recover one stepping-stone asset matching the locked design.
+   - transparent background;
+   - no black matte;
+   - no baked water/grass beyond minimal stone-edge grounding;
+   - stones should form one believable shallow crossing path, not a straight ruler line.
+
+3. Integrate the visual prop as a separate static object over the baked creek.
+   - keep visual width/height only as large as needed for the visible crossing;
+   - do not repaint the baked terrain plate.
+
+4. Add **one explicit walkable crossing corridor** through the B2B1 water collision aligned to the visible stepping stones.
+   - only the visible stepping-stone path may exempt water blocking;
+   - adjacent visible water must stay blocked;
+   - corridor should be narrow enough that sideways movement off the stones immediately meets water collision;
+   - use the same explicit-crossing principle proven by the Healer bridge.
+
+5. Preserve:
+   - all accepted B2B1 water polygons;
+   - Healer bridge corridor;
+   - B2A static collision;
+   - player foot radius / movement substeps / slide / dodge behavior;
+   - NPC positions/radii;
+   - combat timing/hitboxes;
+   - A1 topology and current art.
+
+6. Do not add:
+   - a second new crossing;
+   - a second bridge;
+   - water slowdown/splash/damage;
+   - occlusion/Y-depth work;
    - tree motion;
-   - water VFX/slowdown/damage.
+   - enemy pathfinding changes;
+   - extra creek polish.
 
 ## Work self-VERIFY before deploy
 
-- probe representative points along every newly blocked visible creek section;
-- test at least one diagonal bank slide per new section;
-- test dodge toward new water blockers;
-- verify the Healer bridge still crosses both directions and does not leak sideways;
-- verify all three NPCs and the southern fringe remain reachable;
-- verify no dry road/field area is accidentally blocked;
-- build, deploy, inspect the live build badge.
+- cross the stepping stones both directions with normal movement;
+- push sideways off the crossing at north bank, mid-span and south bank;
+- dodge toward / across the crossing;
+- verify adjacent water remains blocked on both sides;
+- verify the visual stones and collision corridor line up;
+- verify full route and all NPCs remain reachable;
+- verify existing Healer bridge is unchanged;
+- build, deploy and verify live build badge.
 
 ## Required Work return format
 
@@ -105,78 +133,70 @@ Return in one message:
 
 1. QC link;
 2. build ID;
-3. concise list of newly covered water sections;
-4. whether route-connectivity VERIFY passed without requiring a new crossing;
-5. the **“Anh cần QC — B2B1”** checklist below.
+3. asset ID/path + metadata;
+4. final crossing anchor/corridor coordinates;
+5. short self-QC result;
+6. the **“Anh cần QC — B2B2”** checklist below.
 
 Do not return a bare link.
 
-## Anh cần QC — B2B1
+## Anh cần QC — B2B2
 
 Use **1.0x**, UI visible.
 
-1. **Remaining creek banks**
-   - walk into the visible creek/water at several points outside the Dược Sư pocket, especially east/southeast water;
-   - PASS: player stops near the visible bank and cannot stand in water;
-   - FAIL: any obvious visible water remains walkable or the invisible margin blocks far out on dry ground.
+1. **Visual readability**
+   - inspect the new stepping stones at the southeast creek;
+   - PASS: clearly reads as a deliberate shallow crossing, fits the painterly village and stays visually modest;
+   - FAIL: looks pasted-on, too bright/ornate, too regular, or unclear as a crossing.
 
-2. **Bank slide + dodge**
-   - walk diagonally along at least two newly blocked banks and dodge directly toward water;
-   - PASS: movement slides naturally and dodge never tunnels into water;
-   - FAIL: sticky/jittery banks, snagging on tiny geometry, or dodge appears inside/across water.
+2. **Cross both directions**
+   - walk across the stones north→south and south→north;
+   - PASS: crossing is smooth and the character stays visually on/very near the stone path;
+   - FAIL: invisible snag, unexpected sideways push, or route feels narrower than the visible stones.
 
-3. **Existing Dược Sư bridge regression**
-   - cross the wooden bridge both directions and push sideways near the deck;
-   - PASS: crossing remains smooth and adjacent water remains blocked;
-   - FAIL: bridge becomes blocked or the old water leak returns.
+3. **Side-water blocking**
+   - at both ends and mid-crossing, deliberately steer sideways into visible water;
+   - PASS: player cannot leave the stone path into adjacent water;
+   - FAIL: any visible water next to the stones becomes freely walkable.
 
-4. **Full route connectivity**
-   - travel Trưởng Lão → Thương Nhân → Dược Sư → southern fringe;
-   - PASS: all accepted destinations remain reachable without walking through visible water;
-   - FAIL: new water collision cuts an accepted route or forces an impossible detour.
+4. **Dodge**
+   - dodge across the stones, then dodge sideways toward adjacent water;
+   - PASS: crossing works without tunneling and sideways dodge does not bypass water collision;
+   - FAIL: dodge lands in water or jumps across a blocked bank.
 
-5. **Dry-ground false positives**
-   - move along nearby roads/field edges beside the creek;
-   - PASS: dry ground remains freely traversable;
-   - FAIL: invisible water collision spills onto road/field in a noticeable way.
+5. **Regression smoke**
+   - briefly check the Healer bridge and route toward Merchant / southern fringe;
+   - PASS: old bridge and full village route still behave normally;
+   - FAIL: new crossing change breaks the old bridge or blocks an accepted route.
 
-**Already accepted unless regression appears:** B2A houses/trees/fences/merchant goods, NPC interaction, current bridge, combat movement.
+**Already accepted unless regression appears:** B1/B2A/B2B1 collision, NPC interaction, current terrain plate.
 
-**Not being judged:** new ford/stepping-stone visuals, additional crossings, roof/tree occlusion, tree sway, enemy pathfinding, water VFX.
+**Not being judged:** roof/tree occlusion, tree sway, enemy pathfinding, water VFX, second additional crossing.
 
-## B2B1 PASS gate
+## B2B2 PASS gate
 
-B2B1 is PHONE PASS when all five checks above pass on Android and route connectivity remains intact.
+B2B2 is PHONE PASS when all five checks pass on Android.
 
-## Planned next proof
+After PASS, the collision foundation is complete enough to move to **Proof C — occlusion + one tree-motion case**.
 
-### B2B2 — one authored crossing
+## Planned Proof C after B2B2
 
-Only after B2B1 Phone PASS:
-
-- choose one useful non-bridge crossing location based on actual route/composition;
-- create or recover one visually clear shallow ford / stepping-stone crossing;
-- make only that visible crossing walkable through the blocked creek;
-- Phone QC it before considering a second crossing.
-
-If one additional crossing proves sufficient for route/composition, do not add a second merely to hit a count.
-
-### Proof C — Occlusion + tree motion
-
-Only after B2B2 passes:
-
-- one near-road tree: trunk collision + canopy occlusion + subtle wind sway;
-- one building roof/eave occlusion case;
-- Phone QC before expansion.
+- one near-road tree:
+  - trunk collision already preserved;
+  - canopy occlusion in front of player when player passes behind;
+  - subtle canopy sway;
+- one building:
+  - roof/eave foreground occlusion case;
+- Phone QC before any expansion.
 
 ## Failed paths / cautions
 
-- Do not use broad accidental gaps between water polygons. That caused the historical Healer water leak.
-- Do not pixel-trace the creek.
-- Do not create an invisible walkable ford with no visual cue.
-- Do not combine B2B1 water blocking with crossing art, occlusion or VFX.
-- Do not reopen accepted static collision just because the water module is being generalized.
+- do not leave a broad hole in water collision around the new crossing;
+- do not make all water walkable near the stones;
+- do not use full-sprite collision for the stones;
+- do not create a second crossing in the same proof;
+- do not combine this with occlusion/tree-motion work.
 
 ## Resume sentence
 
-Resume from live functional B2B1 `cc9c796` with `WAIT_QC`: obtain Android results of the five listed checks. If all pass, record B2B1 PHONE_PASS and return to design for B2B2 crossing selection. If any fail, revise only the evidenced bank/route issue. Do not begin B2B2 or Proof C while Phone QC is pending.
+Resume from verified live `main 82dc68e` with transfer state `READY_FOR_WORK`: **B2B1 is PHONE_PASS**. Execute **B2B2 only**: one low-profile stepping-stone crossing in the southeast creek near world `(1200,8550)`, with one explicit walkable corridor aligned to the visible stones. Deploy and return the build with the five-item Phone-QC checklist. Do not start Proof C yet.
