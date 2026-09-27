@@ -337,7 +337,17 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: B1/B1.1 + B2A/B2A.1 collision are PHONE PASS. Execute B2B1 full-creek collision only; B2B2 crossing art and occlusion/tree motion remain blocked.
+- Next action: B1/B1.1 + B2A/B2A.1 + B2B1 are PHONE PASS. Execute B2B2 one southeast stepping-stone crossing only; occlusion/tree motion remain blocked.
+
+### ENV-CREEK-STEPPING-STONES-A
+
+- Purpose: B2B2 authored shallow crossing at the eastern/southeast Thanh Vân Thôn creek.
+- Status: `PLANNED` / not yet created at this handoff.
+- Design state: target locked — 4–6 irregular low-profile flat stones, muted painterly warm-gray/earth-stained palette, visually subordinate to the Healer bridge.
+- Target world zone: approximately center `(1200,8550)`; Work may make a small alignment adjustment inside the verified creek bend.
+- Target runtime path: `public/assets/c4/environment/settlement/env_creek_stepping_stones_a.png`.
+- Collision intent: one explicit narrow walkable corridor aligned to visible stones; adjacent water remains blocked.
+- Next action: Work creates/recovers, integrates, records metadata/checksum, deploys and returns Phone QC.
 
 ## 8. Current critical non-art architecture note
 
