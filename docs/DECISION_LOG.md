@@ -96,6 +96,9 @@ Rules:
 | 2026-09-26 | B2A/B2A.1 static settlement collision is `PHONE_PASS` after Android QC of PR #130 runtime `b9cd497` / live handoff lineage `920ae9f`. | Merchant goods grounded collision, route-rock cleanup, Elder/Merchant/southern house/tree/fence collision and accepted Healer B1 behavior now form the locked static-collision baseline. |
 | 2026-09-26 | Split B2B into **B2B1 full-creek collision only → B2B2 one visually authored crossing**. | B2B1 must not invent invisible ford gaps or new art. If blocking all remaining water disconnects an accepted route, Work returns to design. B2B2 later proves one visible ford/stepping-stone crossing before Proof C. |
 
+| 2026-09-27 | B2B1 full-creek collision is `PHONE_PASS` after Android QC of live B2B1 runtime `cc9c796` / handoff lineage `82dc68e`. | Remaining visible creek is blocked, bank slide/dodge/Healer bridge/full route/dry-ground checks passed. Preserve B2B1 water geometry as baseline. |
+| 2026-09-27 | B2B2 will prove exactly one additional crossing: **low-profile stepping stones** on the eastern/southeast creek, target around world `(1200,8550)`, visually linking the main village side to the southern-east field/house pocket. | This is an optional authored shortcut, not required route repair. Use an explicit narrow walkable corridor aligned to visible stones; adjacent water stays blocked. No second crossing in the same proof. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -118,7 +121,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2A/B2A.1 are PHONE PASS. Handoff is `READY_FOR_WORK` for **B2B1 — full-creek collision audit/expansion only**; B2B2 crossing art and Proof C remain gated.
+- Current production action: B2B1 is PHONE PASS. Handoff is `READY_FOR_WORK` for **B2B2 — one southeast stepping-stone crossing only**; Proof C remains gated.
 
 
 ## 2026-09-24 — Proof A technical delivery
