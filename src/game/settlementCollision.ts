@@ -23,6 +23,16 @@ export const HEALER_B1_BRIDGE = {
   halfWidth: 18,
 } as const;
 
+// B2B2: the five visible stepping stones run northwest to southeast across
+// the eastern creek. The corridor exempts only water, never solid footprints.
+// Its endpoints are centered on the first and last stones; the player foot
+// radius remains unchanged and water on either side still blocks movement.
+export const CREEK_B2B2_STEPPING_STONES = {
+  from: [1174, 8509] as Point,
+  to: [1226, 8586] as Point,
+  halfWidth: 14,
+} as const;
+
 // Only the grounded lower mass of the house blocks; the roof and front forecourt do not.
 export const HEALER_B1_FOOTPRINTS: readonly Footprint[] = [
   { kind: 'box', left: 366, right: 566, top: 8298, bottom: 8337 },
@@ -179,7 +189,10 @@ export function isSettlementBlocked(x: number, y: number): boolean {
     insidePolygon(x, y, vertices)
       || vertices.some((point, index) => segmentDistanceSquared(
         x, y, point, vertices[(index + 1) % vertices.length],
-      ) < r * r))) return true;
+      ) < r * r))
+    && segmentDistanceSquared(
+      x, y, CREEK_B2B2_STEPPING_STONES.from, CREEK_B2B2_STEPPING_STONES.to,
+    ) > CREEK_B2B2_STEPPING_STONES.halfWidth ** 2) return true;
 
   for (const shape of SETTLEMENT_B2A_FOOTPRINTS) {
     if (shape.kind === 'box') {

@@ -14,6 +14,7 @@ export const SETTLEMENT_V2A_TEXTURES = {
   merchantGoods: 'prod-v2a-merchant-goods-b',
   merchantSign: 'prod-v2a-merchant-sign-b',
   healerWaterBridge: 'prod-v2a-healer-water-bridge-a',
+  creekSteppingStones: 'prod-v2a-creek-stepping-stones-a',
   healerHerbBed: 'prod-v2a-healer-herb-bed-a',
   healerDrying: 'prod-v2a-healer-drying-a',
   fieldEdge: 'prod-v2a-field-edge-b',
@@ -30,6 +31,7 @@ export const SETTLEMENT_V2A_PRELOADS = [
   [SETTLEMENT_V2A_TEXTURES.merchantGoods, C4_ASSETS.settlementMerchantGoodsB],
   [SETTLEMENT_V2A_TEXTURES.merchantSign, C4_ASSETS.settlementMerchantSignB],
   [SETTLEMENT_V2A_TEXTURES.healerWaterBridge, C4_ASSETS.settlementHealerWaterBridgeA],
+  [SETTLEMENT_V2A_TEXTURES.creekSteppingStones, C4_ASSETS.settlementCreekSteppingStonesA],
   [SETTLEMENT_V2A_TEXTURES.healerHerbBed, C4_ASSETS.settlementHealerHerbBedA],
   [SETTLEMENT_V2A_TEXTURES.healerDrying, C4_ASSETS.settlementHealerDryingPropsA],
   [SETTLEMENT_V2A_TEXTURES.fieldEdge, C4_ASSETS.settlementFieldEdgeKitB],
@@ -243,6 +245,13 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
     .setTint(0xe8e1d8)
     .setAlpha(0.96)
     .setDepth(-6);
+  // B2B2: one separate low-profile crossing over the baked southeast creek.
+  // The alpha bounds and 78 × 100 world placement align with the narrow
+  // water-only corridor in settlementCollision.ts; the plate is untouched.
+  scene.add.image(1161, 8498, SETTLEMENT_V2A_TEXTURES.creekSteppingStones)
+    .setOrigin(0, 0)
+    .setDisplaySize(78, 100)
+    .setDepth(-6.1);
   addHerbGarden(scene, top, healer.dx, healer.dy);
   scene.add.image(548 + healer.dx, top + 1340 + healer.dy, SETTLEMENT_V2A_TEXTURES.healerDrying)
     .setOrigin(0.5)
