@@ -121,7 +121,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2B1 is PHONE PASS. Handoff is `READY_FOR_WORK` for **B2B2 — one southeast stepping-stone crossing only**; Proof C remains gated.
+- Current production action: B2B1 is PHONE PASS. B2B2 one southeast stepping-stone crossing is deployed on PR #136 / main `a3648f7` and `WAIT_QC`; Proof C remains gated until B2B2 Phone PASS.
 
 
 ## 2026-09-24 — Proof A technical delivery

@@ -337,7 +337,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: B1/B1.1 + B2A/B2A.1 + B2B1 are PHONE PASS. Execute B2B2 one southeast stepping-stone crossing only; occlusion/tree motion remain blocked.
+- Next action: B1/B1.1 + B2A/B2A.1 + B2B1 are PHONE PASS. B2B2 is deployed and awaits Android Phone QC; occlusion/tree motion remain blocked.
 
 ### ENV-CREEK-STEPPING-STONES-A
 
@@ -349,7 +349,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Runtime placement: top-left `(1161,8498)`, 78 × 100 world units, depth `-6.1` over the baked creek. Stone centers run approximately `(1174,8509)` → `(1226,8586)`.
 - Collision: one water-only corridor from `(1174,8509)` to `(1226,8586)`, half-width 14 world units. The B2B1 water polygon and Healer bridge geometry remain unchanged; adjacent water stays blocked.
 - Local QC: build, two-way crossing, side-bank and dodge probes, existing bridge and route connectivity pass. Android 1.0x visual/movement QC remains the acceptance gate.
-- Next action: deploy and obtain the five-item B2B2 Phone QC result before Proof C.
+- Deployed runtime: PR #136 / main `a3648f7`; Android 1.0x five-item Phone QC pending before Proof C.
+- Next action: collect B2B2 Phone QC; preserve the runtime asset pending PASS/REVISE.
 
 ## 8. Current critical non-art architecture note
 
@@ -403,4 +404,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **B2B2 stepping-stone proof is runtime-ready; deploy and request the five-item Android Phone QC. Proof C remains gated until B2B2 Phone PASS.**
+Current exact next action: **WAIT_QC on deployed B2B2 `a3648f7` (PR #136): visual fit, two-way crossing, side-water blocking, dodge and Healer bridge/full-route smoke. Proof C remains gated until B2B2 Phone PASS.**
