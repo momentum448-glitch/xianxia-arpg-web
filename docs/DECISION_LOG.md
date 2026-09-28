@@ -99,6 +99,9 @@ Rules:
 | 2026-09-27 | B2B1 full-creek collision is `PHONE_PASS` after Android QC of live B2B1 runtime `cc9c796` / handoff lineage `82dc68e`. | Remaining visible creek is blocked, bank slide/dodge/Healer bridge/full route/dry-ground checks passed. Preserve B2B1 water geometry as baseline. |
 | 2026-09-27 | B2B2 will prove exactly one additional crossing: **low-profile stepping stones** on the eastern/southeast creek, target around world `(1200,8550)`, visually linking the main village side to the southern-east field/house pocket. | This is an optional authored shortcut, not required route repair. Use an explicit narrow walkable corridor aligned to visible stones; adjacent water stays blocked. No second crossing in the same proof. |
 
+| 2026-09-28 | B2B2 southeast stepping-stone crossing is `PHONE_PASS` after Android QC of live `BUILD a3648f7` / PR #136. | Collision Proof B is now complete enough to advance to Proof C. Preserve the five-stone visual, narrow explicit water-only corridor, adjacent blocked water, Healer bridge and all prior collision behavior unless a concrete regression appears. |
+| 2026-09-28 | Proof C begins as one compact Healer-pocket architecture proof: existing tree near `(255,8365)` gets selective canopy occlusion + subtle canopy-only sway; existing Healer house near `(470,8365)` gets one selective roof/eave occlusion case. | Keep collision independent and unchanged. Do not regenerate accepted base art, build per-pixel occlusion, animate the trunk, fade the whole building, or roll out map-wide before Phone QC. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -121,7 +124,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2B1 is PHONE PASS. B2B2 one southeast stepping-stone crossing is deployed on PR #136 / main `a3648f7` and `WAIT_QC`; Proof C remains gated until B2B2 Phone PASS.
+- Current production action: B2B2 is PHONE PASS on live `BUILD a3648f7`. Handoff is `READY_FOR_WORK` for Proof C1 only: one Healer-pocket tree canopy occlusion + subtle canopy-only sway and one Healer-house roof/eave occlusion case.
 
 
 ## 2026-09-24 — Proof A technical delivery
