@@ -344,11 +344,12 @@ Only after B2A Phone PASS:
 
 Only after B2B1 Phone PASS:
 
-- choose one useful non-bridge crossing from actual route/composition evidence;
-- add one visually authored ford / stepping-stone crossing;
-- make only that clearly visible crossing walkable through the blocked creek;
-- Phone QC before deciding whether a second crossing is actually needed;
-- do not add a second crossing merely to satisfy a nominal count.
+- use one **low-profile stepping-stone crossing** at the eastern/southeast creek, target around world `(1200,8550)`, linking toward the southern-east field/house pocket;
+- create/recover one compact transparent crossing asset, 4–6 irregular flat stones, muted painterly stone/earth tones;
+- make only that clearly visible stepping-stone path walkable through the blocked creek using an explicit narrow corridor;
+- keep adjacent visible water blocked;
+- Phone QC before deciding whether any later additional crossing is actually needed;
+- do not add a second crossing in this proof.
 
 ### Proof C — Occlusion + tree motion
 
@@ -397,4 +398,4 @@ Work must deploy B1 and return:
 - a short self-check result;
 - the exact ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.
 
-B1/B1.1 and B2A/B2A.1 are now Phone PASS. Next execute B2B1 full-creek collision only. B2B2 crossing art and Proof C remain gated.
+B1/B1.1, B2A/B2A.1 and B2B1 are now Phone PASS. Next execute B2B2 one southeast stepping-stone crossing only. Proof C remains gated.
