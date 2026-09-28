@@ -342,12 +342,14 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ENV-CREEK-STEPPING-STONES-A
 
 - Purpose: B2B2 authored shallow crossing at the eastern/southeast Thanh Vân Thôn creek.
-- Status: `PLANNED` / not yet created at this handoff.
-- Design state: target locked — 4–6 irregular low-profile flat stones, muted painterly warm-gray/earth-stained palette, visually subordinate to the Healer bridge.
-- Target world zone: approximately center `(1200,8550)`; Work may make a small alignment adjustment inside the verified creek bend.
-- Target runtime path: `public/assets/c4/environment/settlement/env_creek_stepping_stones_a.png`.
-- Collision intent: one explicit narrow walkable corridor aligned to visible stones; adjacent water remains blocked.
-- Next action: Work creates/recovers, integrates, records metadata/checksum, deploys and returns Phone QC.
+- Status: `RUNTIME_READY / PHONE_QC_PENDING` for Proof B2B2.
+- Design: five irregular low-profile warm-gray/earth-stained stones; subordinate to the Healer bridge. Generated against a crop of the accepted baked creek plate, technically normalized to the small runtime size; no water/grass/black matte baked into the transparent prop.
+- Canonical runtime path: `public/assets/c4/environment/settlement/env_creek_stepping_stones_a.png`.
+- Runtime binary: PNG RGBA, 78 × 100 px, 8,908 bytes; SHA-256 `1631cd602b08d177fe7f11437a193f6c85a66071a970f41522f58cfaec10d2ff`.
+- Runtime placement: top-left `(1161,8498)`, 78 × 100 world units, depth `-6.1` over the baked creek. Stone centers run approximately `(1174,8509)` → `(1226,8586)`.
+- Collision: one water-only corridor from `(1174,8509)` to `(1226,8586)`, half-width 14 world units. The B2B1 water polygon and Healer bridge geometry remain unchanged; adjacent water stays blocked.
+- Local QC: build, two-way crossing, side-bank and dodge probes, existing bridge and route connectivity pass. Android 1.0x visual/movement QC remains the acceptance gate.
+- Next action: deploy and obtain the five-item B2B2 Phone QC result before Proof C.
 
 ## 8. Current critical non-art architecture note
 
@@ -401,4 +403,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **WAIT_QC on deployed B2B1 `cc9c796` (PR #133): full creek, dry route, bridge, slide/dodge and false positives. B2B2/Proof C remain gated.**
+Current exact next action: **B2B2 stepping-stone proof is runtime-ready; deploy and request the five-item Android Phone QC. Proof C remains gated until B2B2 Phone PASS.**

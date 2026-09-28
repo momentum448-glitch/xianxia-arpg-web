@@ -23,6 +23,7 @@ export const C4_ASSETS = {
   settlementMerchantSignB: 'assets/c4/environment/settlement/env_merchant_sign_b.png',
   settlementMerchantStallB: 'assets/c4/environment/settlement/env_merchant_stall_b.png',
   settlementHealerWaterBridgeA: 'assets/c4/environment/settlement/env_healer_water_bridge_a.webp',
+  settlementCreekSteppingStonesA: 'assets/c4/environment/settlement/env_creek_stepping_stones_a.png',
   settlementHealerHerbBedA: 'assets/c4/environment/settlement/env_healer_herb_bed_a.webp',
   settlementHealerDryingPropsA: 'assets/c4/environment/settlement/env_healer_drying_props_a.webp',
   settlementFieldEdgeKitB: 'assets/c4/environment/settlement/env_field_edge_kit_b.webp',
