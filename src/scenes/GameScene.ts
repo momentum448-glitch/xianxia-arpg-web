@@ -206,6 +206,11 @@ export class GameScene extends Phaser.Scene {
     this.updateWorldEvents();
   }
 
+  protected playerFootForOcclusion(): readonly [number, number] {
+    // The accepted collision resolver uses the same +31 contact offset.
+    return [this.player.x, this.player.y + 31];
+  }
+
   private createWorldShell(): void {
     for (const zone of WORLD.zones) {
       const zoneHeight = zone.yMax - zone.yMin;

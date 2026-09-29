@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { C4_ASSETS } from './art/assetManifest';
 import { SETTLEMENT_HOUSE_TEXTURES } from './environmentVisuals';
+import { createHealerC1Occlusion, type HealerC1Occlusion } from './settlementC1Occlusion';
 import type { WorldZone } from './worldConfig';
 
 export const SETTLEMENT_V2A_TEXTURES = {
@@ -184,7 +185,7 @@ function addHerbGarden(scene: Phaser.Scene, top: number, dx = 0, dy = 0): void {
   herbBed.setMask(maskGraphics.createGeometryMask());
 }
 
-export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone): void {
+export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone): HealerC1Occlusion {
   const top = zone.yMin;
   removeLegacySettlementArt(scene, zone);
   prepareTreeRuntimeTexture(scene);
@@ -233,8 +234,14 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 990 + merchant.dx, top + 845 + merchant.dy, 72, false, 0.94);
 
   const healer = TOPOLOGY_REVISION_A.healer;
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchB, 350 + healer.dx, top + 1295 + healer.dy, 292);
-  addAsset(scene, tree, 135 + healer.dx, top + 1310 + healer.dy, 168, true, 0.92);
+  const healerOcclusion = createHealerC1Occlusion(scene, {
+    treeTexture: tree,
+    houseTexture: SETTLEMENT_HOUSE_TEXTURES.thatchB,
+    treeX: 135 + healer.dx,
+    treeGroundY: top + 1310 + healer.dy,
+    houseX: 350 + healer.dx,
+    houseGroundY: top + 1295 + healer.dy,
+  });
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 565 + healer.dx, top + 1315 + healer.dy, 182, true, 0.91);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 540 + healer.dx, top + 1225 + healer.dy, 112, true, 0.90);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615 + healer.dx, top + 1265 + healer.dy, 72, false, 0.94);
@@ -273,4 +280,5 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
     .setDisplaySize(320, 180)
     .setAlpha(0.96)
     .setDepth(-7.2);
+  return healerOcclusion;
 }
