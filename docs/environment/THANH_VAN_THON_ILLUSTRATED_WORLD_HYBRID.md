@@ -386,16 +386,16 @@ Do not:
 
 ## 12. Immediate next action
 
-Proof A and NPC Re-block A are Phone PASS.
+Proof A, NPC Re-block A, Collision Proof B through B2B2, and Proof C1 are Phone PASS.
 
-Transfer to Work as `READY_FOR_WORK` for **Proof B1 — Healer-pocket collision foundation only**.
+Transfer to Work as `READY_FOR_WORK` for **Proof D1 — selective rollout only**:
 
-Work must deploy B1 and return:
+- Elder pocket: existing tree + Elder hall;
+- southeast pocket: existing tree + tile house;
+- reuse the C1 selective canopy/roof foreground pattern;
+- add only subtle canopy-only sway to the two target trees, with de-synchronized timing;
+- preserve all accepted collision, source art, topology, NPC/gameplay and the Healer C1 behavior.
 
-- QC link;
-- build ID;
-- exact code/data paths for the collision implementation;
-- a short self-check result;
-- the exact ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.
+Do not expand to every tree/building, add Merchant/southwest rollout, or add wind/water VFX until D1 Phone PASS.
 
-B1/B1.1, B2A/B2A.1 and B2B1 are now Phone PASS. Next execute B2B2 one southeast stepping-stone crossing only. Proof C remains gated.
+Work must deploy D1 and return the QC link, build ID, exact split/threshold/depth logic, self-QC evidence, and the ordered Phone-QC checklist from `HANDOFF_CURRENT.md`.

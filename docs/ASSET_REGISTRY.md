@@ -355,15 +355,26 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ARCH-HEALER-C1-SELECTIVE-OCCLUSION
 
 - Purpose: Proof C1 only — one Healer tree canopy foreground/sway case and one Healer-house roof/eave foreground case.
-- Status: `DEPLOYED / PHONE_QC_PENDING` on functional runtime PR #139 / `9e564bc`.
+- Status: `PHONE_PASS` on Android live `BUILD 9e564bc` / PR #139.
 - Canonical implementation: `src/game/settlementC1Occlusion.ts`, invoked only by `src/game/settlementV2AProduction.ts` and updated from `ProductionGameScene.ts`.
 - Source lineage: accepted `env_tree_village_a.png` (160 × 198 source, SHA-256 `c4100456e464661fc3e06765fc8da032a8ef8ad35687b43c167c04a4ab054788`) and `env_house_thatch_b.png` (208 × 172 source, SHA-256 `71069f35aff92045dc4e64c84b5cdb936484f848c0d5d737915adfc07fba7f0f`). Both original GitHub binaries remain unchanged.
 - Derivatives: runtime canvas textures only (`prod-c1-healer-tree-base`, `prod-c1-healer-tree-canopy`, `prod-c1-healer-house-roof`); no new binary files. Tree layers retain the 168 px flipped display width and 0.92 alpha at `(255,8365)`; house retains 292 px width at `(470,8350)`.
 - Split: tree source y=112 with a 4 px shared seam; canopy pivots there and oscillates ±0.65° over 6.4 s while the lower trunk/base stays fixed. House upper roof/eave cutout ends at source y=126; the accepted full house remains the base image.
 - Foreground rule: player visual depth 11; canopy is depth 12 only when nearby and player foot is behind tree center y=8358, otherwise world depth -3. Roof cutout is depth 12 and visible only when nearby and player foot is behind y=8318; both thresholds use 6 world-unit hysteresis. The player foot is the existing actor center +31.
 - Gameplay state: visual only. All B1/B2A/B2B1/B2B2 collision, crossings, NPC interaction, combat, topology and baked terrain remain unchanged.
-- Desktop QC: source checksums unchanged, local build PASS, source-pixel front/back composites and both sway extremes inspected. Live `BUILD 9e564bc` loaded the game and Healer pocket without game console errors. Android 1.0x traversal/visual judgement remains the final gate.
-- Next action: obtain five-item Android Phone QC at 1.0x before considering a wider Proof D.
+- Desktop QC: source checksums unchanged, local build PASS, source-pixel front/back composites and both sway extremes inspected. Live `BUILD 9e564bc` loaded the game and Healer pocket without game console errors.
+- Phone QC: PASS — tree front/back ordering, subtle canopy-only sway, house roof/eave ordering, collision independence and regression smoke accepted.
+- Next action: preserve as the proven selective-occlusion reference while D1 reuses the pattern in two additional pockets.
+
+### ARCH-SETTLEMENT-D1-SELECTIVE-OCCLUSION-ROLLOUT
+
+- Purpose: controlled reuse of the C1 selective-occlusion architecture before any map-wide rollout.
+- Status: `PLANNED / READY_FOR_WORK`.
+- Targets: Elder tree `(270,7815)` + Elder hall `(470,7775)`; southeast tree `(1230,8525)` + tile house `(1275,8685)`.
+- Collision baseline: preserve accepted tree trunk circles and house grounded boxes exactly; no new collision in D1.
+- Visual rule: canopy/roof foreground only when spatially behind; canopy-only sway on the two target trees with subtle de-synchronized timing; trunks fixed.
+- Source rule: reuse accepted GitHub runtime art; do not regenerate base tree/house assets.
+- Next action: Work implements only these two pockets, deploys, self-QCs and returns focused Android Phone QC.
 
 ## 8. Current critical non-art architecture note
 
@@ -417,4 +428,4 @@ Before changing chat or starting another production branch, verify:
 - this registry matches current PHONE PASS / REVISE state;
 - `HANDOFF_CURRENT.md` names the exact next action and pass gate.
 
-Current exact next action: **WAIT_QC on deployed Healer-pocket Proof C1 `9e564bc` (PR #139): tree front/back, canopy sway, house roof/eave front/back, collision independence and B2B2/bridge/Healer regression. Wider occlusion/tree-motion work remains gated.**
+Current exact next action: **READY_FOR_WORK for Proof D1 only: Elder tree + hall and southeast tree + tile house selective occlusion; subtle de-synchronized canopy-only sway on those two trees; preserve Healer C1 and all collision/gameplay.**

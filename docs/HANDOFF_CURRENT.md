@@ -1,71 +1,212 @@
 # Current Project Handoff
 
 Current owner: DESIGN_CHAT
-Transfer state: WAIT_QC
-Repo-write permission: DESIGN_CHAT for the QC disposition; Work must not start a wider rollout or another production proof.
-Return condition: user reports the five Proof C1 Android checks below; Design records PHONE_PASS or REVISE and defines the next handoff.
+Transfer state: READY_FOR_WORK
+Repo-write permission: WORK
+Return condition: Work deploys **Proof D1 — selective occlusion/sway expansion to the Elder pocket and southeast pocket only** and returns build/QC evidence. Do not roll out map-wide or add wind/water VFX until D1 Phone PASS.
 Snapshot: 2026-09-29
 Repository: `momentum448-glitch/xianxia-arpg-web`
-Verified functional runtime main: `9e564bc8f4b539697dc5e5f57741ba1eb610fd6f` (PR #139, Proof C1)
-Accepted Collision Proof B: B1/B2A/B2B1/B2B2 PHONE_PASS; B2B2 functional runtime PR #136 / `a3648f7`
-Relevant execution PR: #139 merged; unrelated open PR #4
+Verified current main before this continuity update: `91b28c3487f10459c0420bfeadc5470c7c985220`
+Proof C1 functional runtime: PR #139 / `9e564bc8f4b539697dc5e5f57741ba1eb610fd6f`
+Proof C1 handoff/docs: PR #140 / `91b28c3`
+Accepted Collision Proof B: B1/B2A/B2B1/B2B2 PHONE_PASS
+Relevant execution PR: none
 
-## Current gate
+## Phone PASS just recorded
 
-**Proof C1 is deployed for Android Phone QC, not yet PHONE_PASS.** Do not expand occlusion or tree motion to other objects until all five checks pass and Design records the result.
+User Android QC reports **Proof C1 PASS** on live `BUILD 9e564bc`.
 
-QC URL: `https://momentum448-glitch.github.io/xianxia-arpg-web/?qc=9e564bc`
-Functional runtime badge: `BUILD 9e564bc`
-CI: run #36514728308 PASS. Pages: run #36514728320 PASS. The live page displayed `BUILD 9e564bc`, entered the settlement scene and showed the Healer pocket without a game console error.
+Therefore **Proof C1 = PHONE_PASS**.
 
-## Proof C1 implementation
+Accepted C1 baseline:
 
-- One existing Healer tree at world `(255,8365)`, accepted trunk collider `(255,8358)` radius 19. Accepted `env_tree_village_a.png` is unchanged: source 160 × 198, SHA-256 `c4100456e464661fc3e06765fc8da032a8ef8ad35687b43c167c04a4ab054788`.
-- Runtime canvas splits that tree near source y=112 with a 4 px shared seam. Fixed base stays at world depth -3; canopy retains 168 px flipped display width, alpha 0.92, and pivots at the split. Only the canopy sways ±0.65° in a 6.4 s cycle.
-- One existing Healer house at world `(470,8350)`, accepted grounded collider x366–566 / y8298–8337. Accepted `env_house_thatch_b.png` is unchanged: source 208 × 172, 69,820 bytes, SHA-256 `71069f35aff92045dc4e64c84b5cdb936484f848c0d5d737915adfc07fba7f0f`.
-- The accepted full house remains at depth -3, 292 px display width. A runtime canvas copy of its upper roof/eave portion ends at source y=126; it appears at depth 12 only when the player is behind and nearby. No whole-house fade.
-- Player visual depth is 11; the foot used for sorting is player center y +31. Tree crossing threshold is foot y=8358, house threshold is foot y=8318, each with 6-unit hysteresis. The canopy foreground is gated to |foot x−255|<122 and foot y 8145–8465; roof foreground to |foot x−470|<180 and foot y 8100–8400.
-- Code/Asset ID: `ARCH-HEALER-C1-SELECTIVE-OCCLUSION` in `src/game/settlementC1Occlusion.ts`. Derivatives are three runtime canvas textures only: `prod-c1-healer-tree-base`, `prod-c1-healer-tree-canopy`, `prod-c1-healer-house-roof`. No new binary asset files exist. Original tree/house and all collision, NPC, combat, terrain and crossing code/assets are unchanged.
+- Healer tree canopy foreground ordering behaves correctly front/back;
+- canopy-only sway is subtle; trunk/base remains visually rooted;
+- Healer house roof/eave foreground ordering behaves correctly;
+- accepted tree/house collision is unchanged;
+- Healer interaction, wooden bridge and B2B2 stepping stones remain accepted;
+- original tree/house binaries remain unchanged; C1 uses runtime-derived layers only.
 
-Local verification: TypeScript/Vite build PASS, original PNG checksums unchanged, source-pixel composites checked front/back and at both sway extremes; no visible moving seam in those composites. PR #139 contained only the C1 module, its three scene integration points and the registry. Browser access to local Vite was blocked by the browser client; the live game boot and Healer area were observed. Physical behind/front movement feel and regression routes remain the authoritative Android gate.
+Preserve `ARCH-HEALER-C1-SELECTIVE-OCCLUSION` behavior unless a concrete regression appears.
 
-## Anh cần QC — Proof C1
+## Current objective
 
-Use **1.0x**, UI visible first. Optionally use 0.5x hidden UI only for a quick whole-scene sanity check.
+Execute **Proof D1 — selective rollout to two additional pockets only**.
 
-1. **Tree front/back readability**
-   - Walk around the Healer tree, including behind its upper side and in front of its lower side.
-   - PASS: canopy naturally covers the player only when the player is behind it.
-   - FAIL: player is always on top, always hidden, or ordering flips/jitters unnaturally.
+Question:
 
-2. **Tree sway**
-   - Stand near the test tree for several seconds.
-   - PASS: canopy has subtle living motion but trunk feels rooted and the motion does not attract attention.
-   - FAIL: whole tree rocks, motion is large/floaty, or tree looks detached from the ground.
+> Does the C1 selective-occlusion pattern remain convincing and stable when reused on different accepted tree/house art, flip states and map positions, without causing synchronized “breathing trees,” depth flicker or any collision regression?
 
-3. **House roof/eave occlusion**
-   - Move along both back/upper and front/lower sides of the Healer house.
-   - PASS: player convincingly passes behind the relevant roof/eave only on the back side and remains in front on the front side.
-   - FAIL: player disappears incorrectly, roof ordering is backwards, or there is obvious visual popping.
+This is still a controlled rollout, not the final map-wide polish pass.
+
+## Locked Proof D1 targets
+
+### Target A — Elder pocket
+
+Existing tree:
+
+- visual anchor approximately **(270, 7815)**;
+- accepted trunk collider **(270, 7808)** radius 21;
+- accepted source tree `public/assets/c4/environment/settlement/env_tree_village_a.png`;
+- current display width 185, unflipped, alpha 0.96.
+
+Existing Elder hall:
+
+- visual anchor approximately **(470, 7775)**;
+- accepted grounded collider `left 370, right 570, top 7723, bottom 7762`;
+- accepted source `public/assets/c4/environment/settlement/env_house_hall_a.png`;
+- current display width 315.
+
+Required behavior:
+
+- tree canopy can foreground the player only when the player is spatially behind the tree;
+- tree trunk/base remains fixed;
+- use subtle canopy-only sway comparable to C1, but not phase-locked with other animated trees;
+- Elder hall roof/eave foreground only when the player is on the visually behind/upper side;
+- no whole-building fade.
+
+### Target B — Southeast pocket
+
+Existing tree:
+
+- visual anchor approximately **(1230, 8525)**;
+- accepted trunk collider **(1230, 8518)** radius 19;
+- same accepted tree source;
+- current display width 168, flipped, alpha 0.76.
+
+Existing southeast tile house:
+
+- visual anchor approximately **(1275, 8685)**;
+- accepted grounded collider `left 1170, right 1380, top 8633, bottom 8672`;
+- accepted source `public/assets/c4/environment/settlement/env_house_tile_a.png`;
+- current display width 310, flipped.
+
+Why these two pockets:
+
+- Elder is a high-value hero/NPC pocket and exercises a different house asset plus larger tree scale.
+- Southeast is close to the newly accepted stepping-stone route and exercises flipped tree/house presentation.
+- Together they test reuse better than duplicating the Healer case everywhere at once.
+
+## Exact Work brief — Proof D1 only
+
+1. VERIFY exact current source pixels, placements and flip/scale state for all four target visuals before splitting anything.
+   - recover/use the existing accepted runtime assets;
+   - do not regenerate them;
+   - derive sensible canopy/roof cut lines from each asset rather than copying Healer source-Y values blindly.
+
+2. Reuse/generalize the proven C1 architecture only as much as necessary.
+   - It is acceptable to refactor `settlementC1Occlusion.ts` into a small reusable selective-occlusion helper if that reduces duplication.
+   - Healer C1 behavior must remain functionally and visually equivalent.
+   - Do not introduce a global/per-pixel occlusion engine.
+
+3. Add canopy foreground + subtle canopy-only sway to the **Elder tree** and **southeast tree** only.
+   - trunk/base stays fixed;
+   - keep amplitude in the restrained C1 neighborhood (roughly <= ±0.65° unless VERIFY shows a slightly smaller value reads better);
+   - offset animation phase/timing so nearby trees do not sway in perfect synchronization;
+   - no translation, bounce, gust particles or trunk rocking.
+
+4. Add selective roof/eave foreground to the **Elder hall** and **southeast tile house** only.
+   - player behind/upper side: appropriate roof/eave may foreground;
+   - player front/lower side: player remains in front;
+   - no whole-building fade;
+   - collision remains tied only to the accepted grounded footprint.
+
+5. Preserve exactly:
+   - Healer C1 accepted behavior;
+   - all B1/B2A/B2B1/B2B2 collision/crossing geometry;
+   - player foot radius/offset, movement substeps, axis sliding and dodge behavior;
+   - NPC positions/radii/interactions;
+   - combat hitboxes/timing;
+   - baked terrain plate/topology;
+   - source art binaries and existing scales/anchors.
+
+6. Do not add in D1:
+   - occlusion to entry/background trees;
+   - occlusion to Merchant stall/cart/goods;
+   - southwest house/tree rollout;
+   - map-wide tree sway;
+   - wind particles;
+   - water animation/VFX;
+   - new collision;
+   - new props;
+   - gameplay changes.
+
+7. If runtime derivative textures or helper architecture change materially, update `ASSET_REGISTRY.md` with exact lineage/state. Do not create new binary art unless technically necessary; runtime-derived canvas layers are preferred.
+
+## Work self-VERIFY before deploy
+
+- Elder tree: front/back ordering from multiple approach angles; trunk fixed; sway subtle.
+- Elder hall: back/front roof/eave ordering with no popping.
+- Southeast tree: flipped presentation front/back ordering; trunk fixed; sway subtle and not synchronized with Elder/Healer.
+- Southeast tile house: flipped roof/eave ordering correct on both sides.
+- Confirm accepted grounded collision data is unchanged.
+- Regression smoke: Healer C1, all three NPC interactions, wooden bridge and stepping stones.
+- At 0.5x hidden UI, check the three animated tree canopies together for visual rhythm: movement should feel ambient, not coordinated.
+- Build, deploy and verify the live build badge.
+
+## Required Work return format
+
+Return in one message:
+
+1. QC link;
+2. build ID;
+3. implementation/refactor summary;
+4. exact target split/threshold/depth logic;
+5. derivative runtime texture IDs or asset-registry changes;
+6. concise self-QC result;
+7. the **“Anh cần QC — Proof D1”** checklist below.
+
+Do not return a bare link.
+
+## Anh cần QC — Proof D1
+
+Use **1.0x**, UI visible for interaction checks. Then use **0.5x, UI hidden** briefly for whole-village motion rhythm.
+
+1. **Elder pocket**
+   - walk behind/in front of the Elder tree and Elder hall;
+   - PASS: canopy and roof/eave foreground only when spatially appropriate; no flicker or obvious popping;
+   - FAIL: player is always above/below the art, ordering jitters, or the house occludes incorrectly.
+
+2. **Southeast pocket**
+   - walk around the southeast tree and tile house from both sides;
+   - PASS: flipped assets behave naturally; tree/roof ordering matches player position;
+   - FAIL: flip causes reversed/broken occlusion, or player disappears incorrectly.
+
+3. **Tree motion hierarchy**
+   - observe Healer + Elder + southeast tree canopies at 0.5x for several seconds;
+   - PASS: subtle independent motion gives life without drawing attention; trunks stay rooted;
+   - FAIL: trees sway in lockstep, wobble too much, or the settlement appears to “breathe.”
 
 4. **Collision independence**
-   - Push against the same Healer tree trunk and house base used in earlier proofs.
-   - PASS: physical contact feels unchanged and canopy/roof pixels do not create new invisible walls.
-   - FAIL: collision footprint grows/shifts or occlusion changes movement.
+   - push against Elder tree/hall and southeast tree/house bases;
+   - PASS: collision feels exactly as before and canopy/roof pixels add no invisible walls;
+   - FAIL: footprint changes, snagging appears, or visual split affects movement.
 
 5. **Regression smoke**
-   - Test Healer interaction, wooden bridge and southeast stepping stones briefly.
-   - PASS: all behave as before.
-   - FAIL: Proof C changes the accepted collision/crossing route.
+   - briefly check Healer C1, NPC interaction, wooden bridge and southeast stepping stones;
+   - PASS: all accepted behavior remains intact;
+   - FAIL: D1 breaks the proven C1 or collision/crossing baseline.
 
-**Already accepted unless regression appears:** Terrain Proof A, NPC re-block, Collision B1/B2A/B2B1/B2B2, Healer bridge, stepping stones.
+**Already accepted unless regression appears:** Terrain Proof A, NPC re-block, Collision Proof B, B2B2, Healer C1.
 
-**Not being judged:** occlusion for every tree/house, stronger wind animation, foliage particles, enemy pathfinding, water VFX, broader visual polish.
+**Not being judged:** remaining trees/buildings, Merchant-stall occlusion, southwest rollout, wind particles, water VFX, final map-wide polish.
 
-## After the Phone gate
+## PASS gate
 
-Proof C1 becomes PHONE_PASS only when all five Android checks pass. Then Design decides whether the proven pattern should expand to selected trees/buildings as a separate Proof D. If C1 fails, revise only the observed visual/depth issue; do not alter collision or add a map-wide engine, whole-house fade, wind VFX, new art or gameplay changes.
+Proof D1 is PHONE PASS when all five checks above pass on Android.
+
+After D1 PASS, Design decides the final **required-object rollout** versus leaving low-value/background objects static, then separately evaluates whether restrained wind/water VFX are worth a small D2 proof. Do not automatically animate every tree.
+
+## Failed paths / cautions
+
+- Do not regenerate accepted art to obtain cutouts.
+- Do not blindly reuse Healer split coordinates on different images.
+- Do not animate trunks/bases.
+- Do not phase-lock all tree sway.
+- Do not expand to low-value/background trees just because the helper supports it.
+- Do not add per-pixel occlusion or whole-house fading.
+- Do not mix D1 with water/wind VFX or new gameplay.
 
 ## Resume sentence
 
-Resume from functional runtime `9e564bc`, state `WAIT_QC`: B2B2 is PHONE_PASS, C1 is deployed and awaits five-item Android QC. Design evaluates the result before any Proof D work.
+Resume from live Proof C1 `BUILD 9e564bc` with **C1 PHONE_PASS** and transfer state `READY_FOR_WORK`. Execute **Proof D1 only**: reuse the accepted selective-occlusion architecture for the Elder tree + hall and southeast tree + tile house, preserve collision/gameplay/source art, keep canopy sway subtle and de-synchronized, deploy, self-QC, and return the five-item Phone-QC checklist.
