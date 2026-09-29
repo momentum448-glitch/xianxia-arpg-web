@@ -4,6 +4,7 @@ import {
   promoteLockedSettlementV2A,
   SETTLEMENT_V2A_PRELOADS,
 } from '../game/settlementV2AProduction';
+import type { HealerC1Occlusion } from '../game/settlementC1Occlusion';
 import { WORLD } from '../game/worldConfig';
 import { GameScene } from './GameScene';
 
@@ -19,6 +20,7 @@ export class ProductionGameScene extends GameScene {
   private readonly qcClassifiedObjects = new Set<Phaser.GameObjects.GameObject>();
   private readonly qcControlObjects = new Set<Phaser.GameObjects.GameObject>();
   private readonly qcWorldTextVisibility = new Map<Phaser.GameObjects.Text, boolean>();
+  private healerC1Occlusion?: HealerC1Occlusion;
 
   preload(): void {
     super.preload();
@@ -30,7 +32,7 @@ export class ProductionGameScene extends GameScene {
   create(): void {
     super.create();
     const settlement = WORLD.zones.find((zone) => zone.id === 'settlement');
-    if (settlement) promoteLockedSettlementV2A(this, settlement);
+    if (settlement) this.healerC1Occlusion = promoteLockedSettlementV2A(this, settlement);
 
     this.qcZoomIndex = 0;
     this.qcUiVisible = true;
@@ -43,6 +45,8 @@ export class ProductionGameScene extends GameScene {
 
   update(time: number, delta: number): void {
     super.update(time, delta);
+    const [footX, footY] = this.playerFootForOcclusion();
+    this.healerC1Occlusion?.update(footX, footY, time);
     this.refreshQcCameraFilters();
     if (!this.qcUiVisible) this.captureAndHideWorldTextLabels();
   }
