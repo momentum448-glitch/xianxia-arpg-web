@@ -102,6 +102,9 @@ Rules:
 | 2026-09-28 | B2B2 southeast stepping-stone crossing is `PHONE_PASS` after Android QC of live `BUILD a3648f7` / PR #136. | Collision Proof B is now complete enough to advance to Proof C. Preserve the five-stone visual, narrow explicit water-only corridor, adjacent blocked water, Healer bridge and all prior collision behavior unless a concrete regression appears. |
 | 2026-09-28 | Proof C begins as one compact Healer-pocket architecture proof: existing tree near `(255,8365)` gets selective canopy occlusion + subtle canopy-only sway; existing Healer house near `(470,8365)` gets one selective roof/eave occlusion case. | Keep collision independent and unchanged. Do not regenerate accepted base art, build per-pixel occlusion, animate the trunk, fade the whole building, or roll out map-wide before Phone QC. |
 
+| 2026-09-29 | Proof C1 selective occlusion/tree-motion architecture is `PHONE_PASS` after Android QC of live `BUILD 9e564bc` / PR #139. | Preserve the Healer tree canopy foreground + subtle canopy-only sway and Healer-house roof/eave foreground pattern; collision, source art and gameplay remain independent and unchanged. |
+| 2026-09-29 | Proof D1 expands the C1 pattern only to two additional accepted pockets: **Elder tree + Elder hall** and **southeast tree + tile house**. | This deliberately tests reuse across different scales/assets/flip states before any wider rollout. Tree canopies may sway subtly with de-synchronized phase; trunks stay fixed. No water/wind VFX, Merchant/southwest rollout or map-wide animation in D1. |
+
 ## Current locked values at a glance
 
 - Screen: portrait 9:16.
@@ -124,7 +127,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2B2 is PHONE PASS. Proof C1's one Healer tree/house visual case is deployed on PR #139 / functional `BUILD 9e564bc` and `WAIT_QC`; wider occlusion/tree motion remains gated until C1 Phone PASS.
+- Current production action: Proof C1 is PHONE PASS on live `BUILD 9e564bc`. Handoff is `READY_FOR_WORK` for Proof D1 only: Elder tree + hall and southeast tree + tile house selective occlusion, with subtle de-synchronized canopy-only sway on the two trees.
 
 
 ## 2026-09-24 — Proof A technical delivery
