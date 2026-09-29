@@ -102,6 +102,8 @@ export function createHealerC1Occlusion(
 
   let treeBehind = false;
   let houseBehind = false;
+  let canopyInFront = false;
+  let roofVisible = false;
   return {
     update(playerFootX: number, playerFootY: number, time: number): void {
       // Physical contacts forbid the player from standing at either center.
@@ -113,10 +115,18 @@ export function createHealerC1Occlusion(
         && playerFootY > treeGroundY - 220 && playerFootY < treeGroundY + 100;
       const nearHouse = Math.abs(playerFootX - houseX) < 180
         && playerFootY > houseGroundY - 250 && playerFootY < houseGroundY + 50;
-      canopy.setDepth(treeBehind && nearTree ? PLAYER_FOREGROUND_DEPTH : WORLD_DEPTH);
+      const nextCanopyInFront = treeBehind && nearTree;
+      if (nextCanopyInFront !== canopyInFront) {
+        canopy.setDepth(nextCanopyInFront ? PLAYER_FOREGROUND_DEPTH : WORLD_DEPTH);
+        canopyInFront = nextCanopyInFront;
+      }
       // When the player is in front, the original unsplit house is the only
       // visible copy. This keeps its accepted alpha edges exactly as before.
-      roof.setVisible(houseBehind && nearHouse);
+      const nextRoofVisible = houseBehind && nearHouse;
+      if (nextRoofVisible !== roofVisible) {
+        roof.setVisible(nextRoofVisible);
+        roofVisible = nextRoofVisible;
+      }
 
       // One canopy only: ±0.65° in a 6.4 s cycle; base and collider stay fixed.
       canopy.setAngle(0.65 * Math.sin(time * Math.PI * 2 / 6400));
