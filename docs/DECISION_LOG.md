@@ -124,7 +124,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: B2B2 is PHONE PASS on live `BUILD a3648f7`. Handoff is `READY_FOR_WORK` for Proof C1 only: one Healer-pocket tree canopy occlusion + subtle canopy-only sway and one Healer-house roof/eave occlusion case.
+- Current production action: B2B2 is PHONE PASS. Proof C1's one Healer tree/house visual case is deployed on PR #139 / functional `BUILD 9e564bc` and `WAIT_QC`; wider occlusion/tree motion remains gated until C1 Phone PASS.
 
 
 ## 2026-09-24 — Proof A technical delivery
