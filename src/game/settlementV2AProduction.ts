@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 import { C4_ASSETS } from './art/assetManifest';
 import { SETTLEMENT_HOUSE_TEXTURES } from './environmentVisuals';
-import { createHealerC1Occlusion, type HealerC1Occlusion } from './settlementC1Occlusion';
+import {
+  createElderD1Occlusion, createHealerC1Occlusion, createSoutheastD1Occlusion,
+  type SettlementSelectiveOcclusion,
+} from './settlementC1Occlusion';
 import type { WorldZone } from './worldConfig';
 
 export const SETTLEMENT_V2A_TEXTURES = {
@@ -185,7 +188,7 @@ function addHerbGarden(scene: Phaser.Scene, top: number, dx = 0, dy = 0): void {
   herbBed.setMask(maskGraphics.createGeometryMask());
 }
 
-export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone): HealerC1Occlusion {
+export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone): SettlementSelectiveOcclusion {
   const top = zone.yMin;
   removeLegacySettlementArt(scene, zone);
   prepareTreeRuntimeTexture(scene);
@@ -218,8 +221,14 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   addAsset(scene, tree, 1460, top + 355, 184, true, 0.86);
 
   const elder = TOPOLOGY_REVISION_A.elder;
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.hallA, 350 + elder.dx, top + 555 + elder.dy, 315);
-  addAsset(scene, tree, 150 + elder.dx, top + 575 + elder.dy, 185, false, 0.96);
+  const elderOcclusion = createElderD1Occlusion(scene, {
+    treeTexture: tree,
+    houseTexture: SETTLEMENT_HOUSE_TEXTURES.hallA,
+    treeX: 150 + elder.dx,
+    treeGroundY: top + 575 + elder.dy,
+    houseX: 350 + elder.dx,
+    houseGroundY: top + 555 + elder.dy,
+  });
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.fence, 540 + elder.dx, top + 595 + elder.dy, 195, false, 0.94);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.rockGrass, 535 + elder.dx, top + 510 + elder.dy, 120, false, 0.92);
   addAsset(scene, SETTLEMENT_V2A_TEXTURES.lantern, 615 + elder.dx, top + 570 + elder.dy, 74, false, 0.96);
@@ -270,9 +279,15 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
   const southEast = TOPOLOGY_REVISION_A.southEast;
   const field = TOPOLOGY_REVISION_A.field;
   addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.thatchA, 75 + southWest.dx, top + 1750 + southWest.dy, 292, false, 0.84);
-  addAsset(scene, SETTLEMENT_HOUSE_TEXTURES.tileA, 1535 + southEast.dx, top + 1665 + southEast.dy, 310, true, 0.82);
+  const southeastOcclusion = createSoutheastD1Occlusion(scene, {
+    treeTexture: tree,
+    houseTexture: SETTLEMENT_HOUSE_TEXTURES.tileA,
+    treeX: 1490 + southEast.dx,
+    treeGroundY: top + 1505 + southEast.dy,
+    houseX: 1535 + southEast.dx,
+    houseGroundY: top + 1665 + southEast.dy,
+  });
   addAsset(scene, tree, 120 + southWest.dx, top + 1540 + southWest.dy, 155, false, 0.74);
-  addAsset(scene, tree, 1490 + southEast.dx, top + 1505 + southEast.dy, 168, true, 0.76);
   // Remove floating southern fence stamps; field/terrain edges now carry the boundary logic.
 
   scene.add.image(1210 + field.dx, top + 1620 + field.dy, SETTLEMENT_V2A_TEXTURES.fieldEdge)
@@ -280,5 +295,11 @@ export function promoteLockedSettlementV2A(scene: Phaser.Scene, zone: WorldZone)
     .setDisplaySize(320, 180)
     .setAlpha(0.96)
     .setDepth(-7.2);
-  return healerOcclusion;
+  return {
+    update(playerFootX, playerFootY, time): void {
+      healerOcclusion.update(playerFootX, playerFootY, time);
+      elderOcclusion.update(playerFootX, playerFootY, time);
+      southeastOcclusion.update(playerFootX, playerFootY, time);
+    },
+  };
 }
