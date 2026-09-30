@@ -337,7 +337,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Occlusion: Y-depth sorting plus selective canopy/roof/eave foreground cutouts.
 - Tree animation: important near-player trees remain separate so canopy sway/wind can be added later.
 - Water: blocked by default; bridge plus 1–2 authored ford/stepping-stone crossings.
-- Next action: Collision Proof B through B2B2 is PHONE PASS. Healer-pocket C1 is deployed and awaits Phone QC before any wider rollout.
+- Next action: Collision Proof B through B2B2 and Healer C1 are PHONE PASS. Two-pocket D1 is deployed and awaits Phone QC before any wider rollout.
 
 ### ENV-CREEK-STEPPING-STONES-A
 
@@ -369,7 +369,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ARCH-SETTLEMENT-D1-SELECTIVE-OCCLUSION-ROLLOUT
 
 - Purpose: controlled reuse of the C1 selective-occlusion architecture before any map-wide rollout.
-- Status: `IMPLEMENTED / PHONE_QC_PENDING` (Proof D1 runtime; Android review remains authoritative).
+- Status: `DEPLOYED / PHONE_QC_PENDING` (PR #142 / functional main `b8cfc86`; Android review remains authoritative).
 - Targets: Elder tree `(270,7815)` + Elder hall `(470,7775)`; southeast tree `(1230,8525)` + tile house `(1275,8685)`.
 - Collision baseline: preserve accepted tree trunk circles and house grounded boxes exactly; no new collision in D1.
 - Source lineage: accepted `env_tree_village_a.png` (160 × 198, SHA-256 `c4100456e464661fc3e06765fc8da032a8ef8ad35687b43c167c04a4ab054788`), `env_house_hall_a.png` (384 × 268, SHA-256 `28c7ab193e98121e12a7687eea033f7f384235f066234abd70a70be3d49db30d`) and `env_house_tile_a.png` (256 × 183, SHA-256 `41716b51e0a8dd4c4e17b1924a4999a7d50e6a7569ff7884bc69f5452152c3d7`). Original binaries unchanged. The tree uses the existing flood-cleaned runtime texture `prod-v2a-tree-a-runtime`.
@@ -377,7 +377,8 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 - Elder: tree 185 px unflipped alpha 0.96, source pivot y=112 with 4 px seam, canopy ±0.55° / 7.1 s / phase 1.7; hall 315 px unflipped alpha 1, roof source cut y=150. Foreground tree when foot y<7808 and within x±132, y(7570,7920); hall when foot y<7743 and within x±195, y(7505,7830). Hysteresis ±6 world units; player visual depth 11, conditional canopy/roof depth 12, world base -3.
 - Southeast: tree 168 px flipped alpha 0.76, source pivot y=112 with 4 px seam, canopy ±0.48° / 5.7 s / phase 3.3; tile house 310 px flipped alpha 0.82, roof source cut y=112. Foreground tree when foot y<8518 and within x±122, y(8305,8625); house when foot y<8653 and within x±190, y(8435,8740). Hysteresis ±6 world units; depths as above.
 - Visual-only rule: full house/base image keeps accepted placement and scale; foreground roof/eave appears only near an actor behind the base. Only canopies rotate. All accepted grounded collision, NPC, crossing, gameplay and terrain data stay unchanged.
-- Next action: deploy and complete five-item D1 Android Phone QC before any wider rollout or wind/water VFX.
+- Build/QC: local build, PR/main CI and Pages PASS; live `BUILD b8cfc86` booted into the settlement. Source-pixel upper-house composites inspected. Full front/back path traversal, collision feel and three-tree rhythm remain Android Phone-QC gates.
+- Next action: complete five-item D1 Android Phone QC before any wider rollout or wind/water VFX.
 
 ## 8. Current critical non-art architecture note
 

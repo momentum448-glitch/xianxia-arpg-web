@@ -127,7 +127,7 @@ Rules:
 - `ENV-HEALER-ACTIVITY-KIT-A`: `PHONE_PASS` on reviewed build `c45288c`; final garden left of Healer house.
 - `ENV-FIELD-EDGE-KIT-B`: `PHONE_PASS` on reviewed build `de30ae7`; Field Edge A is superseded/rejected.
 - Phone QC beats desktop intuition for UX/art readability.
-- Current production action: Proof C1 is PHONE PASS on live `BUILD 9e564bc`. Handoff is `READY_FOR_WORK` for Proof D1 only: Elder tree + hall and southeast tree + tile house selective occlusion, with subtle de-synchronized canopy-only sway on the two trees.
+- Current production action: Proof C1 is PHONE PASS on live `BUILD 9e564bc`. Proof D1 runtime is deployed via PR #142 / live `BUILD b8cfc86` and handoff is `WAIT_QC` for Android checks at Elder tree/hall, southeast tree/tile house, independent canopy motion, collision independence and C1/crossing/NPC regression smoke. No further production until Design records D1 Phone QC.
 
 
 ## 2026-09-24 — Proof A technical delivery
