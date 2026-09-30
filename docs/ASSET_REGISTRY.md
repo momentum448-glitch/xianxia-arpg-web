@@ -356,7 +356,7 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 
 - Purpose: Proof C1 only — one Healer tree canopy foreground/sway case and one Healer-house roof/eave foreground case.
 - Status: `PHONE_PASS` on Android live `BUILD 9e564bc` / PR #139.
-- Canonical implementation: `src/game/settlementC1Occlusion.ts`, invoked only by `src/game/settlementV2AProduction.ts` and updated from `ProductionGameScene.ts`.
+- Canonical implementation: `src/game/settlementC1Occlusion.ts`, invoked by `src/game/settlementV2AProduction.ts` and updated from `ProductionGameScene.ts`; D1 reuses its parameterized pair helper without changing C1 values.
 - Source lineage: accepted `env_tree_village_a.png` (160 × 198 source, SHA-256 `c4100456e464661fc3e06765fc8da032a8ef8ad35687b43c167c04a4ab054788`) and `env_house_thatch_b.png` (208 × 172 source, SHA-256 `71069f35aff92045dc4e64c84b5cdb936484f848c0d5d737915adfc07fba7f0f`). Both original GitHub binaries remain unchanged.
 - Derivatives: runtime canvas textures only (`prod-c1-healer-tree-base`, `prod-c1-healer-tree-canopy`, `prod-c1-healer-house-roof`); no new binary files. Tree layers retain the 168 px flipped display width and 0.92 alpha at `(255,8365)`; house retains 292 px width at `(470,8350)`.
 - Split: tree source y=112 with a 4 px shared seam; canopy pivots there and oscillates ±0.65° over 6.4 s while the lower trunk/base stays fixed. House upper roof/eave cutout ends at source y=126; the accepted full house remains the base image.
@@ -369,12 +369,15 @@ Do not regenerate a `DESIGN_PASS` or `PHONE_PASS` asset merely because a later c
 ### ARCH-SETTLEMENT-D1-SELECTIVE-OCCLUSION-ROLLOUT
 
 - Purpose: controlled reuse of the C1 selective-occlusion architecture before any map-wide rollout.
-- Status: `PLANNED / READY_FOR_WORK`.
+- Status: `IMPLEMENTED / PHONE_QC_PENDING` (Proof D1 runtime; Android review remains authoritative).
 - Targets: Elder tree `(270,7815)` + Elder hall `(470,7775)`; southeast tree `(1230,8525)` + tile house `(1275,8685)`.
 - Collision baseline: preserve accepted tree trunk circles and house grounded boxes exactly; no new collision in D1.
-- Visual rule: canopy/roof foreground only when spatially behind; canopy-only sway on the two target trees with subtle de-synchronized timing; trunks fixed.
-- Source rule: reuse accepted GitHub runtime art; do not regenerate base tree/house assets.
-- Next action: Work implements only these two pockets, deploys, self-QCs and returns focused Android Phone QC.
+- Source lineage: accepted `env_tree_village_a.png` (160 × 198, SHA-256 `c4100456e464661fc3e06765fc8da032a8ef8ad35687b43c167c04a4ab054788`), `env_house_hall_a.png` (384 × 268, SHA-256 `28c7ab193e98121e12a7687eea033f7f384235f066234abd70a70be3d49db30d`) and `env_house_tile_a.png` (256 × 183, SHA-256 `41716b51e0a8dd4c4e17b1924a4999a7d50e6a7569ff7884bc69f5452152c3d7`). Original binaries unchanged. The tree uses the existing flood-cleaned runtime texture `prod-v2a-tree-a-runtime`.
+- Derivatives: runtime canvas textures only, `prod-d1-elder-tree-base`, `prod-d1-elder-tree-canopy`, `prod-d1-elder-house-roof`, `prod-d1-southeast-tree-base`, `prod-d1-southeast-tree-canopy`, `prod-d1-southeast-house-roof`; no new binary. C1 derivative IDs and parameters remain unchanged. Implementation: `src/game/settlementC1Occlusion.ts`, wired from `src/game/settlementV2AProduction.ts`.
+- Elder: tree 185 px unflipped alpha 0.96, source pivot y=112 with 4 px seam, canopy ±0.55° / 7.1 s / phase 1.7; hall 315 px unflipped alpha 1, roof source cut y=150. Foreground tree when foot y<7808 and within x±132, y(7570,7920); hall when foot y<7743 and within x±195, y(7505,7830). Hysteresis ±6 world units; player visual depth 11, conditional canopy/roof depth 12, world base -3.
+- Southeast: tree 168 px flipped alpha 0.76, source pivot y=112 with 4 px seam, canopy ±0.48° / 5.7 s / phase 3.3; tile house 310 px flipped alpha 0.82, roof source cut y=112. Foreground tree when foot y<8518 and within x±122, y(8305,8625); house when foot y<8653 and within x±190, y(8435,8740). Hysteresis ±6 world units; depths as above.
+- Visual-only rule: full house/base image keeps accepted placement and scale; foreground roof/eave appears only near an actor behind the base. Only canopies rotate. All accepted grounded collision, NPC, crossing, gameplay and terrain data stay unchanged.
+- Next action: deploy and complete five-item D1 Android Phone QC before any wider rollout or wind/water VFX.
 
 ## 8. Current critical non-art architecture note
 

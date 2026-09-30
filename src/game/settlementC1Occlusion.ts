@@ -1,27 +1,39 @@
 import Phaser from 'phaser';
 
-// Proof C1 uses the accepted source pixels. These scene-local canvas textures
-// split only the Healer tree and house; no source PNG or collision is changed.
-const TREE_BASE_KEY = 'prod-c1-healer-tree-base';
-const TREE_CANOPY_KEY = 'prod-c1-healer-tree-canopy';
-const HOUSE_ROOF_KEY = 'prod-c1-healer-house-roof';
-const TREE_PIVOT_SOURCE_Y = 112;
-const HOUSE_ROOF_SOURCE_BOTTOM = 126;
+// Scene-local canvas derivatives only. Source PNGs and collision stay unchanged.
 const WORLD_DEPTH = -3;
 const PLAYER_FOREGROUND_DEPTH = 12; // player visual is at depth 11
 const DEPTH_HYSTERESIS = 6;
 
-export interface HealerC1Occlusion {
+export interface SettlementSelectiveOcclusion {
   update(playerFootX: number, playerFootY: number, time: number): void;
 }
 
-interface HealerC1Placement {
+interface PairSpec {
+  key: string;
   treeTexture: string;
   houseTexture: string;
   treeX: number;
   treeGroundY: number;
   houseX: number;
   houseGroundY: number;
+  treeWidth: number;
+  treeFlipX: boolean;
+  treeAlpha: number;
+  treePivotSourceY: number;
+  treeNearX: number;
+  treeNearAbove: number;
+  treeNearBelow: number;
+  swayDegrees: number;
+  swayPeriodMs: number;
+  swayPhase: number;
+  houseWidth: number;
+  houseFlipX: boolean;
+  houseAlpha: number;
+  roofSourceBottom: number;
+  houseNearX: number;
+  houseNearAbove: number;
+  houseNearBelow: number;
 }
 
 function sourceImage(scene: Phaser.Scene, key: string): CanvasImageSource & {
@@ -43,7 +55,7 @@ function copyWithVerticalCut(
 ): void {
   if (scene.textures.exists(key)) return;
   const texture = scene.textures.createCanvas(key, source.width, source.height);
-  if (!texture) throw new Error(`Proof C1 could not create ${key}`);
+  if (!texture) throw new Error(`Selective occlusion could not create ${key}`);
   const context = texture.getContext();
   context.clearRect(0, 0, source.width, source.height);
   context.drawImage(source, 0, 0);
@@ -73,32 +85,38 @@ function behindWithHysteresis(
     : playerFootY < threshold - DEPTH_HYSTERESIS;
 }
 
-export function createHealerC1Occlusion(
-  scene: Phaser.Scene, placement: HealerC1Placement,
-): HealerC1Occlusion {
-  const { treeTexture, houseTexture, treeX, treeGroundY, houseX, houseGroundY } = placement;
+function createPair(scene: Phaser.Scene, spec: PairSpec): SettlementSelectiveOcclusion {
+  const {
+    treeTexture, houseTexture, treeX, treeGroundY, houseX, houseGroundY,
+  } = spec;
+  const treeBaseKey = `prod-${spec.key}-tree-base`;
+  const treeCanopyKey = `prod-${spec.key}-tree-canopy`;
+  const roofKey = `prod-${spec.key}-house-roof`;
   const treeSource = sourceImage(scene, treeTexture);
   const houseSource = sourceImage(scene, houseTexture);
 
-  // Four source pixels overlap at the join. Rotation around source Y=112 is
-  // under a degree, so the rooted lower trunk does not expose a moving seam.
-  copyWithVerticalCut(scene, TREE_BASE_KEY, treeSource, false, TREE_PIVOT_SOURCE_Y - 2);
-  copyWithVerticalCut(scene, TREE_CANOPY_KEY, treeSource, true, TREE_PIVOT_SOURCE_Y + 2);
-  copyWithVerticalCut(scene, HOUSE_ROOF_KEY, houseSource, true, HOUSE_ROOF_SOURCE_BOTTOM);
+  // Four source pixels overlap at the pivot. The lower trunk stays rooted.
+  copyWithVerticalCut(scene, treeBaseKey, treeSource, false, spec.treePivotSourceY - 2);
+  copyWithVerticalCut(scene, treeCanopyKey, treeSource, true, spec.treePivotSourceY + 2);
+  copyWithVerticalCut(scene, roofKey, houseSource, true, spec.roofSourceBottom);
 
   // Base art retains the exact old scale, flip, alpha and world depth.
-  addGroundedImage(scene, houseTexture, houseX, houseGroundY, 292);
-  const roof = addGroundedImage(scene, HOUSE_ROOF_KEY, houseX, houseGroundY, 292)
+  addGroundedImage(scene, houseTexture, houseX, houseGroundY,
+    spec.houseWidth, spec.houseFlipX, spec.houseAlpha);
+  const roof = addGroundedImage(scene, roofKey, houseX, houseGroundY,
+    spec.houseWidth, spec.houseFlipX, spec.houseAlpha)
     .setDepth(PLAYER_FOREGROUND_DEPTH)
     .setVisible(false);
-  addGroundedImage(scene, TREE_BASE_KEY, treeX, treeGroundY, 168, true, 0.92);
-  const canopy = addGroundedImage(scene, TREE_CANOPY_KEY, treeX, treeGroundY, 168, true, 0.92);
+  addGroundedImage(scene, treeBaseKey, treeX, treeGroundY,
+    spec.treeWidth, spec.treeFlipX, spec.treeAlpha);
+  const canopy = addGroundedImage(scene, treeCanopyKey, treeX, treeGroundY,
+    spec.treeWidth, spec.treeFlipX, spec.treeAlpha);
 
   // Pivot at the canopy/trunk junction, not at the ground. At angle zero the
   // canopy pixels line up exactly with the fixed base and accepted tree art.
-  const scale = 168 / treeSource.width;
-  canopy.setOrigin(0.5, TREE_PIVOT_SOURCE_Y / treeSource.height);
-  canopy.setPosition(treeX, treeGroundY - (treeSource.height - TREE_PIVOT_SOURCE_Y) * scale);
+  const scale = spec.treeWidth / treeSource.width;
+  canopy.setOrigin(0.5, spec.treePivotSourceY / treeSource.height);
+  canopy.setPosition(treeX, treeGroundY - (treeSource.height - spec.treePivotSourceY) * scale);
 
   let treeBehind = false;
   let houseBehind = false;
@@ -111,10 +129,12 @@ export function createHealerC1Occlusion(
       // small hysteresis prevents flicker when walking around their sides.
       treeBehind = behindWithHysteresis(playerFootY, treeGroundY - 7, treeBehind);
       houseBehind = behindWithHysteresis(playerFootY, houseGroundY - 32, houseBehind);
-      const nearTree = Math.abs(playerFootX - treeX) < 122
-        && playerFootY > treeGroundY - 220 && playerFootY < treeGroundY + 100;
-      const nearHouse = Math.abs(playerFootX - houseX) < 180
-        && playerFootY > houseGroundY - 250 && playerFootY < houseGroundY + 50;
+      const nearTree = Math.abs(playerFootX - treeX) < spec.treeNearX
+        && playerFootY > treeGroundY - spec.treeNearAbove
+        && playerFootY < treeGroundY + spec.treeNearBelow;
+      const nearHouse = Math.abs(playerFootX - houseX) < spec.houseNearX
+        && playerFootY > houseGroundY - spec.houseNearAbove
+        && playerFootY < houseGroundY + spec.houseNearBelow;
       const nextCanopyInFront = treeBehind && nearTree;
       if (nextCanopyInFront !== canopyInFront) {
         canopy.setDepth(nextCanopyInFront ? PLAYER_FOREGROUND_DEPTH : WORLD_DEPTH);
@@ -128,8 +148,51 @@ export function createHealerC1Occlusion(
         roofVisible = nextRoofVisible;
       }
 
-      // One canopy only: ±0.65° in a 6.4 s cycle; base and collider stay fixed.
-      canopy.setAngle(0.65 * Math.sin(time * Math.PI * 2 / 6400));
+      canopy.setAngle(spec.swayDegrees * Math.sin(
+        time * Math.PI * 2 / spec.swayPeriodMs + spec.swayPhase,
+      ));
     },
   };
+}
+
+type Placement = Pick<PairSpec,
+  'treeTexture' | 'houseTexture' | 'treeX' | 'treeGroundY' | 'houseX' | 'houseGroundY'>;
+
+export function createHealerC1Occlusion(
+  scene: Phaser.Scene, placement: Placement,
+): SettlementSelectiveOcclusion {
+  return createPair(scene, {
+    key: 'c1-healer', ...placement,
+    treeWidth: 168, treeFlipX: true, treeAlpha: 0.92,
+    treePivotSourceY: 112, treeNearX: 122, treeNearAbove: 220, treeNearBelow: 100,
+    swayDegrees: 0.65, swayPeriodMs: 6400, swayPhase: 0,
+    houseWidth: 292, houseFlipX: false, houseAlpha: 1,
+    roofSourceBottom: 126, houseNearX: 180, houseNearAbove: 250, houseNearBelow: 50,
+  });
+}
+
+export function createElderD1Occlusion(
+  scene: Phaser.Scene, placement: Placement,
+): SettlementSelectiveOcclusion {
+  return createPair(scene, {
+    key: 'd1-elder', ...placement,
+    treeWidth: 185, treeFlipX: false, treeAlpha: 0.96,
+    treePivotSourceY: 112, treeNearX: 132, treeNearAbove: 245, treeNearBelow: 105,
+    swayDegrees: 0.55, swayPeriodMs: 7100, swayPhase: 1.7,
+    houseWidth: 315, houseFlipX: false, houseAlpha: 1,
+    roofSourceBottom: 150, houseNearX: 195, houseNearAbove: 270, houseNearBelow: 55,
+  });
+}
+
+export function createSoutheastD1Occlusion(
+  scene: Phaser.Scene, placement: Placement,
+): SettlementSelectiveOcclusion {
+  return createPair(scene, {
+    key: 'd1-southeast', ...placement,
+    treeWidth: 168, treeFlipX: true, treeAlpha: 0.76,
+    treePivotSourceY: 112, treeNearX: 122, treeNearAbove: 220, treeNearBelow: 100,
+    swayDegrees: 0.48, swayPeriodMs: 5700, swayPhase: 3.3,
+    houseWidth: 310, houseFlipX: true, houseAlpha: 0.82,
+    roofSourceBottom: 112, houseNearX: 190, houseNearAbove: 250, houseNearBelow: 55,
+  });
 }
